@@ -1,0 +1,49 @@
+<Configuration>
+	<Component Id="ClickOnceInstallerTools" State="Local" ShowOptionNode="yes"/>
+	<Component Id="NavHelpServer" State="Local" ShowOptionNode="yes"/>
+	<Component Id="WebClient" State="Local" ShowOptionNode="yes"/>
+	<Component Id="AutomatedDataCaptureSystem" State="Local" ShowOptionNode="yes"/>
+	<Component Id="OutlookAddIn" State="Local" ShowOptionNode="yes"/>
+	<Component Id="SQLServerDatabase" State="Local" ShowOptionNode="yes"/>
+	<Component Id="SQLDemoDatabase" State="Local" ShowOptionNode="yes"/>
+	<Component Id="ServiceTier" State="Local" ShowOptionNode="yes"/>
+	<Component Id="Pagetest" State="Local" ShowOptionNode="yes"/>
+	<Component Id="STOutlookIntegration" State="Local" ShowOptionNode="yes"/>
+	<Component Id="ServerManager" State="Local" ShowOptionNode="yes"/>
+	<Component Id="RoleTailoredClient" State="Local" ShowOptionNode="yes"/>
+	<Component Id="ExcelAddin" State="Local" ShowOptionNode="yes"/>
+	<Component Id="ClassicClient" State="Local" ShowOptionNode="yes"/>
+	<Parameter Id="TargetPath" Value="C:\Program Files (x86)\Microsoft Dynamics NAV\90"/>
+	<Parameter Id="TargetPathX64" Value="C:\Program Files\Microsoft Dynamics NAV\90"/>
+	<Parameter Id="NavServiceServerName" Value="localhost"/>
+	<Parameter Id="NavServiceInstanceName" Value="DynamicsNAV90"/>
+	<Parameter Id="NavServiceAccount" Value="NT AUTHORITY\NETWORK SERVICE"/>
+	<Parameter Id="NavServiceAccountPassword" IsHidden="yes" Value=""/>
+	<Parameter Id="ManagementServiceServerPort" Value="7045"/>
+	<Parameter Id="NavServiceClientServicesPort" Value="7046"/>
+	<Parameter Id="WebServiceServerPort" Value="7047"/>
+	<Parameter Id="WebServiceServerEnabled" Value="false"/>
+	<Parameter Id="DataServiceServerPort" Value="7048"/>
+	<Parameter Id="DataServiceServerEnabled" Value="false"/>
+	<Parameter Id="NavFirewallOption" Value="true"/>
+	<Parameter Id="CredentialTypeOption" Value="Windows"/>
+	<Parameter Id="DnsIdentity" Value=""/>
+	<Parameter Id="ACSUri" Value=""/>
+	<Parameter Id="SQLServer" Value="WIN-K5JLU49T31O"/>
+	<Parameter Id="SQLInstanceName" Value=""/>
+	<Parameter Id="SQLDatabaseName" Value="NAV2016"/>
+	<Parameter Id="SQLReplaceDb" Value="FAILINSTALLATION"/>
+	<Parameter Id="SQLAddLicense" Value="true"/>
+	<Parameter Id="PostponeServerStartup" Value="false"/>
+	<Parameter Id="PublicODataBaseUrl" Value=""/>
+	<Parameter Id="PublicSOAPBaseUrl" Value=""/>
+	<Parameter Id="PublicWebBaseUrl" Value=""/>
+	<Parameter Id="PublicWinBaseUrl" Value=""/>
+	<Parameter Id="WebServerPort" Value="8080"/>
+	<Parameter Id="WebServerSSLCertificateThumbprint" Value=""/>
+	<Parameter Id="WebClientRunDemo" Value="true"/>
+	<Parameter Id="WebClientDependencyBehavior" Value="install"/>
+	<Parameter Id="NavHelpServerPath" Value="C:\Inetpub\wwwroot"/>
+	<Parameter Id="NavHelpServerName" Value="WIN-K5JLU49T31O"/>
+	<Parameter Id="NavHelpServerPort" Value="49000"/>
+</Configuration>
