@@ -10,7 +10,7 @@
         
         [Parameter(Mandatory=$false)]
         [System.String]
-        $DatabaseServerInstance = 'MSSQLSERVER',
+        $DatabaseInstance,
         
         [Parameter(Mandatory=$true)]
         [System.String]
@@ -21,6 +21,11 @@
         $BackupFile = "$DatabaseName.bak"
     )
     
+    if ([String]::IsNullOrEmpty($DatabaseInstance)){
+        $DatabaseServerInstance = 'MSSQLSERVER'
+    } else {
+        $DatabaseServerInstance = $DatabaseInstance
+    }
 
     $BaseReg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $DatabaseServer)
     $RegKey  = $BaseReg.OpenSubKey('SOFTWARE\\Microsoft\\Microsoft SQL Server\\Instance Names\\SQL')
@@ -33,7 +38,7 @@
     
     write-Host -ForegroundColor Green "Backing up database $Database ..."
     
-    invoke-sql -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseServerInstance -sqlCommand $SQLString
+    invoke-sql -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseInstance -sqlCommand $SQLString
 
     Get-Item $BackupFileFullPath
 }

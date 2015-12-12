@@ -23,16 +23,17 @@
         $ResultProduct = $MatchedRegEx.Groups.Item('product').value
         $ResultVersion = $MatchedRegEx.Groups.Item('version').value
 
-        switch ($ResultVersion)
+        switch ($ResultVersion.length)
         {
-          '8' {
+          1 {
                 $regex = '(?<product>\w+?)\.(?<version>\d+?\.\d+?)\.(?<build>\d+?)\.(?<country>\w+?)\.'
                 $MatchedRegEx = [regex]::Match($ZipFileName, $regex)
         
                 $ResultBuild = $MatchedRegEx.Groups.Item('build').value
                 $ResultCountry = $MatchedRegEx.Groups.Item('country').value        
                 }
-          '90' { 
+          
+          2 { 
                 $ChangeLogFileName = $ChangeLogFileName | Where-Object {$_ -Like 'Changelog*'}
                 $ChangeLogFileName = "$ChangeLogFileName.txt"
                 $regex = 'ChangeLog.(?<country>\w+?)\.(?<build>\d+?)\.txt'
@@ -43,7 +44,7 @@
                 }
 
           default { 
-                    write-error "'$($MatchedRegEx.Groups.Item('version').value)' is not a known version."
+                    write-error "'$($MatchedRegEx.Groups.Item('version').value)' is not a known version.  It would be nice if Microsoft would actually apply some standard naming conventions here :-/"
                   }
         }
 
