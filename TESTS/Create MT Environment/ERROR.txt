@@ -1,1 +1,0 @@
-Export-NAVApplication -DatabaseServer localhost -databasename DemoMTEnvironment -DestinationDatabaseName DemoApplicationDB
