@@ -53,6 +53,7 @@ Invoke-Command -ComputerName $computerName -Script {
 
 #Rights on ProgramData directory
 #download: https://gallery.technet.microsoft.com/scriptcenter/1abd77a5-9c0b-4a2b-acef-90dbb2b84e85
+#be sure to unblock the zipfile before you unzip!!
 Import-Module ntfssecurity
 Add-NTFSAccess -Path 'C:\ProgramData\Microsoft\Microsoft Dynamics NAV' `
     -Account $FullUserName `
