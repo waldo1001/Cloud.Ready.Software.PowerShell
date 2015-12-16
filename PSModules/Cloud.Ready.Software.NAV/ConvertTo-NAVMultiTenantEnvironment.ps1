@@ -9,7 +9,7 @@
         
         [Parameter(Mandatory=$false, Position=1)]
         [System.String]
-        $MainTenantId = 'default',
+        $MainTenantId,
         
         [Parameter(Mandatory=$false, Position=2)]
         [Object]
@@ -20,7 +20,11 @@
         $DatabaseInstance = ''
     )
     Write-Host -ForegroundColor Green "Converting $ServerInstance to MultiTenancy with Tenant $MainTenantId ..."
-
+    
+    if ([string]::IsNullOrEmpty($MainTenantId)){
+        $MainTenantId = 'default'
+    }
+    
     $ServerInstanceDB = (Get-NAVServerConfiguration2 -ServerInstance $ServerInstance | Where Key -eq DatabaseName).Value
     
     $ServerInstanceAppDB = $ServerInstanceDB + '_Application'
