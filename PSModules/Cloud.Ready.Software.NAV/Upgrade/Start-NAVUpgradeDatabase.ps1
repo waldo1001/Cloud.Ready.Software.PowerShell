@@ -16,7 +16,8 @@
         [ValidateSet('ForceSync','Sync')]
         [String] $SyncMode='Sync',
         [ValidateSet('Overwrite','Use')]
-        [String] $IfResultDBExists='Overwrite'
+        [String] $IfResultDBExists='Overwrite',
+        [Switch] $CreateBackup
     )
     
     #Creating Workspace
@@ -154,31 +155,34 @@
         -ErrorAction Stop
 
     #Start Dataupgrade
-    Write-Host 'Starting Data Upgrade' -ForegroundColor Green
-    Start-NAVDataUpgrade -ServerInstance $SandboxServerInstance -SkipCompanyInitialization -ContinueOnError -Force
+    if ($UpgradeToolkit){
+        Write-Host 'Starting Data Upgrade' -ForegroundColor Green
+        Start-NAVDataUpgrade -ServerInstance $SandboxServerInstance -SkipCompanyInitialization -ContinueOnError -Force
     
-    $Stop = $false
-    while (!$Stop){
-        $NAVDataUpgradeStatus = Get-NAVDataUpgrade -ServerInstance $SandboxServerInstance 
-        Write-Host "$($NAVDataUpgradeStatus.State) -- $($NAVDataUpgradeStatus.Progress)" -ForeGroundColor Gray
-        if ($NAVDataUpgradeStatus.State -ne 'InProgress') {
-            $Stop = $true
+        $Stop = $false
+        while (!$Stop){
+            $NAVDataUpgradeStatus = Get-NAVDataUpgrade -ServerInstance $SandboxServerInstance 
+            Write-Host "$($NAVDataUpgradeStatus.State) -- $($NAVDataUpgradeStatus.Progress)" -ForeGroundColor Gray
+            if ($NAVDataUpgradeStatus.State -ne 'InProgress') {
+                $Stop = $true
+            }
+            Start-Sleep 2
         }
-        Start-Sleep 2
+    
+        write-host "Data upgrade status: $($NAVDataUpgradeStatus.State)" -ForegroundColor Green
     }
-    
-    write-host "Data upgrade status: $($NAVDataUpgradeStatus.State)" -ForegroundColor Green
-    
+
     #Start RTC
     Start-NAVWindowsClient -ServerInstance $SandboxServerInstance -ServerName ([net.dns]::GetHostName())
     
     #BackupDB
-    Write-Host 'BackupDatabase' -ForegroundColor Green
-    $ResultDBBackupfile = Backup-NAVDatabase -ServerInstance $SandboxServerInstance
-    $ResultDBBackupfile = get-item $ResultDBBackupfile
-    $ResultDBBackupfile = move-item -Path $ResultDBBackupfile.FullName -Destination (join-path $WorkingFolder $ResultDBBackupfile.Name) -PassThru -Force
+    if ($CreateBackup){
+        $ResultDBBackupfile = Backup-NAVDatabase -ServerInstance $SandboxServerInstance
+        $ResultDBBackupfile = get-item $ResultDBBackupfile
+        $ResultDBBackupfile = move-item -Path $ResultDBBackupfile.FullName -Destination (join-path $WorkingFolder $ResultDBBackupfile.Name) -PassThru -Force
     
-    Start $ResultDBBackupfile.Directory
+        Write-Host "Backup created on $($ResultDBBackupfile.Directory)" -ForegroundColor Green 
+    }
 
     Get-NAVServerInstance -ServerInstance $SandboxServerInstance
 }
