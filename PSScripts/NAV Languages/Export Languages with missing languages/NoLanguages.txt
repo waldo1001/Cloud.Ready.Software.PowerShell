@@ -1,0 +1,32 @@
+OBJECT Table 54100 Test Languages
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13/02/15;
+    Time=20:30:06;
+    Modified=Yes;
+    Version List=;
+  }
+  PROPERTIES
+  {
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10         }
+    { 2   ;   ;Description         ;Text30         }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+
