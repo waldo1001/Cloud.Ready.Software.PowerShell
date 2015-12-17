@@ -20,7 +20,7 @@ waldo's PowerShell Scripts &amp; Modules
   This module has typical Windows related functions such as zip and unzip, working with streams, file management, ISO files, etc.
 
 ## Scripts
-The root directory contains many numbered directories. These are scripts that use the modules in various ways to perform various day to day tasks.
+The PSScripts directory contains many subdirectories. These are scripts that use the modules in various ways to perform various day to day tasks.
 You will likely edit or create your own scripts.
 
 ## Installation
