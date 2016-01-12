@@ -14,7 +14,9 @@
     )
     process
     {
-    
+        $Logdir = [io.path]::GetDirectoryName($Log)
+        if (!(Test-Path $Logdir)) {New-Item -Path $Logdir -ItemType directory}
+
         $ConfigFile = Get-Item $Configfile
 
         Write-Host "Starting install from $($DVDFolder) with Configfile $($ConfigFile.Fullname)" -ForegroundColor Green
