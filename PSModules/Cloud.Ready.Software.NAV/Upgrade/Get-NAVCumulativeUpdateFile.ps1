@@ -80,7 +80,7 @@ function Get-NAVCumulativeUpdateFile
                 $kblink = $ie.Document.links | Where-Object -FilterScript {
                     Write-Verbose "Link: $($_.href) id: $($_.id)"
                     $_.innerText -match 'KB'
-                }
+                } | Select-Object -First 1
 
                 Write-Host -Object "Opening KB link $($kblink.href)" -ForegroundColor Green
                 $null = $ie.Navigate($kblink.href)
