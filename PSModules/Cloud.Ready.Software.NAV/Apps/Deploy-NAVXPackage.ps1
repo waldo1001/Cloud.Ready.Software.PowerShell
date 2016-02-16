@@ -15,6 +15,7 @@
         
     )
     
+    $PublishedApps = Get-NAVAppInfo -ServerInstance $ServerInstance -ErrorAction Stop
     $InstalledApps = Get-NAVAppInfo -ServerInstance $ServerInstance -Tenant $Tenant -ErrorAction Stop
     $myApp = Get-NAVAppInfo -Path $PackageFile -ErrorAction Stop
 
@@ -33,7 +34,6 @@
         
         # unpublish App, if Data don't has to be saved so a re-deploy of the same App Version is possible
         if ($DoNotSaveData){
-            $PublishedApps = Get-NAVAppInfo -ServerInstance $ServerInstance -ErrorAction Stop
             $RemoveApp = $PublishedApps | Where Name -eq $MyApp.Name | Where Publisher -eq $MyApp.Publisher | Where Version -eq $MyApp.Version
             if ($RemoveApp){
                 Write-Host -ForegroundColor Green "Unpublishing $($RemoveApp.Name) version $($RemoveApp.Version) from $ServerInstance"        
