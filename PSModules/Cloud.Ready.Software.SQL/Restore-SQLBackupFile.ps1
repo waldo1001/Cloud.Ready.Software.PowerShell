@@ -1,31 +1,30 @@
 ﻿function Restore-SQLBackupFile
 {
-
+    <#
+    .Synopsis
+       Restore a SQL Database to a File
+    .DESCRIPTION
+       Working with SQL Backups works much faster than working with NAVDataBackup.  Easily working with SQL Backups can termendously make you more effective
+    .NOTES
+       No Return value
+    .PREREQUISITES
+   
+    #>
     [CmdletBinding()]
     param
     (
         [Parameter(Mandatory=$true)]
-        [System.String]
-        $BackupFile,
+        [String] $BackupFile,
         [Parameter(Mandatory=$false)]
-        [System.String]
-        $DatabaseServer = '.',
-
+        [String] $DatabaseServer = '.',
         [Parameter(Mandatory=$false)]
-        [System.String]
-        $DatabaseInstance = '',
-        
+        [String] $DatabaseInstance = '',
         [Parameter(Mandatory=$true)]
-        [System.String]
-        $DatabaseName,
-        
+        [String] $DatabaseName,
         [Parameter(Mandatory=$false)]
-        [System.String]
-        $DatabaseDataPath = '',
-
+        [String] $DatabaseDataPath = '',
         [Parameter(Mandatory=$false, Position=2)]
-        [System.String]
-        $DatabaseLogPath = ''
+        [String] $DatabaseLogPath = ''
     )
     
     if ([String]::IsNullOrEmpty($DatabaseDataPath)){
@@ -55,7 +54,7 @@
 
     write-Host -ForegroundColor Green "Restoring database $DatabaseName"
         
-    #Invoke-Sqlcmd -ServerInstance $DatabaseServer -Database 'master' -Query $RestoreSQLString -QueryTimeout 600000
-    Invoke-sql -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseInstance -DatabaseName 'master' -sqlCommand $RestoreSQLString    
+    #$null = Invoke-Sqlcmd -ServerInstance $DatabaseServer -Database 'master' -Query $RestoreSQLString -QueryTimeout 600000
+    $null = Invoke-sql -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseInstance -DatabaseName 'master' -sqlCommand $RestoreSQLString    
 }
 

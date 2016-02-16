@@ -1,5 +1,15 @@
 ﻿function Release-NAVVersionList
 {
+    <#
+    .Synopsis
+       Arrange NAV VersionList and provide a new ProductVersion
+    .DESCRIPTION
+       <TODO: why would I need it?>
+    .NOTES
+       <TODO: Some tips>
+    .PREREQUISITES
+       <TODO: like positioning the prompt and such>
+    #>
     param (
         [String]$VersionList,
         [String]$ProductVersion, 

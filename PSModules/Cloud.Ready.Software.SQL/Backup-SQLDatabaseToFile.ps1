@@ -1,24 +1,29 @@
 ﻿function Backup-SQLDatabaseToFile
 {
-
+    <#
+    .Synopsis
+       Backup a SQL Database to a File
+    .DESCRIPTION
+       Working with SQL Backups works much faster than working with NAVDataBackup.  Easily working with SQL Backups can termendously make you more effective
+    .NOTES
+       Output is a System.IO.DirectoryInfo (like Get-Item)
+    .PREREQUISITES
+   
+    #>
     [CmdletBinding()]
     param
     (
         [Parameter(Mandatory=$false)]
-        [System.String]
-        $DatabaseServer = '.',
+        [String] $DatabaseServer = '.',
         
         [Parameter(Mandatory=$false)]
-        [System.String]
-        $DatabaseInstance,
+        [String] $DatabaseInstance,
         
         [Parameter(Mandatory=$true)]
-        [System.String]
-        $DatabaseName,
+        [String] $DatabaseName,
         
         [Parameter(Mandatory=$false)]
-        [System.String]
-        $BackupFile = "$DatabaseName.bak"
+        [String] $BackupFile = "$DatabaseName.bak"
     )
     
     if ([String]::IsNullOrEmpty($DatabaseInstance)){

@@ -17,7 +17,11 @@
         [Parameter(Mandatory=$false)]
         [String] $NavAppWorkingFolder,
         [Parameter(Mandatory=$false)]
-        [Object] $ExportPermissionSetId
+        [Object] $ExportPermissionSetId,
+        [Parameter(Mandatory=$False)]
+        [String] $Name
+        
+
     )
     Process{
         $ServerInstanceObject = (Get-NAVServerInstance4 -ServerInstance $ServerInstance)
@@ -35,8 +39,9 @@
         }
         $BackupFiles = @()
         
-        $Backupfiletxt = join-path $BackupPath "$($ServerInstance)_$($BackupOption).txt"
-        $Backupfilefob = join-path $BackupPath "$($ServerInstance)_$($BackupOption).fob"
+        if ([String]::IsNullOrEmpty($Name)){$Name = $ServerInstance}
+        $Backupfiletxt = join-path $BackupPath "$($Name)_$($BackupOption).txt"
+        $Backupfilefob = join-path $BackupPath "$($Name)_$($BackupOption).fob"
         
         if ([String]::IsNullOrEmpty($ObjectFilter)){
             Write-host -ForegroundColor Green "Creating $Backupfiletxt"
@@ -52,13 +57,13 @@
         
         }
                 
-        if(!([String]::IsNullOrEmpty($OriginalServerInstance))) {
+        if(!([String]::IsNullOrEmpty($NavAppOriginalServerInstance))) {
             if ([string]::IsNullOrEmpty(($NavAppWorkingFolder))){
                 Write-Error 'Please provide a workingfolder if you want to create delta''s'
                 break
             }
 
-            $AppFilesFolder = Create-NAVAppFiles -OriginalServerInstance $OriginalServerInstance -ModifiedServerInstance $ServerInstance -BuildPath $NavAppWorkingFolder -PermissionSetId $ExportPermissionSetId
+            $AppFilesFolder = Create-NAVAppFiles -OriginalServerInstance $NavAppOriginalServerInstance -ModifiedServerInstance $ServerInstance -BuildPath $NavAppWorkingFolder -PermissionSetId $ExportPermissionSetId
             $null = Copy-Item -Path $appFilesFolder -Destination $BackupPath -Recurse -Force
             get-childitem $BackupPath
         } else {

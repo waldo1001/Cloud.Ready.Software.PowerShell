@@ -2,7 +2,7 @@
 {
     [cmdletbinding()]
     param(
-        [string]$ServerName, 
+        [string]$ServerName=([net.dns]::GetHostName()), 
         [String]$Database
         )
 

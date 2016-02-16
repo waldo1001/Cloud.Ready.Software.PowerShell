@@ -1,4 +1,14 @@
-﻿#Source: http://stackoverflow.com/questions/8423541/how-do-you-run-a-sql-server-query-from-powershell
+﻿<#
+.Synopsis
+   Executes a SQL Statement on the database server 
+.DESCRIPTION
+   Will return an object model when records were retrieved
+.NOTES
+   
+.PREREQUISITES
+   
+#>
+
 function Invoke-SQL {
     [CmdLetBinding()]
     param(
