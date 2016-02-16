@@ -31,17 +31,15 @@
             }
         }
         $RemoveApp | Uninstall-navapp -ServerInstance $ServerInstance -Tenant $Tenant -DoNotSaveData:$DoNotSaveData -ErrorAction Stop        
-        
-        # unpublish App, if Data don't has to be saved so a re-deploy of the same App Version is possible
-        if ($DoNotSaveData){
-            $RemoveApp = $PublishedApps | Where Name -eq $MyApp.Name | Where Publisher -eq $MyApp.Publisher | Where Version -eq $MyApp.Version
-            if ($RemoveApp){
-                Write-Host -ForegroundColor Green "Unpublishing $($RemoveApp.Name) version $($RemoveApp.Version) from $ServerInstance"        
-                $RemoveApp | Unpublish-NAVApp -ServerInstance $ServerInstance -ErrorAction Stop 
-            }    
-        }
     }
-    
+    # unpublish App, if Data don't has to be saved so a re-deploy of the same App Version is possible
+    if ($DoNotSaveData){
+        $RemoveApp = $PublishedApps | Where Name -eq $MyApp.Name | Where Publisher -eq $MyApp.Publisher | Where Version -eq $MyApp.Version
+        if ($RemoveApp){
+            Write-Host -ForegroundColor Green "Unpublishing $($RemoveApp.Name) version $($RemoveApp.Version) from $ServerInstance"        
+            $RemoveApp | Unpublish-NAVApp -ServerInstance $ServerInstance -ErrorAction Stop 
+        }    
+    }
     write-host -ForegroundColor Green "Publishing $($myApp.Name) version $($myApp.Version) on $ServerInstance"
     Publish-NAVApp -Path $PackageFile -ServerInstance $ServerInstance -ErrorAction Stop
 
