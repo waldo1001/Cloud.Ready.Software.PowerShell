@@ -1,6 +1,6 @@
-﻿$ZipFIle = 'C:\_Installs\Dynamics NAV ''Madeira'' CTP8\Dynamics.Main.BE.1826325.DVD.zip'
+﻿$ZipFIle = 'C:\_Installs\Dynamics.Main.BE.1835491.DVD.zip'
 $TmpLocation = 'C:\Temp'
-$ISOName = 'NAV_Madeira_CTP08'
+$ISOName = 'NAV_Madeira_BE_CTP09'
 $IsoFileName = 'C:\_Installs' + "\$ISOName.iso"
 
 

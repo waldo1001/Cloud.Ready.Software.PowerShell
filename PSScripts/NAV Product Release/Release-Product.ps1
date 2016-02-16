@@ -1,6 +1,7 @@
-$CurrentProduct = 'Distri'
-$objectfile     = 'C:\_Workingfolder\ReleaseDistri91\ModifiedObjects.txt'
-$ProductVersion = 'I9.1'
+$CurrentProduct = 'Base'
+$objectfile     = 'C:\_Workingfolder\Release_iFactoBase\iFactoBaseDEV_updated.txt'
+$ProductVersion = 'IB2.0'
+$ModifiedOnly   = $true
 
 switch ($CurrentProduct)
 {
@@ -9,6 +10,9 @@ switch ($CurrentProduct)
     }
     'Distri' {  
         $VersionPrefix  = 'NAVW1','NAVBE','Test','I' 
+    }
+    'Base' {
+        $VersionPrefix  = 'NAVW1','NAVBE','Test','I7','I8','I9','IB' 
     }
     Default {
         write-error "Unknown product '$CurrentProduct'"
@@ -40,13 +44,17 @@ foreach ($object in $Objects) {
     $ObjectComparison = New-object System.Object
     $ObjectComparison | Add-Member -MemberType NoteProperty -Name 'OldVersionList' -Value $object.VersionList
     $ObjectComparison | Add-Member -MemberType NoteProperty -Name 'NewVersionList' -Value (Release-NAVVersionList -VersionList $object.VersionList -ProductVersion $ProductVersion -Versionprefix $VersionPrefix)
+    $ObjectComparison | Add-Member -MemberType NoteProperty -Name 'WasModified' -Value $Object.Modified
     
-    Set-NAVApplicationObjectProperty -TargetPath $object.FileName `
-                    -ModifiedProperty No `
-                    -DateTimeProperty (get-date -Hour 12 -Minute 0 -Second 0 -Format g) `
-                    -VersionListProperty $ObjectComparison.NewVersionList                
+    
+    if ((-not($ModifiedOnly)) -or ($ModifiedOnly -and ($object.Modified))){
+        Set-NAVApplicationObjectProperty -TargetPath $object.FileName `
+                        -ModifiedProperty No `
+                        -DateTimeProperty (get-date -Hour 12 -Minute 0 -Second 0 -Format g) `
+                        -VersionListProperty $ObjectComparison.NewVersionList                
 
-    $VersionlistCompare += $ObjectComparison
+        $VersionlistCompare += $ObjectComparison
+    }
 }
 
 $ReleasedFile = (join-path $WorkingFolder 'Released.txt')

@@ -1,7 +1,7 @@
 #The app
-$AppName = 'RentalExt'
-$AppPublisher = 'iFacto Business Solutions NV'
-$AppDescription = 'Adds rental functionalities to the Dynamics NAV implementation'
+$AppName = 'CRS_Ext'
+$AppPublisher = 'Cloud Ready Software GmbH'
+$AppDescription = 'Description'
 $InitialAppVersion = '1.0.0.0'
 
 #The build environment

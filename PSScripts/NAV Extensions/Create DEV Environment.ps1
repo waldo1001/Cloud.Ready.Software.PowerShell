@@ -11,7 +11,7 @@ New-NAVEnvironment -ServerInstance $OriginalServerInstance -BackupFile $Backupfi
 New-NAVEnvironment -ServerInstance $ModifiedServerInstance -BackupFile $Backupfile -ErrorAction Stop -EnablePortSharing -LicenseFile $License
 New-NAVEnvironment -ServerInstance $TargetServerInstance -BackupFile $Backupfile -ErrorAction Stop -EnablePortSharing -LicenseFile $License
 
-ConvertTo-NAVMultiTenantEnvironment -ServerInstance $TargetServerInstance -MainTenantId $TargetTenant
+#ConvertTo-NAVMultiTenantEnvironment -ServerInstance $TargetServerInstance -MainTenantId $TargetTenant
 
 $Backupfile | Remove-Item -Force
 

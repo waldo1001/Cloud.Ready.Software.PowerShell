@@ -21,7 +21,6 @@ $InstalledApp = Deploy-NAVXPackage `
                     -PackageFile $AppPackage.PackageFile `
                     -ServerInstance $TargetServerInstance `
                     -Tenant $TargetTenant `
-                    -DoNotSaveData `
                     -Force `
                     -Verbose
 
