@@ -32,6 +32,7 @@
         }
         $RemoveApp | Uninstall-navapp -ServerInstance $ServerInstance -Tenant $Tenant -DoNotSaveData:$DoNotSaveData -ErrorAction Stop        
     }
+    
     # unpublish App, if Data don't has to be saved so a re-deploy of the same App Version is possible
     if ($DoNotSaveData){
         $RemoveApp = $PublishedApps | Where Name -eq $MyApp.Name | Where Publisher -eq $MyApp.Publisher | Where Version -eq $MyApp.Version
