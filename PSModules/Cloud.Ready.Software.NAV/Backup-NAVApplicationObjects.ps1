@@ -1,5 +1,15 @@
 ﻿function Backup-NAVApplicationObjects
 {
+    <#
+    .Synopsis
+       Creates Delta's, fob, txt files by providing Original and Modified databases, and path
+    .DESCRIPTION
+       To create every single possible export of your developments
+    .NOTES
+       <TODO: Some tips>
+    .PREREQUISITES
+       <TODO: like positioning the prompt and such>
+    #>
     [CmdletBinding()]
     param
     (
@@ -24,7 +34,7 @@
 
     )
     Process{
-        $ServerInstanceObject = (Get-NAVServerInstance4 -ServerInstance $ServerInstance)
+        $ServerInstanceObject = (Get-NAVServerInstanceDetails -ServerInstance $ServerInstance)
         
         switch($BackupOption){
             'AllObjects' {

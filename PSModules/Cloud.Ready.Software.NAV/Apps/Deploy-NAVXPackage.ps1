@@ -1,6 +1,15 @@
 ﻿function Deploy-NAVXPackage
 {
+    <#
+    .Synopsis
+        Easily deploy a navx file to a serverInstance
+    .DESCRIPTION
+        If the App already exist, it will uninstall it
+    .NOTES
 
+    .PREREQUISITES
+
+    #>
     [CmdletBinding()]
     param
     (        

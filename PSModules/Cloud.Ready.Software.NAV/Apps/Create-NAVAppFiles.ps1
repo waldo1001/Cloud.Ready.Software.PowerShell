@@ -1,5 +1,15 @@
 ﻿function Create-NAVAppFiles
-{
+{    <#
+    .Synopsis
+       Create delta's, specifically meant to do NAVApps, which means: including permissionsets
+    .DESCRIPTION
+       
+    .NOTES
+       <TODO: Some tips>
+    .PREREQUISITES
+       <TODO: like positioning the prompt and such>
+    #>
+
     [CmdLetBinding()]
     param(
         [string] $OriginalServerInstance,
@@ -11,8 +21,8 @@
     $modifiedObjects = Join-Path -Path $BuildPath -ChildPath 'modified.txt'
     $modifiedObjectsPartial = Join-Path -Path $BuildPath -ChildPath 'modified_partial.txt'
 
-    $OriginalServerInstanceObject = Get-NAVServerInstance4 -ServerInstance $OriginalServerInstance
-    $ModifiedServerInstanceObject = Get-NAVServerInstance4 -ServerInstance $ModifiedServerInstance
+    $OriginalServerInstanceObject = Get-NAVServerInstanceDetails -ServerInstance $OriginalServerInstance
+    $ModifiedServerInstanceObject = Get-NAVServerInstanceDetails -ServerInstance $ModifiedServerInstance
 
     $AppFilesFolder = Join-Path -Path $BuildPath -ChildPath 'AppFiles'
     $AppFilesFolder = New-Item -ItemType Directory -Force -Path $AppFilesFolder 
