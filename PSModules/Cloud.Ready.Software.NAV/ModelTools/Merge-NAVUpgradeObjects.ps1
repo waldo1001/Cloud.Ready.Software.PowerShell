@@ -9,9 +9,11 @@
         [Switch] $Force,
         [Switch] $CreateDeltas,
         [String[]] $VersionListPrefixes,
-        [switch] $DoNotOpenMergeResultFolder
-
+        [switch] $DoNotOpenMergeResultFolder,
+        [String[]] $AvoidConflictsForLanguages
+        
     )
+
 
     $MergeResultFolder = Join-Path $WorkingFolder 'MergeResult'
     if(Test-Path $MergeResultFolder){
@@ -24,6 +26,12 @@
         $null = Remove-Item $MergeResultFolder -Recurse -Force
     }
     $null = New-Item -Path $MergeResultFolder -ItemType directory -Force
+
+    if ($AvoidConflictsForLanguages){
+        $OriginalObjects = Remove-NAVUpgradeObjectLanguage -Source $OriginalObjects -WorkingFolder $WorkingFolder -Languages $AvoidConflictsForLanguages
+        $ModifiedObjects = Remove-NAVUpgradeObjectLanguage -Source $ModifiedObjects -WorkingFolder $WorkingFolder -Languages $AvoidConflictsForLanguages
+        $TargetObjects = Remove-NAVUpgradeObjectLanguage -Source $TargetObjects -WorkingFolder $WorkingFolder -Languages $AvoidConflictsForLanguages
+    }
 
     #Create Delta's
     if($CreateDeltas){
