@@ -44,18 +44,20 @@
     Invoke-SQL `
         -DatabaseServer $ServerInstanceObject.DatabaseServer `
         -DatabaseInstance $ServerInstanceObject.DatabaseInstance `
-        -DatabaseName $ServerInstanceObject.DatabaseName `        -SQLCommand $SQLCommand `
+        -DatabaseName $ServerInstanceObject.DatabaseName `
+        -SQLCommand $SQLCommand `
         -ErrorAction SilentlyContinue
     Invoke-SQL `
         -DatabaseServer $ServerInstanceObject.DatabaseServer `
         -DatabaseInstance $ServerInstanceObject.DatabaseInstance `
-        -DatabaseName $ServerInstanceObject.DatabaseName `        -SQLCommand "ALTER ROLE [db_owner] ADD MEMBER [$($ServerInstanceObject.ServiceAccount)]" `
+        -DatabaseName $ServerInstanceObject.DatabaseName `
+        -SQLCommand "ALTER ROLE [db_owner] ADD MEMBER [$($ServerInstanceObject.ServiceAccount)]" `
         -ErrorAction SilentlyContinue
          
     $null = Set-NAVServerInstance -Start -ServerInstance $ServerInstance
     if($LicenseFile){  
         Write-Host -ForegroundColor Green -Object 'Importing license..'
-        $null = $ServerInstanceObject | Import-NAVServerLicense -LicenseFile $LicenseFile -Force -WarningAction SilentlyContinue
+        $null = $ServerInstanceObject | Import-NAVServerLicense -LicenseFile $LicenseFile -Database NavDatabase -Force -WarningAction SilentlyContinue
     }
             
     if ($EnablePortSharing) {
