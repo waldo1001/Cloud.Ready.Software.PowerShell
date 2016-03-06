@@ -53,6 +53,8 @@
         $Backupfiletxt = join-path $BackupPath "$($Name)_$($BackupOption).txt"
         $Backupfilefob = join-path $BackupPath "$($Name)_$($BackupOption).fob"
         
+        Get-Item $Backupfiletxt  | Split-NAVApplicationObjectFile -Destination "$BackupPath\Split\" -Force
+
         if ([String]::IsNullOrEmpty($ObjectFilter)){
             Write-host -ForegroundColor Green "Creating $Backupfiletxt"
             Export-NAVApplicationObject -DatabaseServer $ServerInstanceObject.DatabaseServer -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfiletxt -Force
@@ -73,13 +75,15 @@
                 break
             }
 
-            $AppFilesFolder = Create-NAVAppFiles -OriginalServerInstance $NavAppOriginalServerInstance -ModifiedServerInstance $ServerInstance -BuildPath $NavAppWorkingFolder -PermissionSetId $ExportPermissionSetId
-            $null = Copy-Item -Path $appFilesFolder -Destination $BackupPath -Recurse -Force
-            get-childitem $BackupPath
+            $Folders = Create-NAVAppFiles -OriginalServerInstance $NavAppOriginalServerInstance -ModifiedServerInstance $ServerInstance -BuildPath $NavAppWorkingFolder -PermissionSetId $ExportPermissionSetId
+            foreach($Folder in $Folders){
+                $null = Copy-Item -Path $Folder -Destination $BackupPath -Recurse -Force
+            }
+            
+            Get-childitem $BackupPath
         } else {
             write-warning 'No delta''s were created!'
         }
-        
     }
     
 }

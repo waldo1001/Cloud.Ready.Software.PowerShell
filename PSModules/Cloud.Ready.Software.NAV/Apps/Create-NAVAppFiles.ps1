@@ -88,5 +88,5 @@
             Write-Warning -Message "Permissionset $PermissionSetId was not found!" }
     }   
 
-    return $AppFilesFolder
+    return $AppFilesFolder, $ReverseAppFilesFolder
 }
