@@ -1,7 +1,7 @@
-﻿$ZipFIle = 'C:\_Installs\Dynamics.Main.BE.1835491.DVD.zip'
-$TmpLocation = 'C:\Temp'
-$ISOName = 'NAV_Madeira_BE_CTP09'
-$IsoFileName = 'C:\_Installs' + "\$ISOName.iso"
+﻿$ZipFIle = 'D:\Installs\Dynamics NAV ''Madeira'' CTP10\Dynamics.Main.BE.1842137.DVD.zip'
+$TmpLocation = 'D:\Temp'
+$ISOName = 'NAV_Madeira_BE_CTP10'
+$IsoFileName = 'D:\Installs' + "\$ISOName.iso"
 
 
 IF (Test-Path $TmpLocation){
