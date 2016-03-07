@@ -5,8 +5,7 @@
     .DESCRIPTION
        
     .NOTES
-       It craetes deltas in the 'Appfiles' folder
-       It also creates reverse-deltas in the 'AppFiles_Reverse' which can be used to remove changes to files where deltas were applied
+       <TODO: Some tips>
     .PREREQUISITES
        <TODO: like positioning the prompt and such>
     #>
@@ -27,9 +26,6 @@
 
     $AppFilesFolder = Join-Path -Path $BuildPath -ChildPath 'AppFiles'
     $AppFilesFolder = New-Item -ItemType Directory -Force -Path $AppFilesFolder 
-
-    $ReverseAppFilesFolder = Join-Path -Path $BuildPath -ChildPath 'AppFiles_Reverse'
-    $ReverseAppFilesFolder = New-Item -ItemType Directory -Force -Path $ReverseAppFilesFolder 
 
     $originalFolder = Join-Path -Path $BuildPath -ChildPath 'Original'
     $originalFolder = New-Item -ItemType Directory -Force -Path $originalFolder 
@@ -74,9 +70,6 @@
     $result = Compare-NAVApplicationObject -OriginalPath ($originalFolder.FullName + '\*.txt') -ModifiedPath ($modifiedFolder.FullName + '\*.txt') -DeltaPath $AppFilesFolder -NoCodeCompression -Force 
     Write-Host -Foregroundcolor Green "Deltas extracted to $AppFilesFolder"
 
-    Get-ChildItem -Path $ReverseAppFilesFolder -Include *.* -File -Recurse | Remove-Item
-    $result = Compare-NAVApplicationObject -OriginalPath ($modifiedFolder.FullName + '\*.txt') -ModifiedPath ($originalFolder.FullName + '\*.txt') -DeltaPath $ReverseAppFilesFolder -NoCodeCompression -Force 
-    Write-Host -Foregroundcolor Green "Reverse Deltas extracted to $ReverseAppFilesFolder"
 
     #Create Permission Sets
     if(!([String]::Isnullorempty($PermissionSetId))){
@@ -88,5 +81,6 @@
             Write-Warning -Message "Permissionset $PermissionSetId was not found!" }
     }   
 
-    return $AppFilesFolder, $ReverseAppFilesFolder
+    return $AppFilesFolder
 }
+
