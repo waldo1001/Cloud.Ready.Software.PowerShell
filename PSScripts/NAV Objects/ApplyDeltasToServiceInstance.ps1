@@ -13,7 +13,8 @@ $TargetServerInstanceObject | Copy-NAVEnvironment -ToServerInstance $SandboxServ
 
 $TargetServerInstanceObject = Get-NAVServerInstanceDetails -ServerInstance $SandboxServerInstance
 
-Apply-NAVDelta `    -DeltaPath $DeltaFiles `    -TargetServerInstance $TargetServerInstanceObject.ServerInstance `    -Workingfolder $WorkingFolder `    -OpenWorkingfolder 
+Apply-NAVDelta `    -DeltaPath $DeltaFiles `    -TargetServerInstance $TargetServerInstanceObject.ServerInstance `    -Workingfolder $WorkingFolder `    -OpenWorkingfolder `    -SynchronizeSchemaChanges Force `    -DeltaType Add
+    
 
 Start-NAVIdeClient -Database $TargetServerInstanceObject.DatabaseName 
 Start-NAVWindowsClient -ServerInstance $TargetServerInstanceObject.ServerInstance
