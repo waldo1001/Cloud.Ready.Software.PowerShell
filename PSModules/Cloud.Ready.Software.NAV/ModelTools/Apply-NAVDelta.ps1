@@ -29,11 +29,8 @@ Function Apply-NAVDelta {
         [ValidateSet('Force','No','Yes')]
         [String] $SynchronizeSchemaChanges='Yes',
         [Parameter(Mandatory=$false)]
-        [ValidateSet('FromModified','FromTarget','No','Yes')]
-        [String] $ModifiedProperty = 'Yes',
-        [Parameter(Mandatory=$false)]
         [ValidateSet('Add','Remove')]
-        [String] $VersionListAction = 'Add'
+        [String] $DeltaType='Add'
     )
     begin{
         #Set Constants
@@ -68,7 +65,13 @@ Function Apply-NAVDelta {
             }        
         }
 
-        Write-Host 'Applying deltas' -ForegroundColor Green         
+        Write-Host 'Applying deltas' -ForegroundColor Green    
+        if ($DeltaType -eq 'Add'){
+            $ModifiedProperty = 'Yes'   
+        }
+        else {
+            $ModifiedProperty = 'FromModified'
+        }     
         $UpdateResult =             Update-NAVApplicationObject `                -TargetPath $ExportFolder `                -DeltaPath $DeltaPath `                -ResultPath $ResultFolder `
                 -DateTimeProperty Now `                -ModifiedProperty $ModifiedProperty `                -VersionListProperty FromTarget `
                 -ErrorAction Stop `                -Force
@@ -78,7 +81,7 @@ Function Apply-NAVDelta {
                 Where-Object {$_.UpdateResult –eq 'Updated' -or $_.MergeResult –eq 'Conflict'}  |  
                     Foreach {
                         $CurrObject = Get-NAVApplicationObjectProperty -Source $_.Result
-                        If ($VersionListAction -eq 'Add'){
+                        If ($DeltaType -eq 'Add'){
                             $null = $CurrObject | Set-NAVApplicationObjectProperty -VersionListProperty (Add-NAVVersionListMember -VersionList $CurrObject.VersionList -AddVersionList $Name)         
                         }
                         else {
