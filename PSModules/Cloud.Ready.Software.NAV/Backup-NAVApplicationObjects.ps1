@@ -9,6 +9,8 @@
        <TODO: Some tips>
     .PREREQUISITES
        <TODO: like positioning the prompt and such>
+    .EXAMPLE
+        $CreatedITems = Backup-NAVApplicationObjects `                    -BackupOption OnlyModified `                    -ServerInstance $DEVInstance `                    -BackupPath $BackupPath `                    -Name $Name `                    -NavAppOriginalServerInstance $ORIGInstance `                    -NavAppWorkingFolder $WorkingFolder 
     #>
     [CmdletBinding()]
     param
@@ -75,7 +77,8 @@
                 break
             }
 
-            $Folders = Create-NAVAppFiles -OriginalServerInstance $NavAppOriginalServerInstance -ModifiedServerInstance $ServerInstance -BuildPath $NavAppWorkingFolder -PermissionSetId $ExportPermissionSetId
+            $Folders =                 Create-NAVDelta `                    -OriginalServerInstance $NavAppOriginalServerInstance `                    -ModifiedServerInstance $ServerInstance `                    -WorkingFolder $NavAppWorkingFolder `                    -CreateReverseDeltas
+
             foreach($Folder in $Folders){
                 $null = Copy-Item -Path $Folder -Destination $BackupPath -Recurse -Force
             }
