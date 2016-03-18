@@ -35,6 +35,12 @@
     $null = Dismount-DiskImage -ImagePath $ISOFilePath
     write-host "Dismounted $($IsoImage.DriveLetter)-Drive" -ForegroundColor Green
     
+    #fix installation by registering 
+    write-host "Fixing 'Run' from DEV enviromnent" -ForegroundColor Green
+    $RegasmFile = (Get-childItem -Path "$env:windir\Microsoft.NET\Framework\" -Filter 'RegAsm.exe' -recurse -ErrorAction SilentlyContinue | sort Fullname | select -Last 1).Fullname
+    $RegasmArguments = "/register ""$($InstallationResult.TargetPath)\RoleTailored Client\Microsoft.Dynamics.Nav.Client.WinForms.dll"" /tlb"
+    Start -FilePath $RegasmFile -ArgumentList $RegasmArguments
+
     return $InstallationResult
 }
 
