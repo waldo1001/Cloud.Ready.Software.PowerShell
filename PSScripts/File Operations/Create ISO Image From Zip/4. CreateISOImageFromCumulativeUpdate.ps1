@@ -1,7 +1,7 @@
-﻿$ZipFIle = 'G:\Installs\Downloads\488113_NLD_i386_zip.exe'
+﻿$ZipFIle = 'C:\_Download\490357_NLD_i386_zip.exe'
 
-$TmpLocation = 'G:\Temp'
-$IsoDirectory = 'G:\Installs'
+$TmpLocation = 'D:\Temp'
+$IsoDirectory = 'D:\Installs\'
 
 $IsoFile = 
     New-NAVCumulativeUpdateISOFile `

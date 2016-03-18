@@ -1,4 +1,4 @@
-﻿$name = 'NAV_9_44974_BE'
+﻿$name = 'NAV_9_45243_BE'
 $isofile = "C:\_Installs\$name.iso"
 $ConfigFile     = join-path $PSScriptRoot 'FullInstallNAV2016.xml'
 $Licensefile    = 'C:\Users\Administrator\Dropbox\Dynamics NAV\Licenses\5230132_003 and 004 IFACTO_NAV2016_BELGIUM_2015 11 03.flf'
@@ -33,6 +33,9 @@ if (-not (Test-Path $Exportfile)){
     Remove-Item $TempFile -Force -ErrorAction SilentlyContinue
     
 }
+
+
+
 #UnInstall-NAVFromISO -ISOFilePath $isofile
 #Drop-SQLDatabaseIfExists -Databasename 'NAV2016'
 
