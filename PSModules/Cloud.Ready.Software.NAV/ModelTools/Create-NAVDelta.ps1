@@ -23,6 +23,8 @@
         [parameter(mandatory=$false)]
         [switch] $CreateReverseDeltas
         )
+        
+    $WorkingFolder = join-path -Path $Workingfolder -ChildPath 'CreateDeltas'
 
     $orginalObjects = Join-Path -Path $WorkingFolder -ChildPath 'original.txt'
     $modifiedObjects = Join-Path -Path $WorkingFolder -ChildPath 'modified.txt'

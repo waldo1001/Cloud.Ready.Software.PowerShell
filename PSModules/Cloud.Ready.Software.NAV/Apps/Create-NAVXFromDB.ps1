@@ -12,6 +12,8 @@
         [String] $PermissionSetId='')
 
     # Set Variables
+    $BuildFolder = (join-path $BuildFolder 'Create-NAVXFromDB')
+
     $navAppManifestFile = (join-path $BuildFolder "$($AppName).xml")
 
     New-Item -ItemType Directory -Force -Path $BuildFolder | Out-Null

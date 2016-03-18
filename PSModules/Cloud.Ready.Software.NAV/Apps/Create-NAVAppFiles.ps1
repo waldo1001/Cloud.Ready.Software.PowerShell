@@ -17,6 +17,8 @@
         [string] $BuildPath,
         [String] $PermissionSetId='')
 
+    $BuildPath = Join-Path -Path $BuildPath -ChildPath 'CreateNAVAppFiles'
+
     $orginalObjects = Join-Path -Path $BuildPath -ChildPath 'original.txt'
     $modifiedObjects = Join-Path -Path $BuildPath -ChildPath 'modified.txt'
     $modifiedObjectsPartial = Join-Path -Path $BuildPath -ChildPath 'modified_partial.txt'

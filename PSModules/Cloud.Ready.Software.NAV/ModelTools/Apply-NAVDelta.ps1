@@ -21,19 +21,22 @@ Function Apply-NAVDelta {
         [String] $TargetServerInstance,
         [Parameter(Mandatory=$true)]        
         [String] $Workingfolder,
-        [Parameter(Mandatory=$false)]
-        [switch] $OpenWorkingfolder,
-        [Parameter(Mandatory=$false)]
-        [switch] $DoNotImportAndCompileResult=$false,
+        [parameter(Mandatory=$true)]
+        [String] $VersionList,
         [Parameter(Mandatory=$false)]
         [ValidateSet('Force','No','Yes')]
         [String] $SynchronizeSchemaChanges='Yes',
         [Parameter(Mandatory=$false)]
         [ValidateSet('Add','Remove')]
-        [String] $DeltaType='Add'
+        [String] $DeltaType='Add',
+        [Parameter(Mandatory=$false)]
+        [switch] $OpenWorkingfolder,
+        [Parameter(Mandatory=$false)]
+        [switch] $DoNotImportAndCompileResult=$false
     )
     begin{
         #Set Constants
+        $WorkingFolder = join-path $Workingfolder 'ApplyDeltas'
         $ExportFolder = Join-Path $WorkingFolder 'TargetObjects'
         $ResultFolder = Join-Path $WorkingFolder 'ApplyResult'
         $ReverseFolder = join-path $WorkingFolder 'ReverseDeltas'
@@ -82,17 +85,17 @@ Function Apply-NAVDelta {
                     Foreach {
                         $CurrObject = Get-NAVApplicationObjectProperty -Source $_.Result
                         If ($DeltaType -eq 'Add'){
-                            $null = $CurrObject | Set-NAVApplicationObjectProperty -VersionListProperty (Add-NAVVersionListMember -VersionList $CurrObject.VersionList -AddVersionList $Name)         
+                            $null = $CurrObject | Set-NAVApplicationObjectProperty -VersionListProperty (Add-NAVVersionListMember -VersionList $CurrObject.VersionList -AddVersionList $VersionList)         
                         }
                         else {
-                            $null = $CurrObject | Set-NAVApplicationObjectProperty -VersionListProperty (Remove-NAVVersionListMember -VersionList $CurrObject.VersionList -RemoveVersionList $Name)                
+                            $null = $CurrObject | Set-NAVApplicationObjectProperty -VersionListProperty (Remove-NAVVersionListMember -VersionList $CurrObject.VersionList -RemoveVersionList $VersionList)                
                         }
                     }            
         $UpdateResult |
                 Where-Object {$_.UpdateResult –eq 'Inserted'}  |  
                     Foreach {
                         $CurrObject = Get-NAVApplicationObjectProperty -Source $_.Result
-                        $null = $CurrObject | Set-NAVApplicationObjectProperty -VersionListProperty $Name
+                        $null = $CurrObject | Set-NAVApplicationObjectProperty -VersionListProperty $VersionList
                     }
 
         #Create reversedeltas
