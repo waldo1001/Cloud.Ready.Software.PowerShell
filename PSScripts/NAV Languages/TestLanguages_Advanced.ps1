@@ -130,3 +130,35 @@ foreach ($emptyLine in $EmptyLines){
 $DEVLanguageCode = Get-NAVApplicationObjectLanguageLCID -Key $SecondDictionary[0].Keys[0]
 $DEVLanguageCode = Convert-NAVApplicationObjectLanguageCode -Convert $DEVLanguageCode 
 $DEVLanguageCode
+
+
+
+$finstx = 'C:\Program Files (x86)\Microsoft Dynamics NAV\90\RoleTailored Client\fin.stx'
+$PropertyID = 'P55242'
+
+$RegEx = 'P(\d+)'
+$MatchedRegEx = [regex]::Match($PropertyID,$Regex)
+$Token = $MatchedRegEx.Groups[1].Value
+#To Hex
+$HexToken = [Convert]::ToString($Token, 16)
+#From Hex
+
+$StringToken = ([convert]::ToString([Convert]::ToInt32($HexToken.Substring(0,$HexToken.Length-2),16))).PadLeft(5,'0')
+$StringToken2 = ([convert]::ToString([Convert]::ToInt32($HexToken.Substring($HexToken.Length-2,2),16))).PadLeft(5,'0')
+$StringToken = "$($StringToken)-$($StringToken2)"
+
+$finstxLines = @()
+get-content $finstx | foreach{
+    $Regex = '(.+): (.+)'
+    $MatchedRegEx = [regex]::Match($_, $Regex)
+
+    if ($MatchedRegEx.Success){
+        $Line = New-Object PSObject
+        $Line | Add-Member -MemberType NoteProperty -Name 'Token' -Value $MatchedRegEx.Groups[1].Value
+        $Line | Add-Member -MemberType NoteProperty -Name 'Value' -Value $MatchedRegEx.Groups[2].Value
+
+        $finstxlines += $Line
+    }
+}
+
+$finstxLines | where Token -Like ("*$($StringToken)*")
