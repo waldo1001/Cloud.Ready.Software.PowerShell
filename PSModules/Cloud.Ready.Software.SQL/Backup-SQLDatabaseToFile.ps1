@@ -23,9 +23,17 @@
         [String] $DatabaseName,
         
         [Parameter(Mandatory=$false)]
-        [String] $BackupFile = "$DatabaseName.bak"
+        [String] $BackupFile = "$DatabaseName.bak",
+
+        [Parameter(Mandatory=$false)]
+        [String] $TimeOut = 30
+
     )
     
+    $CurrentLocation = Get-Location
+    $null = import-module SQLPS -DisableNameChecking -WarningAction SilentlyContinue
+    $null = Set-Location $CurrentLocation	
+
     if ([String]::IsNullOrEmpty($DatabaseInstance)){
         $DatabaseServerInstance = 'MSSQLSERVER'
     } else {
@@ -42,8 +50,9 @@
     $SQLString = "BACKUP DATABASE [$DatabaseName] TO  DISK = N'$BackupFileFullPath' WITH  COPY_ONLY, NOFORMAT, INIT,  NAME = N'NAVAPP_QA_MT-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10"
     
     write-Host -ForegroundColor Green "Backing up database $Database ..."
+    write-host -ForegroundColor gray $SQLString
     
-    invoke-sql -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseInstance -sqlCommand $SQLString
+    Invoke-Sqlcmd -Query $SQLString -ServerInstance "$DatabaseServer\$DatabaseInstance" -QueryTimeout $TimeOut -Database 'master'
 
     Get-Item $BackupFileFullPath
 }

@@ -24,7 +24,9 @@
         [Parameter(Mandatory=$false)]
         [String] $DatabaseDataPath = '',
         [Parameter(Mandatory=$false, Position=2)]
-        [String] $DatabaseLogPath = ''
+        [String] $DatabaseLogPath = '',
+        [Parameter(Mandatory=$false)]
+        [String] $TimeOut = 30
     )
     
     if ([String]::IsNullOrEmpty($DatabaseDataPath)){
@@ -53,8 +55,9 @@
     $RestoreSQLString += 'NOUNLOAD, REPLACE, STATS = 5'
 
     write-Host -ForegroundColor Green "Restoring database $DatabaseName"
+    write-host -ForegroundColor gray $RestoreSQLString
         
-    #$null = Invoke-Sqlcmd -ServerInstance $DatabaseServer -Database 'master' -Query $RestoreSQLString -QueryTimeout 600000
-    $null = Invoke-sql -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseInstance -DatabaseName 'master' -sqlCommand $RestoreSQLString    
+    $null = Invoke-Sqlcmd -Query $RestoreSQLString -ServerInstance "$DatabaseServer\$DatabaseInstance" -QueryTimeout $TimeOut -Database 'master' 
+        
 }
 
