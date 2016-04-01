@@ -50,7 +50,7 @@
     if (!(Test-Path -Path $orginalObjects))
     {
         Write-Host -Foregroundcolor Green 'Exporting ORIGINAL objects ...'
-        Export-NAVApplicationObject -DatabaseServer $OriginalServerInstanceObject.DatabaseServer -DatabaseName $OriginalServerInstanceObject.Databasename -Path $orginalObjects -ExportTxtSkipUnlicensed | Out-Null
+        Export-NAVApplicationObject -DatabaseServer "$($OriginalServerInstanceObject.DatabaseServer)\$($OriginalServerInstanceObject.DatabaseInstance)" -DatabaseName $OriginalServerInstanceObject.Databasename -Path $orginalObjects -ExportTxtSkipUnlicensed | Out-Null
         Split-NAVApplicationObjectFile -Source $orginalObjects -Destination $originalFolder -PreserveFormatting -Force 
         Write-Host -Foregroundcolor Green "ORIGINAL objects exported to $originalObjects"        
     } else {
@@ -61,11 +61,11 @@
        
     if (!(Test-Path -Path $modifiedObjects))
     {
-        Export-NAVApplicationObject -DatabaseServer $ModifiedServerInstanceObject.DatabaseServer -DatabaseName $ModifiedServerInstanceObject.DatabaseName -Path $modifiedObjects -ExportTxtSkipUnlicensed | Out-Null   
+        Export-NAVApplicationObject -DatabaseServer "$($ModifiedServerInstanceObject.DatabaseServer)\$($ModifiedServerInstanceObject.DatabaseInstance)" -DatabaseName $ModifiedServerInstanceObject.DatabaseName -Path $modifiedObjects -ExportTxtSkipUnlicensed | Out-Null   
         Split-NAVApplicationObjectFile -Source $modifiedObjects -Destination $modifiedFolder -PreserveFormatting -Force
         Write-Host -Foregroundcolor Green "All objects from $ModifiedServerInstance exported to $modifiedObjects"
     } else {
-        Export-NAVApplicationObject -DatabaseServer $ModifiedServerInstanceObject.DatabaseServer -DatabaseName $ModifiedServerInstanceObject.DatabaseName -Path $modifiedObjectsPartial -Filter 'Modified=1' -ExportTxtSkipUnlicensed -Force | Out-Null   
+        Export-NAVApplicationObject -DatabaseServer "$($ModifiedServerInstanceObject.DatabaseServer)\$($ModifiedServerInstanceObject.DatabaseInstance)" -DatabaseName $ModifiedServerInstanceObject.DatabaseName -Path $modifiedObjectsPartial -Filter 'Modified=1' -ExportTxtSkipUnlicensed -Force | Out-Null   
         
         if (!(Test-Path $modifiedObjectsPartial) -or ((get-item $modifiedObjectsPartial).Length -eq 0)){
             write-error 'No modified objects found! Nothing exported'

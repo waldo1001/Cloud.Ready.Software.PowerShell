@@ -59,15 +59,15 @@
 
         if ([String]::IsNullOrEmpty($ObjectFilter)){
             Write-host -ForegroundColor Green "Creating $Backupfiletxt"
-            Export-NAVApplicationObject -DatabaseServer $ServerInstanceObject.DatabaseServer -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfiletxt -Force
+            Export-NAVApplicationObject -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfiletxt -Force
             Write-host -ForegroundColor Green "Creating $Backupfilefob"
-            Export-NAVApplicationObject -DatabaseServer $ServerInstanceObject.DatabaseServer -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfilefob -Force        
+            Export-NAVApplicationObject -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfilefob -Force        
         }
         Else {
             Write-host -ForegroundColor Green "Creating $Backupfiletxt"
-            Export-NAVApplicationObject -Filter $ObjectFilter -DatabaseServer $ServerInstanceObject.DatabaseServer -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfiletxt -Force
+            Export-NAVApplicationObject -Filter $ObjectFilter -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfiletxt -Force
             Write-host -ForegroundColor Green "Creating $Backupfilefob"
-            Export-NAVApplicationObject -Filter $ObjectFilter -DatabaseServer $ServerInstanceObject.DatabaseServer -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfilefob -Force
+            Export-NAVApplicationObject -Filter $ObjectFilter -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfilefob -Force
         
         }
                 
