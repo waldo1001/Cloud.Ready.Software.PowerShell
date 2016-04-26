@@ -32,7 +32,9 @@ Function Apply-NAVDelta {
         [Parameter(Mandatory=$false)]
         [switch] $OpenWorkingfolder,
         [Parameter(Mandatory=$false)]
-        [switch] $DoNotImportAndCompileResult=$false
+        [switch] $DoNotImportAndCompileResult=$false,
+        [Parameter(Mandatory=$false)]
+        [switch] $ForceModifiedPropertyFalse
     )
     begin{
         #Set Constants
@@ -74,7 +76,10 @@ Function Apply-NAVDelta {
         }
         else {
             $ModifiedProperty = 'FromModified'
-        }     
+        }    
+        if ($ForceModifiedPropertyFalse){
+            $ModifiedProperty = 'No'
+        } 
         $UpdateResult =             Update-NAVApplicationObject `                -TargetPath $ExportFolder `                -DeltaPath $DeltaPath `                -ResultPath $ResultFolder `
                 -DateTimeProperty Now `                -ModifiedProperty $ModifiedProperty `                -VersionListProperty FromTarget `
                 -ErrorAction Stop `                -Force
