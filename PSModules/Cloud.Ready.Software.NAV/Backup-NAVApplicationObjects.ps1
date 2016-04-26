@@ -53,10 +53,8 @@
         
         if ([String]::IsNullOrEmpty($Name)){$Name = $ServerInstance}
         $Backupfiletxt = join-path $BackupPath "$($Name)_$($BackupOption).txt"
-        $Backupfilefob = join-path $BackupPath "$($Name)_$($BackupOption).fob"
+        $Backupfilefob = join-path $BackupPath "$($Name)_$($BackupOption).fob"     
         
-        Get-Item $Backupfiletxt  | Split-NAVApplicationObjectFile -Destination "$BackupPath\Split\" -Force
-
         if ([String]::IsNullOrEmpty($ObjectFilter)){
             Write-host -ForegroundColor Green "Creating $Backupfiletxt"
             Export-NAVApplicationObject -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfiletxt -Force
@@ -70,7 +68,9 @@
             Export-NAVApplicationObject -Filter $ObjectFilter -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfilefob -Force
         
         }
-                
+        
+        Get-Item $Backupfiletxt  | Split-NAVApplicationObjectFile -Destination "$BackupPath\Split\" -Force
+      
         if(!([String]::IsNullOrEmpty($NavAppOriginalServerInstance))) {
             if ([string]::IsNullOrEmpty(($NavAppWorkingFolder))){
                 Write-Error 'Please provide a workingfolder if you want to create delta''s'
