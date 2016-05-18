@@ -35,8 +35,13 @@ function Import-NAVApplicationObject2 {
     process{
         $ServerInstanceObject = Get-NAVServerInstanceDetails -ServerInstance $ServerInstance
 
+        $DatabaseServer =  $ServerInstanceObject.DatabaseServer
+        if (!([string]::IsNullOrEmpty($ServerInstanceObject.DatabaseInstance))){
+            $DatabaseServer += "\$($ServerInstanceObject.DatabaseInstance)"
+        }
+
         Import-NAVApplicationObject ` `            -Path $Path `
-            -DatabaseName $ServerInstanceObject.DatabaseName `            -DatabaseServer $ServerInstanceObject.DatabaseServer `            -LogPath $LogPath `
+            -DatabaseName $ServerInstanceObject.DatabaseName `            -DatabaseServer $DatabaseServer `            -LogPath $LogPath `
             -ImportAction $ImportAction `            -SynchronizeSchemaChanges $SynchronizeSchemaChanges `            -NavServerInstance $ServerInstanceObject.ServerInstance `            -NavServerName $NavServerName `            -NavServerManagementPort $ServerInstanceObject.ManagementServicesPort `            -Confirm:$Confirm           
         
     }

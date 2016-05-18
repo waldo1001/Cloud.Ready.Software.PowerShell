@@ -23,8 +23,13 @@ function Export-NAVApplicationObject2 {
     process{
         $ServerInstanceObject = Get-NAVServerInstanceDetails -ServerInstance $ServerInstance
 
+        $DatabaseServer =  $ServerInstanceObject.DatabaseServer
+        if (!([string]::IsNullOrEmpty($ServerInstanceObject.DatabaseInstance))){
+            $DatabaseServer += "\$($ServerInstanceObject.DatabaseInstance)"
+        }
+
         Export-NAVApplicationObject `
-            -DatabaseName $ServerInstanceObject.DatabaseName `            -DatabaseServer $ServerInstanceObject.DatabaseServer `            -Path $Path `            -LogPath $LogPath `            -Filter $Filter   
+            -DatabaseName $ServerInstanceObject.DatabaseName `            -DatabaseServer $DatabaseServer `            -Path $Path `            -LogPath $LogPath `            -Filter $Filter   
         
     }
 }
