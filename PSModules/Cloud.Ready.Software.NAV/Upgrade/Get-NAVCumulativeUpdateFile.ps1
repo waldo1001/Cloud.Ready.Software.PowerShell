@@ -132,9 +132,9 @@ function Get-NAVCumulativeUpdateFile
                 }
 
                 Write-Host -Object 'Searching for download link' -ForegroundColor Green
-                $downloadlink = $ie.Document.links | Where-Object -FilterScript {
+                $downloadlink = $ie.Document.links | Where-Object -FilterScript { 
                     $_.id -match 'kb_hotfix_link'
-                }
+                } | Select-Object -First 1 
                 Write-Host -Object "Opening download link $($downloadlink.href)" -ForegroundColor Green
                 $null = $ie.Navigate($downloadlink.href)
                 while ($ie.Busy -eq $true)
