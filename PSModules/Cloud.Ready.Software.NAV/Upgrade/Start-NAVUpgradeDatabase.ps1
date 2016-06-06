@@ -13,7 +13,7 @@
         [String] $LicenseFile,
         [String] $UpgradeToolkit,
         [Object[]] $DeletedObjects,
-        [ValidateSet('CheckOnly','ForceSync','Sync')]
+        [ValidateSet('ForceSync','Sync')]
         [String] $SyncMode='Sync',
         [ValidateSet('Overwrite','Use')]
         [String] $IfResultDBExists='Overwrite',
@@ -57,15 +57,15 @@
         }
     }
     
+    #Unlock objects
+    write-host 'Unlock all objects' -ForegroundColor Green
+    Unlock-NAVApplicationObjects -ServerInstance $SandboxServerInstance
+   
     #Make Admin user DB-Owner
     $CurrentUser = [environment]::UserDomainName + '\' + [Environment]::UserName
     Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand "CREATE USER [$CurrentUser] FOR LOGIN [$CurrentUser]" -ErrorAction SilentlyContinue
     Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand "ALTER ROLE [db_owner] ADD MEMBER [$CurrentUser]" -ErrorAction SilentlyContinue
 
-    #Unlock objects
-    write-host 'Unlock all objects' -ForegroundColor Green
-    Unlock-NAVApplicationObjects -ServerInstance $SandboxServerInstance
-   
     #Drop ReVision Triggers
     Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand 'DISABLE TRIGGER [dbo].[REVISION_UPDATE] ON [dbo].[Object]' -ErrorAction silentlyContinue
     Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand 'DISABLE TRIGGER [dbo].[REVISION_INSERT] ON [dbo].[Object]' -ErrorAction silentlyContinue
@@ -87,10 +87,6 @@
     Write-Host "Start NST $SandboxServerInstance" -ForegroundColor Green
     Set-NAVServerInstance -Start -ServerInstance $SandboxServerInstance
     
-    #Add my user to the environment
-    Write-Host 'Add current user to environment' -ForegroundColor Green
-    Add-NAVEnvironmentCurrentUser -ServerInstance $SandboxServerInstance
-
     #Import NAV LIcense
     Write-Host "Import NAV license in $SandboxServerInstance" -ForegroundColor Green
     Get-NAVServerInstance -ServerInstance $SandboxServerInstance | Import-NAVServerLicense -LicenseFile $LicenseFile -Database NavDatabase -WarningAction SilentlyContinue
