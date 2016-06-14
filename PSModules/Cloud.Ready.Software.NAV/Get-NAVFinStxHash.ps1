@@ -1,10 +1,13 @@
 ﻿Function Get-NAVFinStxHash{
     if (!$NAVIde){
-        write-error 'Module "Microsoft.Dynamics.Nav.Model.Tools" has not been loaded.  Please load this module.'
-        break
+        $finstx = (Get-ChildItem "${env:ProgramFiles(x86)}\Microsoft Dynamics NAV" -Recurse | where Name -like fin.stx).FullName
+        if (!$finstx){
+            write-error 'Module "Microsoft.Dynamics.Nav.Model.Tools" has not been loaded.  Please load this module.'
+            break
+        }
+    } else {
+        $finstx = $NavIde -replace 'finsql.exe', 'fin.stx'
     }
-
-    $finstx = $NavIde -replace 'finsql.exe', 'fin.stx'
 
     $finstxLines = @()
     get-content $finstx | foreach{
@@ -12,11 +15,6 @@
         $MatchedRegEx = [regex]::Match($_, $Regex)
 
         if ($MatchedRegEx.Success){
-            #$Line = New-Object PSObject
-            #$Line | Add-Member -MemberType NoteProperty -Name 'Token' -Value $MatchedRegEx.Groups[1].Value
-            #$Line | Add-Member -MemberType NoteProperty -Name 'Value' -Value $MatchedRegEx.Groups[2].Value
-            #$finstxlines += $Line
-
             $finstxlines += @{$MatchedRegEx.Groups[1].Value = $MatchedRegEx.Groups[2].Value}
         }
     }
