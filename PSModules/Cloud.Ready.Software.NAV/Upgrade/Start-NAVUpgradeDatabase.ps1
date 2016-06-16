@@ -122,7 +122,7 @@
     }
     
     #Delete tables
-    Write-Host 'Deleting these Tables:' -ForegroundColor Green
+    Write-Host 'Deleting Tables if necessary' -ForegroundColor Green
     $DeletedObjects | where ObjectType -eq 'Table' | foreach {
         Write-Host "  Type=$($_.ObjectType);Id=$($_.Id)" -ForegroundColor Gray
         Delete-NAVApplicationObject `
@@ -140,14 +140,14 @@
     Write-Host "Import $ResultObjectFile" -ForegroundColor Green
     $ResultObjectFile = get-item $ResultObjectFile -ErrorAction Stop
     Import-NAVApplicationObject `
-    -DatabaseName $SandboxServerInstance `
-    -Path $ResultObjectFile `
-    -LogPath $LogImportObjects `
-    -SynchronizeSchemaChanges No `
-    -ImportAction Overwrite `
-    -NavServerName ([net.dns]::GetHostName()) `
-    -NavServerInstance $SandboxServerInstance `
-    -confirm:$false 
+        -DatabaseName $SandboxServerInstance `
+        -Path $ResultObjectFile `
+        -LogPath $LogImportObjects `
+        -SynchronizeSchemaChanges No `
+        -ImportAction Overwrite `
+        -NavServerName ([net.dns]::GetHostName()) `
+        -NavServerInstance $SandboxServerInstance `
+        -confirm:$false 
     
     #Sync
     Write-Host 'Performing Sync-NAVTenant' -ForegroundColor Green

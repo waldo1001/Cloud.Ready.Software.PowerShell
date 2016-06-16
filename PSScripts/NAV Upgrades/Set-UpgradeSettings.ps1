@@ -6,12 +6,12 @@ I would just copy scripts and (this) settings file to workingfolder, and go from
 #>
 
 #General
-$UpgradeName = 'FLEETNOLOGY'
-$WorkingFolder = "G:\Merge\_Workingfolder\Upgrade_$UpgradeName"
-$ObjectLibrary = 'G:\Merge\_ObjectLibrary'
-$ModifiedFolder = 'G:\Merge\_Workingfolder\CustomerDBs'
-$NAVLicense = 'G:\Installs\5230132_003 and 004 IFACTO_NAV2016_BELGIUM_2015 11 03.flf'
-$UpgradeCodeunitsFullPath = 'E:\UpgradeToolKit\Local Objects\Upgrade800900.BE.fob'
+$UpgradeName = 'Customername'
+$WorkingFolder = "C:\_Workingfolder\Upgrade_$UpgradeName"
+$ObjectLibrary = 'C:\_ObjectLibrary'
+$ModifiedFolder = 'C:\_Customers'
+$NAVLicense = 'C:\_Installs\5230132_003 and 004 IFACTO_NAV2016_BELGIUM_2015 11 03.flf'
+$UpgradeCodeunitsFullPath = ''
 $VersionListPrefixes = 'NAVW1', 'NAVBE', 'I'
 
 

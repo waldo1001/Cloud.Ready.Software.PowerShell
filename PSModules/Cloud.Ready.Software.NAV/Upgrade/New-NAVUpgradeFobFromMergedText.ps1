@@ -21,12 +21,16 @@
     if ($SandboxInstanceObject){
         if (Confirm-YesOrNo -title "Remove $SandboxInstance ?" -message "The Sandbox DB '$SandboxInstance' already exist.  Remove?" ){
             Remove-NAVEnvironment -ServerInstance $SandboxInstance -Force
-        } else {
-            Write-Error 'Execution stopped.'
-            break
+
+            Copy-NAVEnvironment -ServerInstance $TargetServerInstance -ToServerInstance $SandboxInstance
         }
+    } else {
+        #Create WorkingDB
+        Copy-NAVEnvironment -ServerInstance $TargetServerInstance -ToServerInstance $SandboxInstance
     }
 
+    $SandboxInstanceObject = Get-NAVServerInstanceDetails -ServerInstance $SandboxInstance
+    
     #Creating Workspace
     $LogFolder = Join-Path $WorkingFolder 'Log_NAVUpgradeFobFromMergedText'
     if(Test-Path $LogFolder){Remove-Item $LogFolder -Force -Recurse}
@@ -34,10 +38,7 @@
     $LogImportText       = join-path $LogFolder '02_ImportText'
     $LogCompileObjects   = join-path $LogFolder '03_CompileObjects'
     $LogResultObjectFile = join-path $LogFolder '04_ExportFob'
-
-    #Create WorkingDB
-    Copy-NAVEnvironment -ServerInstance $TargetServerInstance -ToServerInstance $SandboxInstance
-    
+        
     #Make Admin user DB-Owner
     $CurrentUser = [environment]::UserDomainName + '\' + [Environment]::UserName
     Invoke-SQL -DatabaseServer $TargetServerInstanceObject.DatabaseServer -DatabaseInstance $TargetServerInstanceObject.DatabaseInstance -DatabaseName $SandboxInstance -SQLCommand "CREATE USER [$CurrentUser] FOR LOGIN [$CurrentUser]" -ErrorAction Continue
@@ -47,7 +48,6 @@
     Invoke-SQL -DatabaseServer $TargetServerInstanceObject.DatabaseServer -DatabaseInstance $TargetServerInstanceObject.DatabaseInstance -DatabaseName $SandboxInstance -SQLCommand 'DISABLE TRIGGER [dbo].[REVISION_UPDATE] ON [dbo].[Object]' -ErrorAction Continue
     Invoke-SQL -DatabaseServer $TargetServerInstanceObject.DatabaseServer -DatabaseInstance $TargetServerInstanceObject.DatabaseInstance -DatabaseName $SandboxInstance -SQLCommand 'DISABLE TRIGGER [dbo].[REVISION_INSERT] ON [dbo].[Object]' -ErrorAction Continue
     Invoke-SQL -DatabaseServer $TargetServerInstanceObject.DatabaseServer -DatabaseInstance $TargetServerInstanceObject.DatabaseInstance -DatabaseName $SandboxInstance -SQLCommand 'DISABLE TRIGGER [dbo].[REVISION_DELETE] ON [dbo].[Object]' -ErrorAction Continue
-
 
     #Import NAV LIcense
     if (!([string]::IsNullOrEmpty($LicenseFile))){
@@ -72,7 +72,7 @@
                     -DatabaseName $SandboxInstance `
                     -Path $FobFileForCreatingUnlicensedObjects `
                     -LogPath $LogImportFob `
-                    -NavServerName ([net.dns]::GetHostName()) `                    
+                    -NavServerName ([net.dns]::GetHostName()) `
                     -NavServerInstance $SandboxInstance `
                     -confirm:$false `
                     -ErrorAction continue `                    -SynchronizeSchemaChanges No `                    -ImportAction Overwrite
@@ -80,39 +80,68 @@
     
     #Import Objects
     Write-Host 'Import Merged Objects' -ForegroundColor Green
-    $null = 
-        Import-NAVApplicationObject `
-            -DatabaseServer $DatabaseServer `
-            -DatabaseName $SandboxInstance `
-            -Path "$TextFileFolder\*.txt" `
-            -LogPath $LogImportText `
-            -NavServerName ([net.dns]::GetHostName()) `
-            -NavServerInstance $SandboxInstance `
-            -confirm:$false `
-            -ErrorAction continue `
-            -ImportAction Overwrite
-       
+    Write-Host '-> Make sure you have the necessary dlls in the client Add-ins folder!'  -ForegroundColor Green
+    Set-NAVServerInstance -Stop -ServerInstance $SandboxInstance
+    #Get-Service (Get-navserverinstance $SandboxInstance).ServerInstance | Set-Service -StartupType Disabled
+    $ObjectsToImport = Get-ChildItem $TextFileFolder -Filter '*.txt'
+    $count = $ObjectsToImport.Count
+    $i = 0
+    foreach ($ObjectToImport in $ObjectsToImport) {
+        $i++
+        #Write-Progress -Activity 'Importing Objects' -Status "($i/$count) - $($ObjectToImport.Basename)" -PercentComplete (($i/$count)*100)
+        Write-Verbose "($i/$count) - Importing $($ObjectToImport.Fullname)"
+
+        $null = 
+            Import-NAVApplicationObject `
+                -DatabaseServer $DatabaseServer `
+                -DatabaseName $SandboxInstance `
+                -Path $ObjectToImport.Fullname `
+                -LogPath $LogImportText `
+                -confirm:$false `
+                -ErrorAction continue `
+                -ImportAction Overwrite `                -SynchronizeSchemaChanges No  
+    }
+        
     #Compile Objects
+    write-host 'Compile System Tables' -ForegroundColor Green
+    $null = Compile-NAVApplicationObject `
+                -DatabaseServer $DatabaseServer `
+                -DatabaseName $SandboxInstance `
+                -LogPath $LogCompileObjects `
+                -SynchronizeSchemaChanges No `
+                -Filter 'ID=2000000000..' `
+                -Recompile `
+                -ErrorAction Continue 
+
+    write-host 'Compile Menusuites' -ForegroundColor Green
+    $null = Compile-NAVApplicationObject `
+                -DatabaseServer $DatabaseServer `
+                -DatabaseName $SandboxInstance `
+                -LogPath $LogCompileObjects `
+                -SynchronizeSchemaChanges No `
+                -Filter 'Type=MenuSuite' `
+                -Recompile `
+                -ErrorAction Continue 
+
     Write-Host 'Compile Uncompiled' -ForegroundColor Green
     $null = Compile-NAVApplicationObject `
-        -DatabaseServer $DatabaseServer `
-        -DatabaseName $SandboxInstance `
-        -LogPath $LogCompileObjects `
-        -SynchronizeSchemaChanges Force `
-        -Filter 'Compiled=0' `
-        -Recompile `
-        -NavServerName ([net.dns]::GetHostName()) `
-        -NavServerInstance $SandboxInstance `
-        -ErrorAction Continue   
-    
+                -DatabaseServer $DatabaseServer `
+                -DatabaseName $SandboxInstance `
+                -LogPath $LogCompileObjects `
+                -SynchronizeSchemaChanges No `
+                -ErrorAction Continue 
+
+    #Set-NAVServerInstance -Start ServerInstance $SandboxInstance
+
     if ((Get-ChildItem $LogCompileObjects | where Name -eq 'naverrorlog.txt').Count -gt 0)
     {      
         if (!$Force){  
-            if (!(Confirm-YesOrNo -Title "There are still uncompiled objects" -Message "There are still uncompiled objects `n Do you want to continue and create fob?")){
+            if (!(Confirm-YesOrNo -Title 'There are still uncompiled objects' -Message "There are still uncompiled objects `n Do you want to continue and create fob?")){
                 Break    
             }
         }
     } 
+    
 
     #Export Result
     if (!($ResultFobFile)){

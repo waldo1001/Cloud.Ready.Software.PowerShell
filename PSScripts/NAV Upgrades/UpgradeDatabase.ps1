@@ -54,7 +54,8 @@ $FobFile =
         -TextFileFolder $FilteredMergeResultFolder `
         -WorkingFolder $WorkingFolder `
         -ErrorAction Stop `
-        -ResultFobFile $ResultObjectFile
+        -ResultFobFile $ResultObjectFile `
+        -Verbose
 
 
 $UpgradedServerInstance = 
@@ -65,8 +66,8 @@ $UpgradedServerInstance =
         -UpgradeToolkit $UpgradeCodeunitsFullPath `
         -ResultObjectFile $FobFile `
         -DeletedObjects $DeletedObjects `
-        -SyncMode ForceSync `
-        -IfResultDBExists Use
+        -SyncMode Sync `
+        -IfResultDBExists Overwrite
   
 $StoppedDateTime = Get-Date
   
