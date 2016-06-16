@@ -24,6 +24,7 @@
 
     # return a ,-delimited string consiting of the "hightest" prefixed versions and any other non-prefixed versions
     $mergedversions += $allVersions
+    $mergedversions = $mergedversions | ? {$_} #Remove empty
     $Result = $mergedVersions -join ','
     write-verbose "Result $Result"
     $Result
