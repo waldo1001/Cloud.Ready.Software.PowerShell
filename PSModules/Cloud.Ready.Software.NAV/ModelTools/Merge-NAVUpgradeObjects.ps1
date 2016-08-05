@@ -10,7 +10,11 @@
         [Switch] $CreateDeltas,
         [String[]] $VersionListPrefixes,
         [switch] $DoNotOpenMergeResultFolder,
-        [String[]] $AvoidConflictsForLanguages
+        [String[]] $AvoidConflictsForLanguages,
+        [switch] $UpdateDateTime,
+        [Switch]$SwitchOriginalDate,
+        [Switch]$SwitchModifiedDate,
+        [Switch]$SwitchTargetDate
         
     )
 
@@ -74,7 +78,7 @@
     Write-Host 'Update Versionlist and DateTime' -ForegroundColor Green
     $Mergeresult |
         Where-Object {$_.MergeResult –eq 'Merged' -or $_.MergeResult –eq 'Conflict'}  |  
-            Merge-NAVApplicationObjectProperty -UpdateDateTime $true -UpdateVersionList $true -VersionListPrefixes $VersionListPrefixes
+            Merge-NAVApplicationObjectProperty -UpdateDateTime $UpdateDateTime -UpdateVersionList $true -VersionListPrefixes $VersionListPrefixes -SwitchOriginalDate:$SwitchOriginalDate -SwitchModifiedDate:$SwitchModifiedDate -SwitchTargetDate:$SwitchTargetDate
     
     $null = $mergeresult | Export-Clixml -Path (Join-Path $WorkingFolder 'MergeResult.xml')
     $MergeResultXML = get-item (Join-Path $WorkingFolder 'MergeResult.xml')

@@ -53,15 +53,16 @@
         $result | Add-Member -MemberType NoteProperty -Name 'Line' -Value $TranslateLine.Line
         $result | Add-Member -MemberType NoteProperty -Name 'Value' -Value $TranslateLine.Value
 
-        $AllTranslationsMissing = $true
+        $TranslationsMissing = $false
         foreach($language in $LanguageId){            
             $CurrLang = $DevelopmentTranslations.(Convert-NAVApplicationObjectLanguageKey -KeyToConvert $TranslateLine.Key -ToLanguage $language)
             $result | Add-Member -MemberType NoteProperty -Name $language -Value $CurrLang
-            if (!([string]::IsNullOrEmpty($CurrLang))){
-                $AllTranslationsMissing=$false
+            if (([string]::IsNullOrEmpty($CurrLang))){
+                $TranslationsMissing=$true
             }
         }
-        if (($KeyObject.propertyType -eq 'ActionList/CaptionML') -and ($AllTranslationsMissing)){
+
+        if (($KeyObject.propertyType -eq 'ActionList/CaptionML') -or (!$TranslationsMissing)){
             $KeyObject.TranslationNecessary = $false
         }
                 

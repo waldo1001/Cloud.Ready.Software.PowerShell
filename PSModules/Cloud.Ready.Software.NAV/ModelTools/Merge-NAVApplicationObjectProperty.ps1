@@ -16,7 +16,10 @@
         [Microsoft.Dynamics.Nav.Model.Tools.ApplicationObjectFileInfo] $Result,
         [Parameter(Mandatory=$True, ValueFromPipelineByPropertyName=$true)]
         [Microsoft.Dynamics.Nav.Model.Tools.MergeResult] $MergeResult,
-        [String[]]$VersionListPrefixes
+        [String[]]$VersionListPrefixes,
+        [Switch]$SwitchOriginalDate,
+        [Switch]$SwitchModifiedDate,
+        [Switch]$SwitchTargetDate
     )
     begin{
         $Errors = @()
@@ -39,7 +42,7 @@
                                                                         -ModifiedDate $Modified.Date `
                                                                         -ModifiedTime $Modified.Time `
                                                                         -TargetDate $Target.Date `
-                                                                        -TargetTime $Target.Time)   
+                                                                        -TargetTime $Target.Time `                                                                        -SwitchOriginalDate:$SwitchOriginalDate `                                                                        -SwitchModifiedDate:$SwitchModifiedDate `                                                                        -SwitchTargetDate:$SwitchTargetDate)   
                 }
              ($UpdateDateTime -and (-not $UpdateVersionList))
                 { 
@@ -51,7 +54,7 @@
                                                                         -ModifiedDate $Modified.Date `
                                                                         -ModifiedTime $Modified.Time `
                                                                         -TargetDate $Target.Date `
-                                                                        -TargetTime $Target.Time)                   
+                                                                        -TargetTime $Target.Time `                                                                        -SwitchOriginalDate:$SwitchOriginalDate `                                                                        -SwitchModifiedDate:$SwitchModifiedDate `                                                                        -SwitchTargetDate:$SwitchTargetDate)                   
                 }
              ($UpdateVersionList -and (-not $UpdateDateTime))
                 { 

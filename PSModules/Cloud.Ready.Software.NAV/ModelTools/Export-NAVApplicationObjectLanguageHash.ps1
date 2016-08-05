@@ -14,7 +14,7 @@
             Export-NAVApplicationObjectLanguage `
                 -Source $Source `
                 -Destination $TempTextFile `
-                -Force `                -PassThru `                -DevelopmentLanguageId $DevelopmentLanguageId
+                -Force `                -PassThru `                -DevelopmentLanguageId $DevelopmentLanguageId `                -LanguageId $LanguageId
     }
     process{        
 <#        $Translations = 
