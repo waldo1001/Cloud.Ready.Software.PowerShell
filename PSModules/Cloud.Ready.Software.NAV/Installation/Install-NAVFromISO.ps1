@@ -21,7 +21,10 @@
 
         [Parameter(Mandatory=$true, Position=2)]
         [System.String]
-        $Log
+        $Log,
+
+        [Parameter(Mandatory=$false)]
+        [Switch] $DisableCompileBusinessLogic
 
     )
     
@@ -30,7 +33,7 @@
     $DVDFolder = "$($IsoImage.DriveLetter):\"
     write-host "Mounted ISO to $($IsoImage.DriveLetter)-Drive" -ForegroundColor Green
     
-    $InstallationResult = Install-NAV -DVDFolder $DVDFolder -Configfile $ConfigFile -LicenseFile $Licensefile -Log $Log
+    $InstallationResult = Install-NAV -DVDFolder $DVDFolder -Configfile $ConfigFile -LicenseFile $Licensefile -Log $Log -DisableCompileBusinessLogic:$DisableCompileBusinessLogic
     
     $null = Dismount-DiskImage -ImagePath $ISOFilePath
     write-host "Dismounted $($IsoImage.DriveLetter)-Drive" -ForegroundColor Green

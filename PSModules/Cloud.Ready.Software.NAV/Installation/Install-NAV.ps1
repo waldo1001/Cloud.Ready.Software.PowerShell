@@ -10,7 +10,9 @@
         [Parameter(Mandatory=$false)]
         $LicenseFile,
         [Parameter(Mandatory=$true)]
-        $Log
+        $Log,
+        [Parameter(Mandatory=$false)]
+        [Switch] $DisableCompileBusinessLogic
     )
     process
     {
@@ -34,7 +36,7 @@
         write-host -foregroundcolor green -object "   Database: $($InstallationResult.Databasename)"
         write-host -foregroundcolor green -object "   ServerInstance: $($InstallationResult.ServerInstance)"
         write-host -foregroundcolor green -object ''
-        write-host -foregroundcolor green -object 'please be patient ...'      
+        write-host -foregroundcolor green -object 'please be patient ...' 
 
         if ($DVDFolder.Length -eq 3){
             $SetupPath = "$($DVDFolder)setup.exe"
@@ -45,9 +47,19 @@
 
         if ($LicenseFile){
             $null = Import-Module (join-path $InstallationResult.TargetPathX64 'service\navadmintool.ps1' )
+            $null = Get-NAVServerInstance | Set-NAVServerInstance -Start -ErrorAction SilentlyContinue
 
             write-host -ForegroundColor Green -Object "Installing licensefile '$Licensefile'"
             $null = Get-NAVServerInstance | Import-NAVServerLicense -LicenseFile $LicenseFile
+            write-host -ForegroundColor Green -Object "Restarting $($installationresult.ServerInstance)"
+            $null = Get-NAVServerInstance  | Set-NAVServerInstance -Restart
+        }
+
+        if ($DisableCompileBusinessLogic){
+            write-host -ForegroundColor Green -Object 'Disabling CompileBusinessApplicationAtStartup'            
+            $null = Import-Module (join-path $InstallationResult.TargetPathX64 'service\navadmintool.ps1' )
+            $null = Get-NAVServerInstance | Set-NAVServerConfiguration -KeyName 'CompileBusinessApplicationAtStartup' -KeyValue 'False'
+ 
             write-host -ForegroundColor Green -Object "Restarting $($installationresult.ServerInstance)"
             $null = Get-NAVServerInstance  | Set-NAVServerInstance -Restart
         }
