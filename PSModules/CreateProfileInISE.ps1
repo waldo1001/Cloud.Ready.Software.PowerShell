@@ -22,6 +22,10 @@ PS >"
     }   
 }
 
+if (-not($psise)) {
+    break
+} 
+
 $code =
 {
 
@@ -59,6 +63,19 @@ $psISE.CurrentPowerShellTab.AddOnsMenu.Submenus.Add(''Load NAV 2016 CmdLets'',$c
 
 $code =
 {
+ Import-Module "${env:ProgramFiles(x86)}\Microsoft Dynamics NAV\91\RoleTailored Client\Microsoft.Dynamics.Nav.Model.Tools.psd1" -WarningAction SilentlyContinue | out-null
+ Import-Module "$env:ProgramFiles\Microsoft Dynamics NAV\91\Service\NavAdminTool.ps1" -WarningAction SilentlyContinue | Out-Null
+ Import-Module "${env:ProgramFiles(x86)}\Microsoft Dynamics NAV\91\RoleTailored Client\Microsoft.Dynamics.Nav.Apps.Tools.psd1" -WarningAction SilentlyContinue | Out-Null
+
+ Clear-Host
+ Write-Host ''get-Command -Module ''Microsoft.Dynamics.Nav.*'''' -ForeGroundColor Yellow
+ get-Command -Module ''Microsoft.Dynamics.Nav.*''
+}
+$psISE.CurrentPowerShellTab.AddOnsMenu.Submenus.Add(''Load NAV 2017 CmdLets'',$code,$null)
+
+
+$code =
+{
   Start-Steroids
 }
 $psISE.CurrentPowerShellTab.AddOnsMenu.Submenus.Add(''Start ISE Steroids'',$code,$null)
@@ -79,4 +96,4 @@ $psISE.CurrentPowerShellTab.AddOnsMenu.Submenus.Add(''Force Import Cloud Ready S
 
 Add-Content -Value $code -Path $profile.AllUsersCurrentHost
 
-psEdit $profile.AllUsersCurrentHost
+psEdit $profile.AllUsersCurrentHost -ErrorAction SilentlyContinue
