@@ -9,7 +9,9 @@
         [string] $OriginalServerInstance,
         [string] $ModifiedServerInstance,
         [String] $InitialVersion = '1.0.0.0',
-        [String] $PermissionSetId='')
+        [String] $PermissionSetId='',
+        [String] $BackupPath,
+        [String] $Dependencies)
 
     # Set Variables
     $BuildFolder = (join-path $BuildFolder 'Create-NAVXFromDB')
@@ -34,7 +36,7 @@
     } else {
         Write-Host -Foregroundcolor Green 'Update APP Package'
         $newAppVersion = $MyNewManifest.AppVersion.Major.ToString() + '.' + $MyNewManifest.AppVersion.Minor.ToString() + '.' + $MyNewManifest.AppVersion.Build.ToString() + '.' + ($MyNewManifest.AppVersion.Revision + 1).ToString()
-        $MyNewManifest = Set-NAVAppManifest -Manifest $MyNewManifest -Version $newAppVersion 
+        $MyNewManifest = Set-NAVAppManifest `                            -Manifest $MyNewManifest `                            -Version $newAppVersion `                            -PrivacyStatement 'http://www.waldo.Be' `                            -Eula 'http://www.waldo.Be' `                            -Help 'http://www.waldo.Be' `                            -Url 'http://www.waldo.Be' `                            -Dependencies $Dependencies
     }
 
     New-NAVAppManifestFile -Path $navAppManifestFile -Manifest $MyNewManifest -Force 
@@ -54,6 +56,10 @@
     $AppPackage = New-NAVAppPackage -Manifest $MyNewManifest -SourcePath $navAppFileDirectory -Path $navAppPackageFile -PassThru 
     Write-Host -Foregroundcolor Green "NavX Package File: $navAppPackageFile"
     
+    if ($BackupPath){
+        $null = Copy-Item -Path $PackageFolder -Destination $BackupPath -Recurse -Force    
+    }
+
     [hashtable]$Return = @{} 
     $Return.Manifest = $MyNewManifest
     $Return.PackageFile = $navAppPackageFile

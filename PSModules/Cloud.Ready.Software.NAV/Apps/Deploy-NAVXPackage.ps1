@@ -20,7 +20,8 @@
         [Parameter(Mandatory=$false)]
         [String] $Tenant='Default',
         [Switch] $DoNotSaveData,
-        [Switch] $Force
+        [Switch] $Force,
+        [Switch] $SkipVerification
         
     )
     
@@ -51,7 +52,7 @@
         }    
     }
     write-host -ForegroundColor Green "Publishing $($myApp.Name) version $($myApp.Version) on $ServerInstance"
-    Publish-NAVApp -Path $PackageFile -ServerInstance $ServerInstance -ErrorAction Stop
+    Publish-NAVApp -Path $PackageFile -ServerInstance $ServerInstance -ErrorAction Stop -SkipVerification:$SkipVerification
 
     write-host -ForegroundColor Green "Installing $($myApp.Name) version $($myApp.Version) on $ServerInstance and tenant $Tenant"
     $InstalledApp = $myApp | Install-NAVApp -ServerInstance $ServerInstance -Tenant $Tenant -ErrorAction Stop -PassThru
