@@ -1,8 +1,9 @@
-﻿$Licensefile    = 'C:\_Installs\Corfu - iFacto Business Solutions NV.FLF'
-$NAVDVD         = 'D:\'
-$ConfigFile     = join-path $PSScriptRoot 'FullInstallNAV2016.xml'
+﻿$Licensefile    = 'C:\Dropbox\Dynamics NAV\Licenses\5230132_003 and 004 IFACTO_NAV2016_BELGIUM_2015 11 03.flf'
+$NAVDVD         = 'E:\'
+$ConfigFile     = join-path $PSScriptRoot 'FullInstallMadeiraCTP.xml'
+$Log            = 'C:\Temp\Log.txt'
 
-$InstallationResult = Install-NAV -DVDFolder $NAVDVD -Configfile $ConfigFile
+$InstallationResult = Install-NAV -DVDFolder $NAVDVD -Configfile $ConfigFile -Log $Log
 
 $null = Import-Module (join-path $InstallationResult.TargetPathX64 'service\navadmintool.ps1' )
 
