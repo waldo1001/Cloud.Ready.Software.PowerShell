@@ -15,7 +15,8 @@
         [string] $OriginalServerInstance,
         [string] $ModifiedServerInstance,
         [string] $BuildPath,
-        [String] $PermissionSetId='')
+        [String] $PermissionSetId='',
+        [String[]] $IncludeFilesInNavApp)
 
     $BuildPath = Join-Path -Path $BuildPath -ChildPath 'CreateNAVAppFiles'
 
@@ -76,12 +77,28 @@
     #Create Permission Sets
     if(!([String]::Isnullorempty($PermissionSetId))){
         Write-Host -Foregroundcolor Green "Exporting PermissionSet $PermissionSetId from $ModifiedServerInstance ..."
-        try { 
-            Export-NAVAppPermissionSet -ServerInstance $ModifiedServerInstance -PermissionSetId $PermissionSetId -Path (join-path $AppFilesFolder "$PermissionSetId.xml") -ErrorAction SilentlyContinue
+        #try { 
+            $PermissionSetExists = Get-NAVServerPermissionSet -ServerInstance $ModifiedServerInstance | where PermissionSetID -eq $PermissionSetId
+            if ($PermissionSetExists){
+                Export-NAVAppPermissionSet `                    -ServerInstance $ModifiedServerInstance `                    -PermissionSetId $PermissionSetID `                    -Path (join-path $AppFilesFolder "$PermissionSetID.xml") `                    -ErrorAction SilentlyContinue
+            } else {
+                Get-NAVServerPermissionSet -ServerInstance $ModifiedServerInstance | 
+                Where PermissionSetID -iLike "$PermissionSetID*" |                    foreach {                        Export-NAVAppPermissionSet `                            -ServerInstance $ModifiedServerInstance `                            -PermissionSetId $_.PermissionSetID `                            -Path (join-path $AppFilesFolder "$($_.PermissionSetID).xml")                     }                    
+            }
+            
+        #}
+        #Catch { 
+        #    Write-Warning -Message 'Something went wrong with exporting Permission sets!'}
+     }   
+
+    #IncludeFiles
+    if(!([String]::Isnullorempty($IncludeFilesInNavApp))){
+        foreach ($IncludeFileInNavApp in $IncludeFilesInNavApp){
+            Write-Host -ForegroundColor Gray "Copying $([io.path]::GetFileName($IncludeFileInNavApp)) to $AppFilesFolder"
+            Copy-Item -Path $IncludeFileInNavApp -Destination (join-path $AppFilesFolder ([io.path]::GetFileName($IncludeFileInNavApp)))
         }
-        Catch { 
-            Write-Warning -Message "Permissionset $PermissionSetId was not found!" }
     }   
+
 
     return $AppFilesFolder
 }

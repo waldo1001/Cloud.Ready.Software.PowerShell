@@ -21,7 +21,9 @@
         [parameter(mandatory=$true)]
         [string] $WorkingFolder,
         [parameter(mandatory=$false)]
-        [switch] $CreateReverseDeltas
+        [switch] $CreateReverseDeltas,
+        [parameter(Mandatory=$false)]
+        [Switch] $CompleteReset
         )
         
     $WorkingFolder = join-path -Path $Workingfolder -ChildPath 'Create-NAVDelta'
@@ -58,6 +60,11 @@
     }
     
     Write-Host -Foregroundcolor Green 'Exporting MODIFIED objects ...'
+    if ($CompleteReset) {
+        if (Test-Path -Path $modifiedObjects){Remove-Item $modifiedObjects -Force -Recurse}
+        if (Test-Path -Path $modifiedObjectsPartial){Remove-Item $modifiedObjectsPartial -Force -Recurse}
+        if (Test-Path -Path $modifiedFolder){Remove-Item $modifiedFolder -Force -Recurse}
+    }
        
     if (!(Test-Path -Path $modifiedObjects))
     {

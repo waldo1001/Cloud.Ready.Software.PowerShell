@@ -11,7 +11,8 @@
         [String] $InitialVersion = '1.0.0.0',
         [String] $PermissionSetId='',
         [String] $BackupPath,
-        [String] $Dependencies)
+        [String] $Dependencies = $null,
+        [String[]] $IncludeFilesInNavApp)
 
     # Set Variables
     $BuildFolder = (join-path $BuildFolder 'Create-NAVXFromDB')
@@ -23,6 +24,14 @@
     $packageFolder = Join-Path -Path $BuildFolder -ChildPath 'Packages'
     $packageFolder = New-Item -ItemType Directory -Force -Path $packageFolder
     
+    #Restore Manifest from Backup folder
+    if ($BackupPath){
+        $BackupNAVAppManifestFile = Join-Path $BackupPath "$($AppName).xml"
+        if (Test-Path $BackupNAVAppManifestFile){
+            $null = Copy-Item -Path $BackupNAVAppManifestFile -Destination $navAppManifestFile -Recurse -Force    
+        }
+    }
+
     # Update or Create Manifest
     Write-Host -Foregroundcolor Green 'Setup App-Manifest... '
     
@@ -32,18 +41,24 @@
     if ($MyNewManifest -eq $null)
     {
         Write-Host -Foregroundcolor Green 'Create APP Package'
-        $MyNewManifest = Create-NAVAppPackage -AppName $AppName -BuildFolder $BuildFolder -Version $InitialVersion -Publisher $AppPublisher -Description $AppDescription
+        $MyNewManifest = Create-NAVAppPackage `
+                                -AppName $AppName `                                -BuildFolder $BuildFolder `                                -Version $InitialVersion `                                -Publisher $AppPublisher `                                -Description $AppDescription
     } else {
         Write-Host -Foregroundcolor Green 'Update APP Package'
         $newAppVersion = $MyNewManifest.AppVersion.Major.ToString() + '.' + $MyNewManifest.AppVersion.Minor.ToString() + '.' + $MyNewManifest.AppVersion.Build.ToString() + '.' + ($MyNewManifest.AppVersion.Revision + 1).ToString()
-        $MyNewManifest = Set-NAVAppManifest `                            -Manifest $MyNewManifest `                            -Version $newAppVersion `                            -PrivacyStatement 'http://www.waldo.Be' `                            -Eula 'http://www.waldo.Be' `                            -Help 'http://www.waldo.Be' `                            -Url 'http://www.waldo.Be' `                            -Dependencies $Dependencies
+        if ([String]::IsNullOrEmpty($Dependencies)){
+            $MyNewManifest = Set-NAVAppManifest `                    -Manifest $MyNewManifest `                    -Version $newAppVersion `                    -PrivacyStatement 'http://www.waldo.Be' `                    -Eula 'http://www.waldo.Be' `                    -Help 'http://www.waldo.Be' `                    -Url 'http://www.waldo.Be'
+        } else {
+            $MyNewManifest = Set-NAVAppManifest `                                        -Manifest $MyNewManifest `                                        -Version $newAppVersion `                                        -PrivacyStatement 'http://www.waldo.Be' `                                        -Eula 'http://www.waldo.Be' `                                        -Help 'http://www.waldo.Be' `                                        -Url 'http://www.waldo.Be' `                                        -Dependencies $Dependencies        
+        }
+        
     }
 
-    New-NAVAppManifestFile -Path $navAppManifestFile -Manifest $MyNewManifest -Force 
+    New-NAVAppManifestFile -Path $navAppManifestFile -Manifest $MyNewManifest -Force
         
     # Extract Applications and Create Deltas
     Write-Host -Foregroundcolor Green "Starting to create deltas between $OriginalServerInstance and $ModifiedServerInstance ..."
-    $navAppFileDirectory = Create-NAVAppFiles -OriginalServerInstance $OriginalServerInstance -ModifiedServerInstance $ModifiedServerInstance -BuildPath $BuildFolder -PermissionSetId $PermissionSetId
+    $navAppFileDirectory = Create-NAVAppFiles -OriginalServerInstance $OriginalServerInstance -ModifiedServerInstance $ModifiedServerInstance -BuildPath $BuildFolder -PermissionSetId $PermissionSetId -IncludeFilesInNavApp $IncludeFilesInNavApp
 
     # Create NavX Package
     $navAppPackageFile = $AppName + '_v' + $MyNewManifest.AppVersion.ToString() + '.navx'
@@ -58,6 +73,7 @@
     
     if ($BackupPath){
         $null = Copy-Item -Path $PackageFolder -Destination $BackupPath -Recurse -Force    
+        $null = Copy-Item -Path $navAppManifestFile -Destination $BackupPath -Force
     }
 
     [hashtable]$Return = @{} 

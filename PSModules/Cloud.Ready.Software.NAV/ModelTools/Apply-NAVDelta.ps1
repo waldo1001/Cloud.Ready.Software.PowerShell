@@ -81,12 +81,12 @@ Function Apply-NAVDelta {
             $ModifiedProperty = 'No'
         } 
         $UpdateResult =             Update-NAVApplicationObject `                -TargetPath $ExportFolder `                -DeltaPath $DeltaPath `                -ResultPath $ResultFolder `
-                -DateTimeProperty Now `                -ModifiedProperty $ModifiedProperty `                -VersionListProperty FromTarget `
+                -DateTimeProperty FromModified `                -ModifiedProperty $ModifiedProperty `                -VersionListProperty FromTarget `
                 -ErrorAction Stop `                -Force
 
         Write-Host 'Updating versionlist' -ForegroundColor Green 
         $UpdateResult |
-                Where-Object {$_.UpdateResult –eq 'Updated' -or $_.MergeResult –eq 'Conflict'}  |  
+                Where-Object {$_.UpdateResult –eq 'Updated' -or $_.UpdateResult –eq 'Conflict' -or $_.MergeResult –eq 'Conflict'}  |  
                     Foreach {
                         $CurrObject = Get-NAVApplicationObjectProperty -Source $_.Result
                         If ($DeltaType -eq 'Add'){
@@ -133,7 +133,15 @@ Function Apply-NAVDelta {
                     -Filter 'Compiled=0' `                    -Recompile `                    -SynchronizeSchemaChanges $SynchronizeSchemaChanges 
         }
     }
-    end{        
+    end{     
+        $Conflicts = $UpdateResult | where UpdateResult -eq 'Conflicted'
+        if (($Conflicts.Count) -gt 0) {
+            write-warning -Message 'There were conflicts!  Please review:' 
+            #foreach ($Conflict in $Conflicts){
+                Write-Warning -Message "$Conflicts"
+            #}
+        }
+       
         if($OpenWorkingfolder){Start-Process $Workingfolder}
         Write-Host 'Apply-NAVDelta done!' -ForegroundColor Green
     }

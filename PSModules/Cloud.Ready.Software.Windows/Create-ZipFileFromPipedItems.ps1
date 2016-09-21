@@ -5,7 +5,7 @@ function Create-ZipFileFromPipedItems
 {
 	param([string]$zipfilename)
 
-	if(test-path($zipfilename))
+    if(test-path($zipfilename))
 	{
 		get-item $zipfilename | remove-item
 	}
@@ -13,7 +13,7 @@ function Create-ZipFileFromPipedItems
     set-content $zipfilename ('PK' + [char]5 + [char]6 + ("$([char]0)" * 18))
 	(get-childitem $zipfilename).IsReadOnly = $false	
 	
-	$shellApplication = new-object -com shell.application
+    $shellApplication = new-object -com shell.application
 	$zipPackage = $shellApplication.NameSpace($zipfilename)
 	
 	foreach($file in $input) 

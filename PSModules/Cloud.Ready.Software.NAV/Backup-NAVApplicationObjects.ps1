@@ -31,9 +31,10 @@
         [Parameter(Mandatory=$false)]
         [Object] $ExportPermissionSetId,
         [Parameter(Mandatory=$False)]
-        [String] $Name
+        [String] $Name,
+        [parameter(Mandatory=$false)]
+        [Switch] $CompleteReset
         
-
     )
     Process{
         $ServerInstanceObject = (Get-NAVServerInstanceDetails -ServerInstance $ServerInstance)
@@ -55,6 +56,7 @@
         $Backupfiletxt = join-path $BackupPath "$($Name)_$($BackupOption).txt"
         $Backupfilefob = join-path $BackupPath "$($Name)_$($BackupOption).fob"     
         
+
         if ([String]::IsNullOrEmpty($ObjectFilter)){
             Write-host -ForegroundColor Green "Creating $Backupfiletxt"
             Export-NAVApplicationObject -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfiletxt -Force
@@ -68,7 +70,10 @@
             Export-NAVApplicationObject -Filter $ObjectFilter -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfilefob -Force
         
         }
-        
+        if($CompleteReset) {
+            $RemoveDestinationPath = "$BackupPath\Split\"
+            if (Test-Path $RemoveDestinationPath) {Remove-Item $RemoveDestinationPath -Force -Recurse}
+        }
         Get-Item $Backupfiletxt  | Split-NAVApplicationObjectFile -Destination "$BackupPath\Split\" -Force
       
         if(!([String]::IsNullOrEmpty($NavAppOriginalServerInstance))) {
@@ -77,9 +82,13 @@
                 break
             }
 
-            $Folders =                 Create-NAVDelta `                    -OriginalServerInstance $NavAppOriginalServerInstance `                    -ModifiedServerInstance $ServerInstance `                    -WorkingFolder $NavAppWorkingFolder `                    -CreateReverseDeltas
+            $Folders =                 Create-NAVDelta `                    -OriginalServerInstance $NavAppOriginalServerInstance `                    -ModifiedServerInstance $ServerInstance `                    -WorkingFolder $NavAppWorkingFolder `                    -CreateReverseDeltas `                    -CompleteReset:$CompleteReset
 
             foreach($Folder in $Folders){
+                if($CompleteReset) {
+                    $RemoveDestinationPath = Join-Path $BackupPath $folder.Basename
+                    if (Test-Path $RemoveDestinationPath) {Remove-Item $RemoveDestinationPath -Force -Recurse}
+                }
                 $null = Copy-Item -Path $Folder -Destination $BackupPath -Recurse -Force
             }
             
