@@ -43,7 +43,7 @@ function Get-NAVApplicationObjectPropertyFromDelta
                 $MatchedRegEx = [regex]::Match($DeltaFileFirstLine, $regex)
                                     
                 $MyNAVObject.ObjectType = $MatchedRegEx.Groups.Item(1).value
-                $MyNAVObject.Id = $MatchedRegEx.Groups.Item(2).value
+                $MyNAVObject.Id = [int] $MatchedRegEx.Groups.Item(2).value
             }
 
             return $MyNAVObject
