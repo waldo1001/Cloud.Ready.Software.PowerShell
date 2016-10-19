@@ -6,8 +6,8 @@
         $DestinationFolder
     )
     $Errors = @()
-    $ObjectsToCopy = $MergeResultObjects | where-Object {($_.MergeResult -ine 'Unchanged') -and ($_.MergeResult -ine 'Failed')}
-    $ObjectsToCopy = $ObjectsToCopy | where-Object {($_.MergeResult.Value -ine 'Unchanged') -and ($_.MergeResult.Value -ine 'Failed')}
+    $ObjectsToCopy = $MergeResultObjects | where-Object {($_.MergeResult -ine 'Unchanged') -and ($_.MergeResult -ine 'Failed') -and ($_.MergeResult -ine 'Deleted')}
+    $ObjectsToCopy = $ObjectsToCopy | where-Object {($_.MergeResult.Value -ine 'Unchanged') -and ($_.MergeResult.Value -ine 'Failed') -and ($_.MergeResult -ine 'Deleted')}
 
     if(!($ObjectsToCopy.Count -ge 1)){
         Write-Warning 'No merged Objects! Possibly identical object sets'
@@ -15,7 +15,7 @@
     }
 
     if(!$DestinationFolder){
-        $tempItem = Get-item $ObjectsToCopy[0].Result.FileName        
+        $tempItem = Get-item $ObjectsToCopy[0].Result.FileName       
         $DestinationFolder = join-path $tempItem.Directory.Parent.FullName "$($tempItem.directory.Name)_ChangedOnly"
     }
     if(Test-Path $DestinationFolder) {Remove-Item -Path $DestinationFolder -Recurse -Force}     New-Item -Path $DestinationFolder -ItemType directory | Out-Null
