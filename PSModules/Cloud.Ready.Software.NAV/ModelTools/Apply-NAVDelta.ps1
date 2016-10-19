@@ -108,15 +108,6 @@ Function Apply-NAVDelta {
         $null =            Compare-NAVApplicationObject `                -OriginalPath (join-path $ResultFolder '*.txt')`                -ModifiedPath (join-path $ExportFolder '*.txt') `                -DeltaPath $ReverseFolder `                -Force
 
         if(!($DoNotImportAndCompileResult)){
-            #Import 
-            Write-Host "Importing result from $ResultFolder" -ForegroundColor Green         
-            $null = 
-                Get-ChildItem $ResultFolder -File -Filter '*.txt' |
-                    Import-NAVApplicationObject2 `
-                        -ServerInstance $TargetServerInstanceObject.ServerInstance `                        -LogPath (Join-Path $ResultFolder 'Log') `
-                        -ImportAction Overwrite `                        -SynchronizeSchemaChanges $SynchronizeSchemaChanges `
-                        -Confirm:$false  
-    
             #Delete objects
             Write-Host "Deleting objects to $ExportFolder" -ForegroundColor Green 
             $UpdateResult |
@@ -125,6 +116,14 @@ Function Apply-NAVDelta {
                                 $null =
                                     Delete-NAVApplicationObject2 `                                        -ServerInstance $TargetServerInstanceObject.ServerInstance `                                        -LogPath (Join-Path $ResultFolder 'Log') `                                        -Filter "type=$($_.ObjectType);Id=$($_.Id)" `                                        -SynchronizeSchemaChanges $SynchronizeSchemaChanges `                                        -Confirm:$false 
                                 Write-Host "  $($_.ObjectType) $($_.Id) deleted." -ForegroundColor Gray                            }
+            #Import 
+            Write-Host "Importing result from $ResultFolder" -ForegroundColor Green         
+            $null = 
+                Get-ChildItem $ResultFolder -File -Filter '*.txt' |
+                    Import-NAVApplicationObject2 `
+                        -ServerInstance $TargetServerInstanceObject.ServerInstance `                        -LogPath (Join-Path $ResultFolder 'Log') `
+                        -ImportAction Overwrite `                        -SynchronizeSchemaChanges $SynchronizeSchemaChanges `
+                        -Confirm:$false  
 
             Write-Host 'Compiling uncompiled' -ForegroundColor Green         
             $null =
