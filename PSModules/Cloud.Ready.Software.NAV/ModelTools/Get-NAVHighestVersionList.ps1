@@ -9,6 +9,10 @@
     if ([string]::IsNullOrEmpty($Versionlist1)){return $VersionList2}
     if ([string]::IsNullOrEmpty($Versionlist2)){return $VersionList1}
 
+    if ($VersionList1 -eq $VersionList2) {
+        return $VersionList1
+    }
+
     try{        
         if ([String]::IsNullOrEmpty($Prefix)) {
             [int[]] $SplitVersionlist1 = $VersionList1.split('.')
