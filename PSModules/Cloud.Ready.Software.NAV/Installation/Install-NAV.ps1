@@ -47,21 +47,21 @@
 
         if ($LicenseFile){
             $null = Import-Module (join-path $InstallationResult.TargetPathX64 'service\navadmintool.ps1' )
-            $null = Get-NAVServerInstance | Set-NAVServerInstance -Start -ErrorAction SilentlyContinue
+            $null = Get-NAVServerInstance -ServerInstance $installationresult.ServerInstance | Set-NAVServerInstance -Start -ErrorAction SilentlyContinue
 
             write-host -ForegroundColor Green -Object "Installing licensefile '$Licensefile'"
-            $null = Get-NAVServerInstance | Import-NAVServerLicense -LicenseFile $LicenseFile
+            $null = Get-NAVServerInstance -ServerInstance $installationresult.ServerInstance | Import-NAVServerLicense -LicenseFile $LicenseFile -Database NavDatabase
             write-host -ForegroundColor Green -Object "Restarting $($installationresult.ServerInstance)"
-            $null = Get-NAVServerInstance  | Set-NAVServerInstance -Restart
+            $null = Get-NAVServerInstance -ServerInstance $installationresult.ServerInstance | Set-NAVServerInstance -Restart
         }
 
         if ($DisableCompileBusinessLogic){
             write-host -ForegroundColor Green -Object 'Disabling CompileBusinessApplicationAtStartup'            
             $null = Import-Module (join-path $InstallationResult.TargetPathX64 'service\navadmintool.ps1' )
-            $null = Get-NAVServerInstance | Set-NAVServerConfiguration -KeyName 'CompileBusinessApplicationAtStartup' -KeyValue 'False'
+            $null = Get-NAVServerInstance -ServerInstance $installationresult.ServerInstance | Set-NAVServerConfiguration -KeyName 'CompileBusinessApplicationAtStartup' -KeyValue 'False'
  
             write-host -ForegroundColor Green -Object "Restarting $($installationresult.ServerInstance)"
-            $null = Get-NAVServerInstance  | Set-NAVServerInstance -Restart
+            $null = Get-NAVServerInstance -ServerInstance $installationresult.ServerInstance | Set-NAVServerInstance -Restart
         }
 
         Write-Host 'Log output:' -ForegroundColor Green

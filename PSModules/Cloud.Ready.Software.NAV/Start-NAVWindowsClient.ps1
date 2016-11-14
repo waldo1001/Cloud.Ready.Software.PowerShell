@@ -16,9 +16,9 @@
         if ([string]::IsNullOrEmpty($Companyname)) {            $Companyname = (Get-NAVCompany -ServerInstance $ServerInstance -Tenant $tenant| select -First 1).CompanyName
         }
     }
-
-    $ConnectionString = "DynamicsNAV://$($Servername):$($Port)/$($ServerInstance)/$($Companyname)/?tenant=$($tenant)"
-    Write-host -ForegroundColor green -object "Starting $ConnectionString ..."
-    Start-Process $ConnectionString
+    $WinClient = (Join-path (Get-Item $NavIde).Directory 'Microsoft.Dynamics.Nav.Client.exe')
+    $ConnectionString = """DynamicsNAV://$($Servername):$($Port)/$($ServerInstance)/$($Companyname)/?tenant=$($tenant)"""
+    Write-host -ForegroundColor green -object "Starting $WinClient $ConnectionString ..."
+    Start-Process -FilePath $WinClient -ArgumentList $ConnectionString
 }
 

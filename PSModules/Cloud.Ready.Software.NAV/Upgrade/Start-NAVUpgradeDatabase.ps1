@@ -12,7 +12,7 @@
         [String] $WorkingFolder,
         [String] $LicenseFile,
         [String] $UpgradeToolkit,
-        [Object[]] $DeletedObjects,
+        #[Object[]] $DeletedObjects,
         [ValidateSet('CheckOnly','ForceSync','Sync')]
         [String] $SyncMode='Sync',
         [ValidateSet('Overwrite','Use')]
@@ -62,6 +62,10 @@
     Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand "CREATE USER [$CurrentUser] FOR LOGIN [$CurrentUser]" -ErrorAction SilentlyContinue
     Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand "ALTER ROLE [db_owner] ADD MEMBER [$CurrentUser]" -ErrorAction SilentlyContinue
 
+    #Import NAV LIcense on server-level 
+    Write-Host "Import NAV license in $SandboxServerInstance" -ForegroundColor Green   
+    Import-NAVServerLicenseToDatabase -LicenseFile $NAVLicense -ServerInstance $SandboxServerInstance -Scope Database
+    
     #Unlock objects
     write-host 'Unlock all objects' -ForegroundColor Green
     Unlock-NAVApplicationObjects -ServerInstance $SandboxServerInstance
@@ -74,29 +78,26 @@
     #Convert DB
     Write-Host 'Converting Database' -ForegroundColor Green
     [System.Data.SqlClient.SqlConnection]::ClearAllPools()
-    Invoke-NAVDatabaseConversion -DatabaseName $SandboxServerInstance -LogPath $LogDataconversion -ErrorVariable $ErrorDatabaseConversion -ErrorAction SilentlyContinue
-    if ($ErrorDatabaseConversion) {
-        if (!($ErrorDatabaseConversion -match 'You must choose an instance')) {
-            Write-Error $ErrorDatabaseConversion
-            break
-        }
-    }
+    Invoke-NAVDatabaseConversion -DatabaseName $SandboxServerInstance -LogPath $LogDataconversion -ErrorAction stop    
     Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand "ALTER DATABASE [$SandboxServerInstance] SET  MULTI_USER WITH NO_WAIT"
     
     #Start NST
     Write-Host "Start NST $SandboxServerInstance" -ForegroundColor Green
     Set-NAVServerInstance -Start -ServerInstance $SandboxServerInstance
     
+    #Compile System Tables
+    Sync-NAVTenant -ServerInstance $SandboxServerInstance -Mode Sync -Force 
+    Compile-NAVApplicationObject2 -ServerInstance $SandboxServerInstance -SynchronizeSchemaChanges Yes -Filter 'Id=2000000000..' -LogPath $LogCompileObjects -Recompile
+
     #Add my user to the environment
     Write-Host 'Add current user to environment' -ForegroundColor Green
-    Add-NAVEnvironmentCurrentUser -ServerInstance $SandboxServerInstance
+    Add-NAVEnvironmentCurrentUser -ServerInstance $SandboxServerInstance -ErrorAction Stop
 
     #Import NAV LIcense
     Write-Host "Import NAV license in $SandboxServerInstance" -ForegroundColor Green
     Get-NAVServerInstance -ServerInstance $SandboxServerInstance | Import-NAVServerLicense -LicenseFile $LicenseFile -Database NavDatabase -WarningAction SilentlyContinue
-    Set-NAVServerInstance -Restart -ServerInstance $SandboxServerInstance
+    #Get-NAVServerInstance -Restart -ServerInstance $SandboxServerInstance
     
-      
     #Delete All except tables
     Write-Host 'Deleting all objects except tables' -ForegroundColor Green
     Delete-NAVApplicationObject `
@@ -106,7 +107,18 @@
         -NavServerName ([net.dns]::GetHostName()) `
         -NavServerInstance $SandboxServerInstance `
         -filter 'Type=<>Table' `
-        -Confirm:$false    
+        -Confirm:$false  
+    
+
+    #Delete Tables without synch
+    Write-Host 'Deleting tables without synch' -ForegroundColor Green
+    Delete-NAVApplicationObject `
+        -DatabaseName $SandboxServerInstance `
+        -LogPath $LogDeleteObjects `
+        -SynchronizeSchemaChanges No `
+        -NavServerName ([net.dns]::GetHostName()) `
+        -NavServerInstance $SandboxServerInstance `
+        -Confirm:$false `        -Filter 'Id=<2000000000'   
 
     #Import Upgrade Toolkit
     if ($UpgradeToolkit){
@@ -122,6 +134,7 @@
     }
     
     #Delete tables
+    <#
     Write-Host 'Deleting Tables if necessary' -ForegroundColor Green
     $DeletedObjects | where ObjectType -eq 'Table' | foreach {
         Write-Host "  Type=$($_.ObjectType);Id=$($_.Id)" -ForegroundColor Gray
@@ -134,7 +147,7 @@
             -filter "Type=$($_.ObjectType);Id=$($_.Id)" `
             -Confirm:$false
     }
-    
+    #>
     
     #Import Fob
     Write-Host "Import $ResultObjectFile" -ForegroundColor Green
@@ -167,7 +180,17 @@
         while (!$Stop){
             $NAVDataUpgradeStatus = Get-NAVDataUpgrade -ServerInstance $SandboxServerInstance 
             Write-Host "$($NAVDataUpgradeStatus.State) -- $($NAVDataUpgradeStatus.Progress)" -ForeGroundColor Gray
-            if ($NAVDataUpgradeStatus.State -ne 'InProgress') {
+            if ($NAVDataUpgradeStatus.State -eq 'Suspended') {
+                Resume-NAVDataUpgrade -ServerInstance $SandboxServerInstance 
+            }
+            if (($NAVDataUpgradeStatus.State -eq 'Stopped') -or ($NAVDataUpgradeStatus.State -eq 'Completed')) {
+                $Stop = $true
+            }
+            $ErrorsDataUpgrade = Get-NAVDataUpgrade -ServerInstance $SandboxServerInstance -ErrorOnly
+            if ($ErrorsDataUpgrade) {
+                foreach($ErrorDataUpgrade in $ErrorsDataUpgrade){
+                    Write-Error "Error in function $($ErrorDataUpgrade.FunctionName) and Company $($ErrorDataUpgrade.CompanyName)`r`n $($ErrorDataUpgrade.Error)"
+                }
                 $Stop = $true
             }
             Start-Sleep 2

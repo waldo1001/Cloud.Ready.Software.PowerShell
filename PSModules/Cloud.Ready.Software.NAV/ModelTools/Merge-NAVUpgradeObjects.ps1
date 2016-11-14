@@ -37,7 +37,8 @@
         $TargetObjects = Remove-NAVUpgradeObjectLanguage -Source $TargetObjects -WorkingFolder $WorkingFolder -Languages $AvoidConflictsForLanguages
     }
 
-    #Create Delta's
+    <# -- has become obsolute.  In the DBUpgrade, everything gets deleted anyway - no need to know deleted objects
+    #Create Delta's 
     if($CreateDeltas){
         $Deltafolder1 = join-path $MergeResultFolder 'Deltas_ORIGINAL_MODIFIED'
         $Deltafolder2 = join-path $MergeResultFolder 'Deltas_ORIGINAL_TARGET'
@@ -60,6 +61,7 @@
             -Force `
             -PassThru       
     }
+    #>
 
     #Merge objects
     Write-Host "Merge to $MergeResultFolder" -ForegroundColor Green
@@ -87,7 +89,8 @@
         Start-Process $MergeResultFolder
     }
         
-    $MergeEndResult = @{MergeResult=$Mergeresult;Mergeresultfolder=$MergeResultFolder;DeltaOriginalVersusModified=$DeltaOriginalModified;DeltaOriginalVersusTarget=$DeltaOriginalTarget;MergeResultXML=$MergeResultXML}
+    #$MergeEndResult = @{MergeResult=$Mergeresult;Mergeresultfolder=$MergeResultFolder;DeltaOriginalVersusModified=$DeltaOriginalModified;DeltaOriginalVersusTarget=$DeltaOriginalTarget;MergeResultXML=$MergeResultXML}
+    $MergeEndResult = @{MergeResult=$Mergeresult;Mergeresultfolder=$MergeResultFolder;MergeResultXML=$MergeResultXML}
     $MergeEndResult
 }
     

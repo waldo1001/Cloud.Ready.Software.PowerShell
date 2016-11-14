@@ -30,6 +30,8 @@
 
     )
     
+    import-module 'sqlps' -DisableNameChecking
+
     $CurrentLocation = Get-Location
     $null = import-module SQLPS -DisableNameChecking -WarningAction SilentlyContinue
     $null = Set-Location $CurrentLocation	

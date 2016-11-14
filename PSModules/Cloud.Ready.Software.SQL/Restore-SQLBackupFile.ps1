@@ -29,6 +29,8 @@
         [String] $TimeOut = 30
     )
     
+    import-module 'sqlps' -DisableNameChecking
+
     if ([String]::IsNullOrEmpty($DatabaseDataPath)){
         $SQLString = "SELECT [Default Data Path] = SERVERPROPERTY('InstanceDefaultDataPath')"
         $DatabaseDataPath = (invoke-sql -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseInstance -sqlCommand $SQLString)."Default Data Path"

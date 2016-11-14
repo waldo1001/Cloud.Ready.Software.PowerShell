@@ -22,7 +22,9 @@
             $CurrentHighestPrefixVersionList = Get-NAVHighestVersionList -VersionList1 $CurrentHighestPrefixVersionList -VersionList2 $PrefixVersionList -Prefix $prefix
         }
 
-        $mergedversions += $CurrentHighestPrefixVersionList
+        if (-not ([string]::IsNullOrEmpty($CurrentHighestPrefixVersionList))){
+            $mergedversions += $CurrentHighestPrefixVersionList
+        }
 
         # remove all prefixed versions
         $allversions = $allVersions.Where({ !$_.StartsWith($prefix) })

@@ -8,7 +8,10 @@
         [String]$BackupFile,
         [switch]$EnablePortSharing,
         [Switch]$StartWindowsClient,
-        [String]$LicenseFile
+        [String]$LicenseFile,
+        [int]$ManagementServicesPort=7045,
+        [int]$ClientServicesPort=7046
+
     )
 
     if ([String]::IsNullOrEmpty($Databasename)){
@@ -22,15 +25,15 @@
     }
 
     write-Host -ForegroundColor Green "Restoring Backup $BackupFile to $Databasename"
-    Restore-SQLBackupFile -BackupFile $BackupFile -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseInstance -DatabaseName $Databasename -ErrorAction Stop
+    Restore-SQLBackupFile -BackupFile $BackupFile -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseInstance -DatabaseName $Databasename -ErrorAction Stop -TimeOut 0
 
     write-Host -ForegroundColor Green "Creating ServerInstance $ServerInstance"
     $Object = New-NAVServerInstance `
             -ServerInstance $ServerInstance `
             -DatabaseServer $DatabaseServer `
             -DatabaseInstance $DatabaseInstance `
-            -ManagementServicesPort 7045 `
-            -ClientServicesPort 7046 `
+            -ManagementServicesPort $ManagementServicesPort `
+            -ClientServicesPort $ClientServicesPort `
             -DatabaseName $Databasename          
 
     $ServerInstanceObject = Get-NAVServerInstance4 -ServerInstance $ServerInstance
