@@ -65,9 +65,9 @@ $UpgradedServerInstance =
         -LicenseFile $NAVLicense `
         -UpgradeToolkit $UpgradeCodeunitsFullPath `
         -ResultObjectFile $FobFile `
-        -DeletedObjects $DeletedObjects `
         -SyncMode Sync `
-        -IfResultDBExists Overwrite
+        -IfResultDBExists Overwrite `
+        -Name "$($UpgradeName)_Result"
   
 $StoppedDateTime = Get-Date
   

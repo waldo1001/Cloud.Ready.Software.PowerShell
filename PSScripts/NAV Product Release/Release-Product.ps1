@@ -1,6 +1,6 @@
-$CurrentProduct = 'Base'
-$objectfile     = 'C:\_Workingfolder\Release_iFactoBase\iFactoBaseDEV_updated.txt'
-$ProductVersion = 'IB2.0'
+$CurrentProduct = 'Distri'
+$objectfile     = "C:\_Scriptfolder\Release Distri 100\ModifiedObjects.txt"
+$ProductVersion = 'I10.0'
 $ModifiedOnly   = $true
 
 switch ($CurrentProduct)
