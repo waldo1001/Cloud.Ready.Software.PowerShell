@@ -21,7 +21,8 @@ function Get-NAVCumulativeUpdateFile
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName)]
         [String]$versions = '2017',
         [Parameter(ValueFromPipelineByPropertyName)]        [String]$DownloadFolder = $env:TEMP,                [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
-        [String]$Locale
+        [String]$Locale,
+        [Switch]$ShowDownloadFolder
 
     )
 
@@ -106,25 +107,28 @@ function Get-NAVCumulativeUpdateFile
 
                 foreach ($DownloadLink in $DownloadLinks){
 
-                    $filename = (Join-Path -Path $DownloadFolder -ChildPath ([io.path]::GetFileName($DownloadLink.DownloadUrl)))
-                    Write-Host -Object "Downloading $($DownloadLink.Code) to $filename" -ForegroundColor Green
-    
-                    if (-not (Test-Path $filename)) 
-                    {
+                    $filename = (Join-Path -Path $DownloadFolder -ChildPath ("$([io.path]::GetFileNameWithoutExtension($DownloadLink.DownloadUrl)).CU$($updateno.Value)$([io.path]::GetExtension($DownloadLink.DownloadUrl))"))
+                    
+                    #set-content -Value 'Just to debug the process - set this line in comment if you don''t want to debug' -Path $filename
+                    if (-not(Test-Path $filename)){
+                        Write-Host -Object "Downloading $($DownloadLink.Code) to $filename" -ForegroundColor Green
                         $null = Start-BitsTransfer -Source $DownloadLink.DownloadUrl -Destination $filename 
-                    }
+                        Write-Host -Object 'Hotfix downloaded' -ForegroundColor Green
+                    } Else {
+                        write-warning "File $([io.path]::GetFileName($filename)) already exists.  Nothing downloaded!"
+                    }                                           
     
-                    Write-Host -Object 'Hotfix downloaded' -ForegroundColor Green
                     $null = Unblock-File -Path $filename
 
                     $result = New-Object -TypeName System.Object
-                    $null = $result | Add-Member -MemberType NoteProperty -Name filename -Value "$filename" 
+                    $null = $result | Add-Member -MemberType NoteProperty -Name NAVVersion -Value $version
+                    $null = $result | Add-Member -MemberType NoteProperty -Name CountryCode -Value $DownloadLink.Code
+                    $null = $result | Add-Member -MemberType NoteProperty -Name CUNo -Value "$updateno"
+                    $null = $result | Add-Member -MemberType NoteProperty -Name Build -Value $Build
                     $null = $result | Add-Member -MemberType NoteProperty -Name KBUrl -Value "$KbHref"
                     $null = $result | Add-Member -MemberType NoteProperty -Name ProductID -Value "$ProductID"
-                    $null = $result | Add-Member -MemberType NoteProperty -Name CountryCode -Value $DownloadLink.Code
                     $null = $result | Add-Member -MemberType NoteProperty -Name DownloadURL -Value $DownloadLink.DownloadUrl
-                    $null = $result | Add-Member -MemberType NoteProperty -Name CUNo -Value "$updateno"   
-                    $null = $result | Add-Member -MemberType NoteProperty -Name Build -Value $Build                  
+                    $null = $result | Add-Member -MemberType NoteProperty -Name filename -Value "$filename"
                     
                     $result | ConvertTo-Json | Set-Content -Path ([io.path]::ChangeExtension($filename,'json'))
 
@@ -133,6 +137,6 @@ function Get-NAVCumulativeUpdateFile
             }            
     }
     end {
-        
+        if ($ShowDownloadFolder){start $DownloadFolder}
     }
 }
