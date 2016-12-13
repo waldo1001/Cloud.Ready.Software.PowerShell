@@ -1,18 +1,17 @@
 ﻿function Unlock-NAVApplicationObjects
 {
-   param(
+    param(
     [String] $ServerInstance
-   )
+    )
 
-   $ServerInstanceObject = Get-NAVServerInstance4 $ServerInstance -ErrorAction Stop
+    $ServerInstanceObject = Get-NAVServerInstanceDetails -ServerInstance $ServerInstance
 
-   if ([string]::IsNullOrEmpty($ServerInstanceObject.DatabaseInstance)){
-        $DatabaseServer = $ServerInstanceObject.DatabaseServer + "\" + $ServerInstanceObject.DatabaseInstance
-   } Else {
-        $DatabaseServer = $ServerInstanceObject.DatabaseServer
-   }
+    $DatabaseServer =  $ServerInstanceObject.DatabaseServer
+    if (!([string]::IsNullOrEmpty($ServerInstanceObject.DatabaseInstance))){
+        $DatabaseServer += "\$($ServerInstanceObject.DatabaseInstance)"
+    }
 
-   Invoke-SQL `
+    Invoke-SQL `
         -DatabaseServer $DatabaseServer `
         -DatabaseName $ServerInstanceObject.DatabaseName `
         -SQLCommand "UPDATE [$($ServerInstanceObject.DatabaseName)].[dbo].[Object] SET [Locked]=0,[Locked By]=''"
