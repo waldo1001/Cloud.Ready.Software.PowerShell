@@ -16,14 +16,14 @@
         if ($ServerinstanceDetails){
             $ServerName = $ServerinstanceDetails.DatabaseServer
             IF (-not ([String]::IsNullOrEmpty($ServerinstanceDetails.DatabaseInstance))){
-                $ServerName = "$($ServerinstanceDetails.DatabaseInstance)\$($ServerName)"
+                $ServerName = "$($ServerName)\$($ServerinstanceDetails.DatabaseInstance)"
             }
             $Database = $ServerinstanceDetails.DatabaseName
         }
     }
 
     $Arguments = "servername=$ServerName, database=$Database, ntauthentication=yes"
-    Write-Verbose "Starting the DEV client $Arguments ..."
+    Write-Host -ForegroundColor Green "Starting the DEV client with Arguments: $Arguments ..."
     Start-Process -FilePath $NavIde -ArgumentList $Arguments 
 }
 
