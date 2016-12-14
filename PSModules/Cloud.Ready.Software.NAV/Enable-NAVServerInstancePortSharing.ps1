@@ -14,7 +14,9 @@
         $null = sc.exe config (get-service NetTcpPortSharing).Name Start= Auto
         $null = Start-service NetTcpPortSharing
     
-        $null = sc.exe config (get-service  "*$ServerInstance*").Name depend= HTTP/NetTcpPortSharing
+        $Service = get-service  "*$ServerInstance*"
+        if ($Service.Count -gt 1){$Service = get-service  "*MicrosoftDynamicsNavServer*$ServerInstance*"}
+        $null = sc.exe config $Service.Name depend= HTTP/NetTcpPortSharing
     
         Set-NAVServerInstance -ServerInstance $ServerInstance -Start 
     }
