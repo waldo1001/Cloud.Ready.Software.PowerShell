@@ -17,7 +17,9 @@
         [String] $SyncMode='Sync',
         [ValidateSet('Overwrite','Use')]
         [String] $IfResultDBExists='Overwrite',
-        [Switch] $CreateBackup
+        [Switch] $CreateBackup,
+        [ValidateSet('Parallel', 'Serial')]
+        [String] $FunctionExecutionMode = 'Parallel'
     )
     
     #Creating Workspace
@@ -64,7 +66,7 @@
 
     #Import NAV LIcense on server-level 
     Write-Host "Import NAV license in $SandboxServerInstance" -ForegroundColor Green   
-    Import-NAVServerLicenseToDatabase -LicenseFile $NAVLicense -ServerInstance $SandboxServerInstance -Scope Database
+    Import-NAVServerLicenseToDatabase -LicenseFile $LicenseFile -ServerInstance $SandboxServerInstance -Scope Database
     
     #Unlock objects
     write-host 'Unlock all objects' -ForegroundColor Green
@@ -120,19 +122,7 @@
         -NavServerInstance $SandboxServerInstance `
         -Confirm:$false `        -Filter 'Id=<2000000000'   
 
-    #Import Upgrade Toolkit
-    if ($UpgradeToolkit){
-        Write-Host 'Import Upgrade Toolkit' -ForegroundColor Green
-        $UpgradeToolkitFile = get-item $UpgradeToolkit -ErrorAction Stop
-        Import-NAVApplicationObject `
-            -DatabaseName $SandboxServerInstance `
-            -Path $UpgradeToolkit `
-            -LogPath $LogImportObjects `
-            -NavServerName ([net.dns]::GetHostName()) `
-            -NavServerInstance $SandboxServerInstance `
-            -confirm:$false 
-    }
-    
+   
     #Delete tables
     <#
     Write-Host 'Deleting Tables if necessary' -ForegroundColor Green
@@ -162,6 +152,19 @@
         -NavServerInstance $SandboxServerInstance `
         -confirm:$false 
     
+    #Import Upgrade Toolkit
+    if ($UpgradeToolkit){
+        Write-Host 'Import Upgrade Toolkit' -ForegroundColor Green
+        $UpgradeToolkitFile = get-item $UpgradeToolkit -ErrorAction Stop
+        Import-NAVApplicationObject `
+            -DatabaseName $SandboxServerInstance `
+            -Path $UpgradeToolkit `
+            -LogPath $LogImportObjects `
+            -NavServerName ([net.dns]::GetHostName()) `
+            -NavServerInstance $SandboxServerInstance `
+            -confirm:$false `            -ImportAction Overwrite
+    }
+
     #Sync
     Write-Host 'Performing Sync-NAVTenant' -ForegroundColor Green
     Sync-NAVTenant `
@@ -174,7 +177,7 @@
     #Start Dataupgrade
     if ($UpgradeToolkit){
         Write-Host 'Starting Data Upgrade' -ForegroundColor Green
-        Start-NAVDataUpgrade -ServerInstance $SandboxServerInstance -SkipCompanyInitialization -ContinueOnError -Force
+        Start-NAVDataUpgrade -ServerInstance $SandboxServerInstance -SkipCompanyInitialization -ContinueOnError -Force -FunctionExecutionMode $FunctionExecutionMode 
     
         $Stop = $false
         while (!$Stop){

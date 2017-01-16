@@ -4,7 +4,7 @@
         [String] $Format
     )
 
-    try   { Get-date $DateString -Format $Format}
+    try   { Get-date $DateStringFromNAVObjectFile -Format $Format}
     catch { Get-date (Switch-NAVDate -DateString $DateString) -Format $Format}
 
 

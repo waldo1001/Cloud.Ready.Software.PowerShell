@@ -59,20 +59,30 @@ namespace MicrosoftDownload
 
         public static IEnumerable<NAVDownload> GetDownloadLocales(Int32 productID)
         {
-            //**** Console.WriteLine(productID);
+            //Console.WriteLine(productID);
 
             var XMLDoc = XDocument.Load("https://www.microsoft.com/en-us/download/details.aspx?id=" + productID);
             IEnumerable<XElement> users = (from el in XMLDoc.Descendants()
                                            where (string)el.Attribute("name") == "newlocale"
                                            select el);
-            foreach (var item in users.FirstOrDefault().Descendants())
-                foreach (var detail in GetDownloadDetail(productID, item.Attribute("value").Value))
+            if ((users == null) || (users.Count() == 0))
+            {                
+                foreach (var detail in GetDownloadDetail(productID, "en-US"))
                     yield return detail;
+            }
+            else
+            {
+                foreach (var item in users.FirstOrDefault().Descendants())
+                    foreach (var detail in GetDownloadDetail(productID, item.Attribute("value").Value))
+                        yield return detail;
+            }
+            
+            
         }
 
         public static IEnumerable<NAVDownload> GetDownloadDetail(Int32 productID, String language)
         {
-            Console.WriteLine("Loading " + language + " ... ");
+            //Console.WriteLine(productID + " - " + language);
 
             using (WebClient client = new WebClient())
             {                
@@ -87,16 +97,27 @@ namespace MicrosoftDownload
                     var endPos = downloadData.IndexOf(@"""", xPos + 1);
                     var url = downloadData.Substring(xPos, endPos - xPos);
 
+                    var fileName = System.IO.Path.GetFileName(url).ToUpper();
+
+                    var langCode = "";
                     xPos = downloadData.IndexOf(urlTag, endPos);
                     if (xPos >= 0)
                         xPos += urlTag.Length + 1;
 
-                    var langCode = url.Substring(url.Length - 10, 2);
-
+                    if (fileName.StartsWith("CU"))
+                    {
+                        langCode = url.Substring(url.Length - 6, 2);
+                    }
+                    else
+                    {                        
+                        langCode = url.Substring(url.Length - 10, 2);
+                    }
+                    
                     yield return new NAVDownload(productID, language, langCode, url);
                 }
             }
         }
+
 
         private static String FetchSubString(String source, String startTag, String endTag)
         {

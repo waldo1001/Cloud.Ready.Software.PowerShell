@@ -19,9 +19,9 @@ function Get-NAVCumulativeUpdateFile
         [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
         [String]$CountryCode,
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName)]
-        [String]$versions = '2017',
+        [ValidateSet('2013','2013 R2','2015','2016','2017')]
+        [String]$version = '2017',
         [Parameter(ValueFromPipelineByPropertyName)]        [String]$DownloadFolder = $env:TEMP,                [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
-        [String]$Locale,
         [Switch]$ShowDownloadFolder
 
     )
@@ -32,111 +32,127 @@ function Get-NAVCumulativeUpdateFile
     }
     process
     {
-
-            foreach ($version in $versions) 
-            {
-                $url = ''
+            
+        $url = ''
                 
-                Write-Host -Object "Processing parameters $CountryCode $version" -ForegroundColor Cyan
+        Write-Host -Object "Processing parameters $CountryCode $version" -ForegroundColor Cyan
         
-                $feedurl = 'https://blogs.msdn.microsoft.com/nav/category/announcements/cu/feed/'
-                [regex]$titlepattern = 'Cumulative Update (\d+) .*'
+        $feedurl = 'https://blogs.msdn.microsoft.com/nav/category/announcements/cu/feed/'
+        [regex]$titlepattern = 'Cumulative Update (\d+) .*'
                 
-                Write-Host -Object 'Searching for RSS item' -ForegroundColor Green
+        Write-Host -Object 'Searching for RSS item' -ForegroundColor Green
 
-                $feed = [xml](Invoke-WebRequest -Uri $feedurl)
+        $feed = [xml](Invoke-WebRequest -Uri $feedurl)
 
-                $blogurl = $feed.SelectNodes("/rss/channel/item[./category='NAV $version' and ./category='Cumulative Updates']").link | Select-Object -First 1
+        $blogurl = ($feed.SelectNodes("/rss/channel/item[./category='Cumulative Updates']") | where title -like "*Cumulative Update*NAV $version*" | Select-Object -First 1).link
+        #if (!($blogurl)){
+        #    $blogurl = $feed.SelectNodes("/rss/channel/item[./category='NAV $version' and ./category='Cumulative Updates']").link | Select-Object -First 1
+        #}
+
+        if (!$blogurl) 
+        {
+            Write-Error -Message 'Blog url not found!'
+            return
+        }
                 
-                if (!$blogurl) 
-                {
-                    Write-Error -Message 'Blog url not found!'
-                    return
-                }
+        Write-Host -Object "Reading blog page $blogurl" -ForegroundColor Green                
+        $blogarticle = ''
+        #$blogarticle = Invoke-WebRequest -Uri $blogurl
+        $null = $ie.Navigate($blogurl)
+        while ($ie.Busy -eq $true)
+        {
+            $null = Start-Sleep -Seconds 1
+        }
                 
-                Write-Host -Object "Reading blog page $blogurl" -ForegroundColor Green                
-                $blogarticle = ''
-                #$blogarticle = Invoke-WebRequest -Uri $blogurl
-                $null = $ie.Navigate($blogurl)
-                while ($ie.Busy -eq $true)
-                {
-                    $null = Start-Sleep -Seconds 1
-                }
-                
-                $titlematches = $titlepattern.Matches($ie.Document.title) 
-                $updateno = $titlematches.Groups[1]
+        $titlematches = $titlepattern.Matches($ie.Document.title) 
+        $updateno = $titlematches.Groups[1]
 
-                Write-Host -Object 'Searching KB Url' -ForegroundColor Green                
-                $titlematches = $titlepattern.Matches($ie.Document.title) 
-                $updateno = $titlematches.Groups[1]
-                $kblink = $ie.Document.links | Where-Object -FilterScript {
-                    Write-Verbose "Link: $($_.href) id: $($_.id)"
-                    $_.innerText -match 'KB'
-                } | Select-Object -First 1
-                $KbHref = $kblink.href
+        Write-Host -Object 'Searching KB Url' -ForegroundColor Green                
+        $titlematches = $titlepattern.Matches($ie.Document.title) 
+        $updateno = $titlematches.Groups[1]
+        $kblink = $ie.Document.links | Where-Object -FilterScript {
+            Write-Verbose "Link: $($_.href) id: $($_.id)"
+            $_.innerText -match 'KB'
+        } | Select-Object -First 1
+        $KbHref = $kblink.href
 
-                Write-Host -Object 'Microsoft Download Center link' -ForegroundColor Green                                
-                #$kblink = $blogarticle.Links | Where-Object -FilterScript {
-                $kblink = $ie.Document.links | Where-Object -FilterScript {
-                    Write-Verbose "Link: $($_.href) id: $($_.id)"
-                    $_.innerText -match 'Download'
-                } | Select-Object -First 1
+        Write-Host -Object 'Microsoft Download Center link' -ForegroundColor Green                                
+        #$kblink = $blogarticle.Links | Where-Object -FilterScript {
+        $kblink = $ie.Document.links | Where-Object -FilterScript {
+            Write-Verbose "Link: $($_.href) id: $($_.id)"
+            $_.innerText -match 'Download'
+        } | Select-Object -First 1
 
-                $ProductID = $kblink.search.Substring(4)
-                Write-Host -ForegroundColor Gray "Found Product ID $ProductID"
+        if (!($kblink)){
+            Write-Warning 'No link to Download Center found.. .'
+            break
+        }
+
+        $ProductID = $kblink.search.Substring(4)
+        Write-Host -ForegroundColor Gray "Found Product ID $ProductID"
 
 
-                Write-Host -ForegroundColor Green "Loading NAVCumulativeUpdateHelper"
-                Load-NAVCumulativeUpdateHelper
+        Write-Host -ForegroundColor Green "Loading NAVCumulativeUpdateHelper"
+        Load-NAVCumulativeUpdateHelper
 
-                if ($Locale){
-                    $DownloadLinks = [MicrosoftDownload.MicrosoftDownloadParser]::GetDownloadDetail($ProductID,$Locale) | Select *
-                } else {
-                    $DownloadLinks = [MicrosoftDownload.MicrosoftDownloadParser]::GetDownloadLocales($ProductID) | Select *
-                }
-                if ($CountryCode){
-                    $DownloadLinks = $DownloadLinks | where Code -eq $CountryCode
-                }
+        if ($Locale){
+            $DownloadLinks = [MicrosoftDownload.MicrosoftDownloadParser]::GetDownloadDetail($ProductID,$Locale) | Select *
+        } else {
+            $DownloadLinks = [MicrosoftDownload.MicrosoftDownloadParser]::GetDownloadLocales($ProductID) | Select *
+        }
+        if ($CountryCode){
+            $DownloadLinks = $DownloadLinks | where Code -eq $CountryCode
+        }
 
-                $BuildSearchString = '(BUILD '
-                $BuildStartPos = $ie.Document.body.innerHTML.ToUpper().IndexOf($BuildSearchString) + $BuildSearchString.Length
-                $BuildEndPos = $ie.Document.body.innerHTML.ToUpper().IndexOf(')',$BuildStartPos)
-                $Build = $ie.Document.body.innerHTML.ToUpper().Substring($BuildStartPos,$BuildEndPos - $BuildStartPos)
+        $BuildSearchString = '(BUILD '
+        $BuildStartPos = $ie.Document.body.innerHTML.ToUpper().IndexOf($BuildSearchString) + $BuildSearchString.Length
+        $BuildEndPos = $ie.Document.body.innerHTML.ToUpper().IndexOf(')',$BuildStartPos)
+        $Build = $ie.Document.body.innerHTML.ToUpper().Substring($BuildStartPos,$BuildEndPos - $BuildStartPos)
 
-                $null = $ie.Quit()
+        $null = $ie.Quit()
 
-                foreach ($DownloadLink in $DownloadLinks){
+        foreach ($DownloadLink in $DownloadLinks){
 
-                    $filename = (Join-Path -Path $DownloadFolder -ChildPath ("$([io.path]::GetFileNameWithoutExtension($DownloadLink.DownloadUrl)).CU$($updateno.Value)$([io.path]::GetExtension($DownloadLink.DownloadUrl))"))
+            #Filename        
+            switch ($version)
+            {
+                '2013'   {$Edition = '7.0'}
+                '2013 R2' {$Edition = '7.1'}
+                '2015'   {$Edition = '8.0'}
+                '2016'   {$Edition = '9.0'}
+                '2017'   {$Edition = '10.0'}
+                Default  {$Edition = $version}
+            }
+            $filename = (Join-Path -Path $DownloadFolder -ChildPath ("NAV.$($Edition).$($Build).$($CountryCode).DVD.CU$($updateno.Value)$([io.path]::GetExtension($DownloadLink.DownloadUrl))"))
                     
-                    #set-content -Value 'Just to debug the process - set this line in comment if you don''t want to debug' -Path $filename
-                    if (-not(Test-Path $filename)){
-                        Write-Host -Object "Downloading $($DownloadLink.Code) to $filename" -ForegroundColor Green
-                        $null = Start-BitsTransfer -Source $DownloadLink.DownloadUrl -Destination $filename 
-                        Write-Host -Object 'Hotfix downloaded' -ForegroundColor Green
-                    } Else {
-                        write-warning "File $([io.path]::GetFileName($filename)) already exists.  Nothing downloaded!"
-                    }                                           
+            #set-content -Value 'Just to debug the process - set this line in comment if you don''t want to debug' -Path $filename
+            if (-not(Test-Path $filename)){
+                Write-Host -Object "Downloading $($DownloadLink.Code) to $filename" -ForegroundColor Green
+                $null = Start-BitsTransfer -Source $DownloadLink.DownloadUrl -Destination $filename 
+                Write-Host -Object 'Hotfix downloaded' -ForegroundColor Green
+            } Else {
+                write-warning "File $([io.path]::GetFileName($filename)) already exists.  Nothing downloaded!"
+            }                                           
     
-                    $null = Unblock-File -Path $filename
+            $null = Unblock-File -Path $filename
 
-                    $result = New-Object -TypeName System.Object
-                    $null = $result | Add-Member -MemberType NoteProperty -Name NAVVersion -Value $version
-                    $null = $result | Add-Member -MemberType NoteProperty -Name CountryCode -Value $DownloadLink.Code
-                    $null = $result | Add-Member -MemberType NoteProperty -Name CUNo -Value "$updateno"
-                    $null = $result | Add-Member -MemberType NoteProperty -Name Build -Value $Build
-                    $null = $result | Add-Member -MemberType NoteProperty -Name KBUrl -Value "$KbHref"
-                    $null = $result | Add-Member -MemberType NoteProperty -Name ProductID -Value "$ProductID"
-                    $null = $result | Add-Member -MemberType NoteProperty -Name DownloadURL -Value $DownloadLink.DownloadUrl
-                    $null = $result | Add-Member -MemberType NoteProperty -Name filename -Value "$filename"
+            $result = New-Object -TypeName System.Object
+            $null = $result | Add-Member -MemberType NoteProperty -Name NAVVersion -Value $version
+            $null = $result | Add-Member -MemberType NoteProperty -Name CountryCode -Value $DownloadLink.Code
+            $null = $result | Add-Member -MemberType NoteProperty -Name CUNo -Value "$updateno"
+            $null = $result | Add-Member -MemberType NoteProperty -Name Build -Value $Build
+            $null = $result | Add-Member -MemberType NoteProperty -Name KBUrl -Value "$KbHref"
+            $null = $result | Add-Member -MemberType NoteProperty -Name ProductID -Value "$ProductID"
+            $null = $result | Add-Member -MemberType NoteProperty -Name DownloadURL -Value $DownloadLink.DownloadUrl
+            $null = $result | Add-Member -MemberType NoteProperty -Name filename -Value "$filename"
                     
-                    $result | ConvertTo-Json | Set-Content -Path ([io.path]::ChangeExtension($filename,'json'))
+            $result | ConvertTo-Json | Set-Content -Path ([io.path]::ChangeExtension($filename,'json'))
 
-                    Write-Output -InputObject $result
-                }
-            }            
+            Write-Output -InputObject $result
+        }                        
     }
-    end {
+    end 
+    {
         if ($ShowDownloadFolder){start $DownloadFolder}
     }
 }
