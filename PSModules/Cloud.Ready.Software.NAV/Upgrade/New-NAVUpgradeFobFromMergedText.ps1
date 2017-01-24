@@ -68,14 +68,16 @@
         Write-host 'Import Fob for Unlicensed objects' -ForegroundColor Green
             $null = 
                 Import-NAVApplicationObject `
-                    -DatabaseServer $DatabaseServer `                    
+                    -DatabaseServer $DatabaseServer `
                     -DatabaseName $SandboxInstance `
                     -Path $FobFileForCreatingUnlicensedObjects `
                     -LogPath $LogImportFob `
                     -NavServerName ([net.dns]::GetHostName()) `
                     -NavServerInstance $SandboxInstance `
                     -confirm:$false `
-                    -ErrorAction continue `                    -SynchronizeSchemaChanges No `                    -ImportAction Overwrite
+                    -ErrorAction continue `
+                    -SynchronizeSchemaChanges No `
+                    -ImportAction Overwrite
     }
     
     #Import Objects
@@ -99,7 +101,8 @@
                 -LogPath $LogImportText `
                 -confirm:$false `
                 -ErrorAction continue `
-                -ImportAction Overwrite `                -SynchronizeSchemaChanges No  
+                -ImportAction Overwrite `
+                -SynchronizeSchemaChanges No  
     }
         
     #Compile Objects
