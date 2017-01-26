@@ -29,7 +29,7 @@
             $ReturnVersionList = $VersionList1
         }
 
-        $WarningMessage = "`r`nVersionlists are probaly too unstructured to compare."
+        $WarningMessage = "`r`nVersionlists are probably too unstructured to compare."
         $WarningMessage += "`r`n    VersionList1  : $VersionList1"
         $WarningMessage += "`r`n    VersionList2  : $VersionList2"
         $WarningMessage += "`r`n    Prefix        : $Prefix"        
