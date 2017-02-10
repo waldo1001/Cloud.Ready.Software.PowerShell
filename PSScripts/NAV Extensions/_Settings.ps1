@@ -19,6 +19,9 @@ $ISVNumberRangeLowestNumber = 82100
 $DefaultServerInstance = 'DynamicsNAV100'
 $NavAppWorkingFolder = join-path $WorkingFolder $AppName
 $BackupPath = [io.path]::GetFullPath((Join-Path $PSScriptRoot '\..\'))
+
+# Client testing parameters
+$TestRTC = $true
 $NavWebClientAddress = "http://localhost/NAV/WebClient/"
 $TestWebClient = $true
 $TestTabletClient = $true
