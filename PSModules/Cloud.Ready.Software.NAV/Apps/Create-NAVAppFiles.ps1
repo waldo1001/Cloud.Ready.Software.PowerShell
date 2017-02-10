@@ -1,7 +1,7 @@
 ﻿function Create-NAVAppFiles
 {    <#
     .Synopsis
-       Create delta's, specifically meant to do NAVApps, which means: including permissionsets
+       Create delta's, specifically meant to do NAVApps, which means: including permissionsets and Web Services
     .DESCRIPTION
        
     .NOTES
@@ -16,6 +16,7 @@
         [string] $ModifiedServerInstance,
         [string] $BuildPath,
         [String] $PermissionSetId='',
+        [String] $WebServicePrefix='',
         [String[]] $IncludeFilesInNavApp)
 
     $BuildPath = Join-Path -Path $BuildPath -ChildPath 'CreateNAVAppFiles'
@@ -90,6 +91,26 @@
         #Catch { 
         #    Write-Warning -Message 'Something went wrong with exporting Permission sets!'}
      }   
+
+    #Create WebServiceXML
+    if(!([String]::Isnullorempty($WebServicePrefix))){
+        Write-Host -Foregroundcolor Green "Exporting Tenant Web Services with prefix '$WebServicePrefix' from $ModifiedServerInstance ..."
+
+        Invoke-NAVSQL -ServerInstance $ModifiedServerInstance -SQLCommand "Select * From [Tenant Web Service] where [Service Name] like '%$WebServicePrefix%'" | 
+            select 'Object Type', 'Service Name', 'Object ID' |
+                foreach {
+                    switch ($_.'Object Type')
+                    {
+                        '8' {$ObjectType = 'Page'}
+                        '5' {$ObjectType = 'CodeUnit'}
+                        Default {$ObjectType = $null}        
+                    }
+                    if (!([String]::IsNullOrEmpty($ObjectType))){
+                        Export-NAVAppTenantWebService `
+                            -ServiceName $_.'Service Name' `                            -ObjectType $ObjectType `                            -ObjectId $_.'Object ID' `                            -Path (join-path $AppFilesFolder "$($_.'Service Name').xml") `                            -ServerInstance $ModifiedServerInstance
+                    }
+                }
+    }
 
     #IncludeFiles
     if(!([String]::Isnullorempty($IncludeFilesInNavApp))){

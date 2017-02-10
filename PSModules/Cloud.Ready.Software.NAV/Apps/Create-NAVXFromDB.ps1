@@ -10,6 +10,7 @@
         [string] $ModifiedServerInstance,
         [String] $InitialVersion = '1.0.0.0',
         [String] $PermissionSetId='',
+        [String] $WebServicePrefix='',
         [String] $BackupPath,
         [String] $Dependencies = $null,
         [String[]] $IncludeFilesInNavApp)
@@ -59,7 +60,7 @@
         
     # Extract Applications and Create Deltas
     Write-Host -Foregroundcolor Green "Starting to create deltas between $OriginalServerInstance and $ModifiedServerInstance ..."
-    $navAppFileDirectory = Create-NAVAppFiles -OriginalServerInstance $OriginalServerInstance -ModifiedServerInstance $ModifiedServerInstance -BuildPath $BuildFolder -PermissionSetId $PermissionSetId -IncludeFilesInNavApp $IncludeFilesInNavApp
+    $navAppFileDirectory = Create-NAVAppFiles `                                    -OriginalServerInstance $OriginalServerInstance `                                    -ModifiedServerInstance $ModifiedServerInstance `                                    -BuildPath $BuildFolder `                                    -PermissionSetId $PermissionSetId `                                    -IncludeFilesInNavApp $IncludeFilesInNavApp `                                    -WebServicePrefix $WebServicePrefix
 
     # Create NavX Package
     $navAppPackageFile = $AppName + '_v' + $MyNewManifest.AppVersion.ToString() + '.navx'
