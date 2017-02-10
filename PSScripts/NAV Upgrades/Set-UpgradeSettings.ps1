@@ -6,11 +6,11 @@ I would just copy scripts and (this) settings file to workingfolder, and go from
 #>
 
 #General
-$UpgradeName = 'Customername'
+$UpgradeName = 'Xenics'
 $WorkingFolder = "C:\_Workingfolder\Upgrade_$UpgradeName"
 $ObjectLibrary = 'C:\_ObjectLibrary'
 $ModifiedFolder = 'C:\_Customers'
-$NAVLicense = 'C:\_Installs\5230132_003 and 004 IFACTO_NAV2016_BELGIUM_2015 11 03.flf'
+$NAVLicense = "C:\Users\Administrator\Dropbox\Dynamics NAV\Licenses\5230132_003 and 004 IFACTO_NAV2017_BELGIUM_2016 10 24.flf"
 $UpgradeCodeunitsFullPath = ''
 $VersionListPrefixes = 'NAVW1', 'NAVBE', 'I'
 
@@ -26,7 +26,7 @@ $ModifiedDatabaseBackupLocation = join-path $ModifiedFolder "$($ModifiedServerIn
 
 #Target Version
 $TargetVersion = 'DISTRI91' 
-$TargetServerInstance = 'DynamicsNAV90'
+$TargetServerInstance = 'DynamicsNAV100'
 $TargetObjects = join-path $ObjectLibrary "$($TargetVersion).txt"
 
 #Result Version

@@ -1,6 +1,6 @@
 $CurrentProduct = 'Distri'
-$objectfile     = "C:\_Scriptfolder\Release Distri 100\ModifiedObjects.txt"
-$ProductVersion = 'I10.0'
+$objectfile     = "C:\_Scriptfolder\ReleaseDistri101\DEVModifiedObjects.txt"
+$ProductVersion = 'I10.1'
 $ModifiedOnly   = $true
 
 switch ($CurrentProduct)

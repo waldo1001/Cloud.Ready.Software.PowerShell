@@ -1,6 +1,6 @@
-﻿$name = 'NAV2017_BE_CTPGoLive'
+﻿$name = 'NAV_9_46621_W1'
 $isofile = "C:\_Installs\$name.iso"
-$ConfigFile     = join-path $PSScriptRoot 'FullInstallNAV2017_ReplaceDB.xml'
+$ConfigFile     = join-path $PSScriptRoot 'FullInstallNAV2016.xml'
 $Licensefile    = "C:\Users\Administrator\Dropbox\Dynamics NAV\Licenses\5230132_003 and 004 IFACTO_NAV2016_BELGIUM_2016 08 03.flf"
 $Log = 'c:\Temp\Log.txt'
 $Objectlibrary  = 'C:\Users\Administrator\Dropbox\Dynamics NAV\ObjectLibrary'

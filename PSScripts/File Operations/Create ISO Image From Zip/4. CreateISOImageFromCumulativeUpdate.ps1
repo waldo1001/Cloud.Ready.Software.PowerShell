@@ -1,4 +1,4 @@
-﻿$ZipFIle = "D:\Installs\493023_NLD_i386_zip.exe"
+﻿$ZipFIle = "D:\Installs\493041_intl_i386_zip.exe"
 
 $TmpLocation = 'D:\Temp'
 $IsoDirectory = 'D:\Installs\'
