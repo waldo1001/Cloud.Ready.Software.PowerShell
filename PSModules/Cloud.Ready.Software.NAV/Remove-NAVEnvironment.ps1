@@ -24,12 +24,18 @@
         }
     
         write-Host -ForegroundColor Green "Removing ServerInstance $ServerInstance"
-        $ServerInstanceObject = Get-NAVServerInstance2 -ServerInstance $ServerInstance -ErrorAction Stop
+        $ServerInstanceObject = Get-NAVServerInstanceDetails -ServerInstance $ServerInstance -ErrorAction Stop
         
         if (!([String]::IsNullOrEmpty($BackupModifiedObjectsPath))){
             If (!(test-path $BackupModifiedObjectsPath)){new-item $BackupModifiedObjectsPath -ItemType directory | Out-Null}
             write-host -ForegroundColor Green "Backing up modified objects to $BackupModifiedObjectsPath"            
             Backup-NAVApplicationObjects -ServerInstance $ServerInstance -BackupOption OnlyModified -BackupPath $BackupModifiedObjectsPath -ErrorAction Stop
+        }
+
+        $WebServerInstance = Get-NAVWebServerInstance | Where ServerInstance -eq $ServerInstanceObject.ServerInstance
+        if($WebServerInstance){
+            write-host -ForegroundColor Green "Remove WebServerInstance $($WebServerInstance.WebServerInstance) (Uri: $($WebServerInstance.Uri))"
+            Remove-NAVWebServerInstance -WebServerInstance $WebServerInstance.WebServerInstance -Force
         }
 
         [bool]$IsMultitenant = (((Get-NAVServerConfiguration2 -ServerInstance $ServerInstance) | Where Key -eq MultiTenant).Value -eq 'true')

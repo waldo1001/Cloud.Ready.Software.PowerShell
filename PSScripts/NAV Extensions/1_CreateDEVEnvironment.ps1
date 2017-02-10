@@ -13,7 +13,7 @@ if (-not(get-navserverinstance $OriginalServerInstance)){
 }
 #TARGET (Test environment)
 if (-not(get-navserverinstance $TargetServerInstance)){
-    New-NAVEnvironment -ServerInstance $TargetServerInstance -BackupFile $Backupfile -ErrorAction Stop -EnablePortSharing -LicenseFile $License
+    New-NAVEnvironment -ServerInstance $TargetServerInstance -BackupFile $Backupfile -ErrorAction Stop -EnablePortSharing -LicenseFile $License -CreateWebServerInstance:$TestWebClient
 }
 
 #MODIFIED (DEV)

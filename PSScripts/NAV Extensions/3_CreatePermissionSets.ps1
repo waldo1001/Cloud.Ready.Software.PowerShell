@@ -1,10 +1,10 @@
 ﻿$PermissionSets = @()
 
 New-NAVAppPermissionSet `
-    -ServerInstance $ModifiedServerInstance `    -AppName $AppName `    -PermissionType Read `    -OnTableIDs 82100, 82101, 82110
+    -ServerInstance $ModifiedServerInstance `    -AppName $AppName `    -PermissionType Read `    -OnTableIDs 50000
 
 New-NAVAppPermissionSet `
-    -ServerInstance $ModifiedServerInstance `    -AppName $AppName `    -PermissionType Write `    -OnTableIDs 82100, 82101, 82110
+    -ServerInstance $ModifiedServerInstance `    -AppName $AppName `    -PermissionType Write `    -OnTableIDs 50000
 
 <#
 List of table you should probably handle!

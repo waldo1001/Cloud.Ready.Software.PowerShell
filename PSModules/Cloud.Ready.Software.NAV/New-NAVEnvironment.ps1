@@ -10,8 +10,8 @@
         [Switch]$StartWindowsClient,
         [String]$LicenseFile,
         [int]$ManagementServicesPort=7045,
-        [int]$ClientServicesPort=7046
-
+        [int]$ClientServicesPort=7046,
+        [Switch]$CreateWebServerInstance
     )
 
     if ([String]::IsNullOrEmpty($Databasename)){
@@ -58,6 +58,10 @@
         -ErrorAction SilentlyContinue
          
     $null = Set-NAVServerInstance -Start -ServerInstance $ServerInstance
+    if($CreateWebServerInstance){
+        Write-Host -ForegroundColor Green -Object "Create WebServerInstance '$ServerInstance'"
+        New-NAVWebServerInstance `            -ClientServicesPort $ClientServicesPort `            -Server localhost `            -ServerInstance $ServerInstance `            -WebServerInstance $ServerInstance `            -Force
+    }
     if($LicenseFile){  
         Write-Host -ForegroundColor Green -Object 'Importing license..'
         $null = $ServerInstanceObject | Import-NAVServerLicense -LicenseFile $LicenseFile -Database NavDatabase -Force -WarningAction SilentlyContinue

@@ -14,7 +14,7 @@ $AppPackage = Create-NAVXFromDB `
                     -AppPublisher $AppPublisher `
                     -PermissionSetId $AppName `                    -BackupPath $BackupPath `
                     -ErrorAction Stop `
-                    -IncludeFilesInNavApp $IncludeFilesInNavApp
+                    -IncludeFilesInNavApp $IncludeFilesInNavApp `                    -WebServicePrefix $WebServicePrefix
 
 # Install NAV Package
 Write-Host 'Installing NavX Package.. ' -ForegroundColor Green
@@ -29,5 +29,7 @@ $StoppedDateTime = Get-Date
 Write-Host 'Total Duration' ([Math]::Round(($StoppedDateTime - $StartedDateTime).TotalSeconds)) 'seconds' -ForegroundColor Green
 
 #Open RTC Test-environment
-$CompanyName = (Get-NAVCompany -ServerInstance $TargetServerInstance -Tenant $TargetTenant)[0].CompanyName
-Start-NAVWindowsClient -ServerName ([net.dns]::GetHostName()) -ServerInstance $TargetServerInstance -Companyname $CompanyName
+if ($TestWindowsClient) {Start-NAVWindowsClient -ServerInstance $TargetServerInstance}
+if ($TestWebClient)     {Start-NAVWebClient -WebServerInstance $TargetServerInstance -WebClientType Web}
+if ($TestTabletClient)  {Start-NAVWebClient -WebServerInstance $TargetServerInstance -WebClientType Tablet}
+if ($TestPhoneClient)   {Start-NAVWebClient -WebServerInstance $TargetServerInstance -WebClientType Phone}
