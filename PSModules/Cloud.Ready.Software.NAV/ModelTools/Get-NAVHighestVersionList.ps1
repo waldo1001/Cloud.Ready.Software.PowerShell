@@ -47,18 +47,30 @@
     }
 
     $HighestVersionList = ''
+    $FoundHighestVersion = $false 
     for ($i=0;$i -lt $Count;$i++){
         if ($SplitVersionlist1[$i] -gt $SplitVersionlist2[$i]){
             $HighestVersionList = $VersionList1
         }
         if ($SplitVersionlist2[$i] -gt $SplitVersionlist1[$i]){
-            $HighestVersionList = $VersionList2
+            $HighestVersionList = $VersionList2            
         }
         if ($HighestVersionList -ne ''){
             $i = $Count
+            $FoundHighestVersion = $true
         }
     }
 
+    if ($FoundHighestVersion -eq $false) {
+        # even there was a difference indicated the system did not found any within the INTEGER Compare
+        # most likly we can fall back to longer one of the versions (happens with 0 vs 00) 
+        if ($Versionlist1.Length -gt $Versionlist2.Length){
+            $HighestVersionList = $VersionList1
+        } else {
+            $HighestVersionList = $VersionList2
+        }
+    }
+ 
     return $HighestVersionList
 
 }
