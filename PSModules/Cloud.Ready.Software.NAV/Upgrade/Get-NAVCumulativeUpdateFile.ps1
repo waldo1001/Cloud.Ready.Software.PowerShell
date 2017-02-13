@@ -21,9 +21,10 @@ function Get-NAVCumulativeUpdateFile
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName)]
         [ValidateSet('2013','2013 R2','2015','2016','2017')]
         [String]$version = '2017',
-        [Parameter(ValueFromPipelineByPropertyName)]        [String]$DownloadFolder = $env:TEMP,                [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
+        [String]$CUNo,
+        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]        [String]$DownloadFolder = $env:TEMP,                [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
         [Switch]$ShowDownloadFolder
-
     )
 
     begin {
@@ -35,7 +36,7 @@ function Get-NAVCumulativeUpdateFile
             
         $url = ''
                 
-        Write-Host -Object "Processing parameters $CountryCode $version" -ForegroundColor Cyan
+        Write-Host -Object "Processing parameters $CountryCode $version $CUNo" -ForegroundColor Cyan
         
         $feedurl = 'https://blogs.msdn.microsoft.com/nav/category/announcements/cu/feed/'
         [regex]$titlepattern = 'Cumulative Update (\d+) .*'
@@ -44,7 +45,8 @@ function Get-NAVCumulativeUpdateFile
 
         $feed = [xml](Invoke-WebRequest -Uri $feedurl)
 
-        $blogurl = ($feed.SelectNodes("/rss/channel/item[./category='Cumulative Updates']") | where title -like "*Cumulative Update*NAV $version*" | Select-Object -First 1).link
+        $blogurl = ($feed.SelectNodes("/rss/channel/item[./category='Cumulative Updates']") | where title -like "*Cumulative Update*$CUNo*NAV $version*" | Select-Object -First 1).link
+        #{
         #if (!($blogurl)){
         #    $blogurl = $feed.SelectNodes("/rss/channel/item[./category='NAV $version' and ./category='Cumulative Updates']").link | Select-Object -First 1
         #}
