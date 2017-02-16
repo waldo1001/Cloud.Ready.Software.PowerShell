@@ -1,5 +1,14 @@
 ﻿Function Add-NAVEnvironmentCurrentUser {
-
+    <#
+    .Synopsis
+        Adds the current user (PowerShell User) to a certain ServerInstance
+    .DESCRIPTION
+        Adds the current user (PowerShell User) to a certain ServerInstance
+    .NOTES
+        Default PermissionSetId is 'SUPER'
+    .EXAMPLE
+        Add-NAVEnvironmentCurrentUser -ServerInstance 'DynamicsNAV100'
+    #>
     param(
         [parameter(Mandatory=$true)]
         [String] $ServerInstance,
