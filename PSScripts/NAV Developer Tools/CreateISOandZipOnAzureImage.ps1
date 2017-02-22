@@ -9,6 +9,7 @@ Find-Module | where author -eq waldo | Install-Module
 Import-Module -Name Cloud.Ready.Software.NAV
 
 #DVD
+Create-FolderIfNotExist -MyFolder 'C:\DOWNLOAD\' | Out-Null
 New-ISOFileFromFolder -FilePath 'C:\NAVDVD\US' -Name 'NAVDVD' -ResultFullFileName 'C:\DOWNLOAD\NAVDVD.iso'
 
 #DEVTools
