@@ -6,11 +6,20 @@
     .DESCRIPTION
        To create every single possible export of your developments
     .NOTES
-       <TODO: Some tips>
-    .PREREQUISITES
-       <TODO: like positioning the prompt and such>
+       It creates:
+         - Deltas
+         - Reversed Deltas
+         - joined txt-file
+         - split txt-files
+         - fob-file
     .EXAMPLE
-        $CreatedITems = Backup-NAVApplicationObjects `                    -BackupOption OnlyModified `                    -ServerInstance $DEVInstance `                    -BackupPath $BackupPath `                    -Name $Name `                    -NavAppOriginalServerInstance $ORIGInstance `                    -NavAppWorkingFolder $WorkingFolder 
+        $CreatedITems = Backup-NAVApplicationObjects `
+                    -BackupOption OnlyModified `
+                    -ServerInstance $DEVInstance `
+                    -BackupPath $BackupPath `
+                    -Name $Name `
+                    -NavAppOriginalServerInstance $ORIGInstance `
+                    -NavAppWorkingFolder $WorkingFolder 
     #>
     [CmdletBinding()]
     param
@@ -82,7 +91,13 @@
                 break
             }
 
-            $Folders =                 Create-NAVDelta `                    -OriginalServerInstance $NavAppOriginalServerInstance `                    -ModifiedServerInstance $ServerInstance `                    -WorkingFolder $NavAppWorkingFolder `                    -CreateReverseDeltas `                    -CompleteReset:$CompleteReset
+            $Folders = 
+                Create-NAVDelta `
+                    -OriginalServerInstance $NavAppOriginalServerInstance `
+                    -ModifiedServerInstance $ServerInstance `
+                    -WorkingFolder $NavAppWorkingFolder `
+                    -CreateReverseDeltas `
+                    -CompleteReset:$CompleteReset
 
             foreach($Folder in $Folders){
                 if($CompleteReset) {
