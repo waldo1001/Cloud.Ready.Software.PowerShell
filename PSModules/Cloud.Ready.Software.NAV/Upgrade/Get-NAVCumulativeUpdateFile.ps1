@@ -24,7 +24,9 @@ function Get-NAVCumulativeUpdateFile
         [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
         [String]$CUNo,
         [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]        [String]$DownloadFolder = $env:TEMP,                [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
-        [Switch]$ShowDownloadFolder
+        [Switch]$ShowDownloadFolder,
+        [Parameter(Mandatory=$false)]        
+        [Switch]$GetInfoOnly
     )
 
     begin {
@@ -36,12 +38,12 @@ function Get-NAVCumulativeUpdateFile
             
         $url = ''
                 
-        Write-Host -Object "Processing parameters $CountryCode $version $CUNo" -ForegroundColor Cyan
+        Write-Verbose "Processing parameters $CountryCode $version $CUNo"
         
         $feedurl = 'https://blogs.msdn.microsoft.com/nav/category/announcements/cu/feed/'
         [regex]$titlepattern = 'Cumulative Update (\d+) .*'
                 
-        Write-Host -Object 'Searching for RSS item' -ForegroundColor Green
+        Write-Verbose 'Searching for RSS item' 
 
         $feed = [xml](Invoke-WebRequest -Uri $feedurl)
 
@@ -57,7 +59,7 @@ function Get-NAVCumulativeUpdateFile
             return
         }
                 
-        Write-Host -Object "Reading blog page $blogurl" -ForegroundColor Green                
+        Write-Verbose "Reading blog page $blogurl"
         $blogarticle = ''
         #$blogarticle = Invoke-WebRequest -Uri $blogurl
         $null = $ie.Navigate($blogurl)
@@ -69,7 +71,7 @@ function Get-NAVCumulativeUpdateFile
         $titlematches = $titlepattern.Matches($ie.Document.title) 
         $updateno = $titlematches.Groups[1]
 
-        Write-Host -Object 'Searching KB Url' -ForegroundColor Green                
+        Write-Verbose 'Searching KB Url'
         $titlematches = $titlepattern.Matches($ie.Document.title) 
         $updateno = $titlematches.Groups[1]
         $kblink = $ie.Document.links | Where-Object -FilterScript {
@@ -78,7 +80,7 @@ function Get-NAVCumulativeUpdateFile
         } | Select-Object -First 1
         $KbHref = $kblink.href
 
-        Write-Host -Object 'Microsoft Download Center link' -ForegroundColor Green                                
+        Write-Verbose 'Microsoft Download Center link' 
         #$kblink = $blogarticle.Links | Where-Object -FilterScript {
         $kblink = $ie.Document.links | Where-Object -FilterScript {
             Write-Verbose "Link: $($_.href) id: $($_.id)"
@@ -91,10 +93,10 @@ function Get-NAVCumulativeUpdateFile
         }
 
         $ProductID = $kblink.search.Substring(4)
-        Write-Host -ForegroundColor Gray "Found Product ID $ProductID"
+        Write-Verbose "Found Product ID $ProductID"
 
 
-        Write-Host -ForegroundColor Green "Loading NAVCumulativeUpdateHelper"
+        Write-Verbose "Loading NAVCumulativeUpdateHelper"
         Load-NAVCumulativeUpdateHelper
 
         if ($Locale){
@@ -126,17 +128,23 @@ function Get-NAVCumulativeUpdateFile
                 Default  {$Edition = $version}
             }
             $filename = (Join-Path -Path $DownloadFolder -ChildPath ("NAV.$($Edition).$($Build).$($CountryCode).DVD.CU$($updateno.Value)$([io.path]::GetExtension($DownloadLink.DownloadUrl))"))
+            $filenameJSON = ([io.path]::ChangeExtension($filename,'json'))
                     
             #set-content -Value 'Just to debug the process - set this line in comment if you don''t want to debug' -Path $filename
-            if (-not(Test-Path $filename)){
-                Write-Host -Object "Downloading $($DownloadLink.Code) to $filename" -ForegroundColor Green
-                $null = Start-BitsTransfer -Source $DownloadLink.DownloadUrl -Destination $filename 
-                Write-Host -Object 'Hotfix downloaded' -ForegroundColor Green
-            } Else {
-                write-warning "File $([io.path]::GetFileName($filename)) already exists.  Nothing downloaded!"
-            }                                           
-    
-            $null = Unblock-File -Path $filename
+            
+            if (!($GetInfoOnly)){
+                if (-not(Test-Path $filenameJSON)){
+                    Write-Verbose "Downloading $($DownloadLink.Code) to $filename" 
+                    $null = Start-BitsTransfer -Source $DownloadLink.DownloadUrl -Destination $filename 
+                    Write-Verbose 'Hotfix downloaded' 
+                } Else {
+                    write-warning "File $([io.path]::GetFileName($filenameJSON)) already exists.  Nothing downloaded!"
+                }                                           
+            }
+
+            if (Test-Path $filename){
+                $null = Unblock-File -Path $filename
+            }
 
             $result = New-Object -TypeName System.Object
             $null = $result | Add-Member -MemberType NoteProperty -Name NAVVersion -Value $version
@@ -147,8 +155,10 @@ function Get-NAVCumulativeUpdateFile
             $null = $result | Add-Member -MemberType NoteProperty -Name ProductID -Value "$ProductID"
             $null = $result | Add-Member -MemberType NoteProperty -Name DownloadURL -Value $DownloadLink.DownloadUrl
             $null = $result | Add-Member -MemberType NoteProperty -Name filename -Value "$filename"
-                    
-            $result | ConvertTo-Json | Set-Content -Path ([io.path]::ChangeExtension($filename,'json'))
+            
+            if (!($GetInfoOnly)){        
+                $result | ConvertTo-Json | Set-Content -Path $filenameJSON
+            }
 
             Write-Output -InputObject $result
         }                        
