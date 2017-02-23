@@ -1,4 +1,4 @@
-﻿$Name = 'NAV_10_RTM_W1'
+﻿$Name = 'NAV_10_15140_W1_CU03'
 $isofile = "C:\_Installs\$Name.iso"
 $ConfigFile     = join-path $PSScriptRoot 'FullInstallNAV2017_ReplaceDB.xml'
 $Licensefile    = "C:\Users\Administrator\Dropbox\Dynamics NAV\Licenses\5230132_003 and 004 IFACTO_NAV2017_BELGIUM_2016 10 24.flf"
@@ -14,10 +14,12 @@ $InstallationResult =
         -Log $Log `
         -DisableCompileBusinessLogic
 
+break
+
 #Export Objects
 if (-not (Test-Path $Exportfile)){
-    
-
+    Import-Module "$env:ProgramFiles\Microsoft Dynamics NAV\100\Service\NavAdminTool.ps1" -WarningAction SilentlyContinue | Out-Null
+ 
     write-host -foregroundcolor Green -Object "Exporting all objects to $Objectlibrary"
     
     $TempFile = "$env:TEMP\$name.txt"
