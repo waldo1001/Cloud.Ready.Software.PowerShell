@@ -8,7 +8,7 @@
         [String]$WebClientType='Web'
         )
     
-    $WebClientUri = (Get-NAVWebServerInstance -WebServerInstance $TargetServerInstance).uri
+    $WebClientUri = (Get-NAVWebServerInstance -WebServerInstance $WebServerInstance).uri
     
     switch ($WebClientType)
     {        
