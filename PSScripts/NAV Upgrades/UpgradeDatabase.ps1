@@ -47,11 +47,6 @@ if (!$MergeResult) {$MergeResult = Import-Clixml -Path "$WorkingFolder\MergeResu
 
 $FilteredMergeResultFolder = Copy-NAVChangedMergedResultFiles -MergeResultObjects $MergeResult.MergeResult
 
-
-#break here, just because in the majority of times I don't need to execute any further
-break
-
-
 $FobFile = 
     New-NAVUpgradeFobFromMergedText `
         -TargetServerInstance $TargetServerInstance `
