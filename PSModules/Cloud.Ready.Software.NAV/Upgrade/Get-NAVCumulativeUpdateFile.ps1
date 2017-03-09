@@ -109,9 +109,14 @@ function Get-NAVCumulativeUpdateFile
         }
 
         $BuildSearchString = '(BUILD '
-        $BuildStartPos = $ie.Document.body.innerHTML.ToUpper().IndexOf($BuildSearchString) + $BuildSearchString.Length
-        $BuildEndPos = $ie.Document.body.innerHTML.ToUpper().IndexOf(')',$BuildStartPos)
-        $Build = $ie.Document.body.innerHTML.ToUpper().Substring($BuildStartPos,$BuildEndPos - $BuildStartPos)
+        $BuildStartPos = $ie.Document.body.innerHTML.ToUpper().IndexOf($BuildSearchString) 
+        if ($BuildStartPos -gt -1){
+            $BuildStartPos = $BuildStartPos + $BuildSearchString.Length
+            $BuildEndPos = $ie.Document.body.innerHTML.ToUpper().IndexOf(')',$BuildStartPos)
+            $Build = $ie.Document.body.innerHTML.ToUpper().Substring($BuildStartPos,$BuildEndPos - $BuildStartPos)
+        } else {
+            $build = 'UnknownBuildNo'    
+        }
 
         $null = $ie.Quit()
 
