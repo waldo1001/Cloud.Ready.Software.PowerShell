@@ -1,4 +1,4 @@
-function Select-VersionNoGui {
+function Select-NAVModuleVersion {
 
     <#
         .SYNOPSIS
@@ -6,7 +6,7 @@ function Select-VersionNoGui {
         .DESCRIPTION
         Show non-GUI dialog and let a user select NAV version (if multiple versions present).
         .EXAMPLE
-        Import-NavModulesGlobally
+        Import-NAVModules
     #>
 
     [CmdletBinding()]
@@ -30,15 +30,15 @@ function Select-VersionNoGui {
         # More than one version
         default {
 
-            Write-Host "`n`tPlease select $importType version" -Fore Cyan
+            Write-Verbose "`n`tPlease select $importType version" -Fore Cyan
 
             [int]$menuChoice = 0
             while ( $menuChoice -lt 1 -or $menuChoice -gt $versions.Count ) {
                 $i = 0
-                Write-Host
+                Write-Verbose
                 $versions.GetEnumerator() | ForEach-Object { 
                     $i += 1
-                    Write-Host "`t`t[$i]`t$($_.Name)"
+                    Write-Verbose "`t`t[$i]`t$($_.Name)"
                 }
                 [Int]$menuChoice = Read-Host "`nPlease, select one of the options available"
             }

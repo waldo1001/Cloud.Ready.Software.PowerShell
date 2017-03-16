@@ -1,11 +1,11 @@
-function Get-NavToolVersions {
+function Get-NAVModuleToolVersions {
     <#
         .SYNOPSIS
         Find and return versions and module paths of NAV client tools.
         .DESCRIPTION
         Find and return all versions and module paths of NAV client tools inside the paths specified in $searchIn.
         .EXAMPLE
-        Get-NavToolVersions
+        
     #>
 
     [CmdletBinding()]
@@ -49,7 +49,7 @@ function Get-NavToolVersions {
 
         foreach ($searchPath in $searchIn) {
             
-            Write-Host "Searching in $searchPath, please wait a second..."
+            Write-Verbose "Searching in $searchPath, please wait a second..."
             $modules = Get-ChildItem -Path $searchPath -Filter $moduleName -Recurse -ErrorAction SilentlyContinue -ErrorVariable longPathError
         
             foreach ($errorRecord in $longPathError)

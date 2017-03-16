@@ -1,11 +1,11 @@
-function Get-NavAdminVersions {
+function Get-NAVModuleAdminVersions {
     <#
         .SYNOPSIS
         Find and return NAV versions and module paths.
         .DESCRIPTION
         Find and return all NAV versions and module paths inside the paths specified in $searchIn.
         .EXAMPLE
-        Find-NavVersions
+        
     #>
 
     [CmdletBinding()]
@@ -30,7 +30,7 @@ function Get-NavAdminVersions {
 
     foreach ($searchPath in $searchIn) {
         
-        Write-Host "Searching in $searchPath, please wait a second..."
+        Write-Verbose "Searching in $searchPath, please wait a second..."
         $modules = Get-ChildItem -Path $searchPath -Filter $navMgtModuleName -Recurse -ErrorAction SilentlyContinue -ErrorVariable longPathError
         
         foreach ($errorRecord in $longPathError)
