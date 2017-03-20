@@ -30,15 +30,15 @@ function Select-NAVModuleVersion {
         # More than one version
         default {
 
-            Write-Verbose "`n`tPlease select $importType version" -Fore Cyan
+            Write-Host "`n`tPlease select $importType version" -Fore Cyan
 
             [int]$menuChoice = 0
             while ( $menuChoice -lt 1 -or $menuChoice -gt $versions.Count ) {
                 $i = 0
-                Write-Verbose
+                Write-Host
                 $versions.GetEnumerator() | ForEach-Object { 
                     $i += 1
-                    Write-Verbose "`t`t[$i]`t$($_.Name)"
+                    Write-Host "`t`t[$i]`t$($_.Name)"
                 }
                 [Int]$menuChoice = Read-Host "`nPlease, select one of the options available"
             }
