@@ -25,45 +25,51 @@ function Import-NAVModules {
 
     )
 
-    $navAdminVersions = Get-NAVModuleAdminVersions -searchIn $searchInNavAdminModule
-    $navToolVersions = Get-NAVModuleToolVersions -searchIn $searchInNavToolsModule
 
-    # Import NAV Administration module.
-    $moduleTitle = "NAV Administration"
-    try {
-        if ([string]::IsNullOrEmpty($navVersion)) {
-            $navAdminVersion = Select-NAVModuleVersion -versions $navAdminVersions -importType $moduleTitle
-            $navVersion = $navAdminVersion.Name
-        } else {
-            if ($navAdminVersions.ContainsKey($navVersion)) {
-                $navAdminVersion = $navAdminVersions[$navVersion]
-            } else {
-                Write-Error "Can not find $moduleTitle module version no. $navVersion"
-            }
-        }
-        Import-Module $navAdminVersion.Value -DisableNameChecking -Global
-        Write-Host "$moduleTitle module has been imported" -ForegroundColor Green
+    $navModuleVersions = @()
+    $useSyncSearchFallback = $false
 
-    } catch {
-        Write-Host "$moduleTitle processing error: $($_.Exception.Message)" -ForegroundColor Red
+    if (($useSyncSearchFallback -eq $false) -and (($Global:NAVJobManager -eq $null) -or ($Global:NAVJobManager.MVS -eq $null))) {
+        Write-Verbose "Starting background search process because `$Global:NAVJobManager.MVS does not exist yet."
+        Start-NAVVersionModuleSearch
     }
-
-    if ([string]::IsNullOrEmpty($navVersion)) {
-        $navVersion = Select-NAVModuleVersion -versions $navToolVersions -importType "NAV Client Tools"
-        $navVersion = $navVersion.Name
-    }
-
-    # Import client tools of the same version.
-    if ($navToolVersions.ContainsKey($navVersion)) {
     
-        $navTool = $navToolVersions[$navVersion]
-        $navTool.GetEnumerator() | ForEach-Object { 
-            Import-Module $_.Value -DisableNameChecking -Global
-            Write-Host "$($_.Name) module has been imported" -ForegroundColor Green
+    if ($useSyncSearchFallback -eq $false) {
+        # Wait if still caching in the background...
+        $writeWait = $true
+        while (($Global:NAVJobManager.MVS.Jobs.Count -ne 0) -and ($Global:NAVJobManager.MVS.Errors.Count -eq 0)) {
+            if ($writeWait) {
+                Write-Verbose "NAV module versions are still being cached in the background. Waiting a second, please..."
+                $writeWait = $false
+            }
+            Start-Sleep -Milliseconds 250
         }
-
-    } else {
-        Write-Warning "NAV client tools for selected version are not present or have not been found."
     }
 
+    if (($useSyncSearchFallback = $false) -and ($Global:NAVJobManager.MVS.Errors.Count -ne 0)) {
+        $useSyncSearchFallback = $true
+        Write-Verbose "Falling back to synchronous search because `$Global:NAVJobManager.MVS.Errors contains the following errors"
+        foreach ($error in $Global:NAVJobManager.MVS.Errors) {
+            Write-Verbose "`t - " + $error
+        }
+    }
+    
+    if ($useSyncSearchFallback) {
+        $navModuleVersions += Get-NAVModuleVersions 'Microsoft.Dynamics.Nav.Management.psm1' 'Microsoft.Dynamics.Nav.Management.dll' 'NAV Management'
+        $navModuleVersions += Get-NAVModuleVersions 'Microsoft.Dynamics.NAV.Model.Tools.psd1' 'Microsoft.Dynamics.NAV.Model.Tools.dll' 'NAV Model Tools'
+        $navModuleVersions += Get-NAVModuleVersions 'Microsoft.Dynamics.Nav.Apps.Tools.psd1' 'Microsoft.Dynamics.Nav.Apps.Tools.dll' 'NAV Apps Tools'
+    } else {
+        $navModuleVersions += $Global:NAVJobManager.MVS.Results
+    }
+
+    $modulesToImport = (Select-NAVVersion $navModuleVersions)
+    
+    foreach ($moduleToImport in $modulesToImport) {
+        try {
+            Import-Module $moduleToImport.ModuleFileFullName -DisableNameChecking -Global
+            Write-Verbose "$($moduleToImport.ModuleTitle) module has been imported"
+        } catch {
+            Write-Error "$($moduleToImport.ModuleTitle) module has not been imported due to the following error: $($_.Exception.Message)"
+        }
+    }
 }
