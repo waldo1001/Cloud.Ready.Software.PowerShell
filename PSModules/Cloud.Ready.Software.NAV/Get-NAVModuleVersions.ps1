@@ -67,7 +67,6 @@ function Get-NAVModuleVersions {
                 $versionModuleInfo | Add-Member NoteProperty ModuleFileName $navModuleName
                 $versionModuleInfo | Add-Member NoteProperty ModuleFileFullName $modulePath
                 $versionModuleInfo | Add-Member NoteProperty ModuleDllFileName $navModuleDllName
-                $versionModuleInfo | Add-Member NoteProperty ModuleDllFileName $navModuleDllName
                 $versionModuleInfo | Add-Member NoteProperty ModuleDirectory $moduleDir
                 
                 if (!$uniqueVersionList.ContainsKey($version)) {                    

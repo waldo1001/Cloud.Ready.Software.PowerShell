@@ -10,9 +10,9 @@ function Start-NAVVersionModuleSearch {
     #>
 
     $Scripts = @()
-    $Scripts += Get-SearchNAVModuleJobTask 'Microsoft.Dynamics.Nav.Management.psm1' 'Microsoft.Dynamics.Nav.Management.dll' 'NAV Management'
-    $Scripts += Get-SearchNAVModuleJobTask 'Microsoft.Dynamics.NAV.Model.Tools.psd1' 'Microsoft.Dynamics.NAV.Model.Tools.dll' 'NAV Model Tools'
-    $Scripts += Get-SearchNAVModuleJobTask 'Microsoft.Dynamics.Nav.Apps.Tools.psd1' 'Microsoft.Dynamics.Nav.Apps.Tools.dll' 'NAV Apps Tools'
+    $Scripts += Get-NAVModuleVersionSearchJobTask 'Microsoft.Dynamics.Nav.Management.psm1' 'Microsoft.Dynamics.Nav.Management.dll' 'NAV Management'
+    $Scripts += Get-NAVModuleVersionSearchJobTask 'Microsoft.Dynamics.NAV.Model.Tools.psd1' 'Microsoft.Dynamics.NAV.Model.Tools.dll' 'NAV Model Tools'
+    $Scripts += Get-NAVModuleVersionSearchJobTask 'Microsoft.Dynamics.Nav.Apps.Tools.psd1' 'Microsoft.Dynamics.Nav.Apps.Tools.dll' 'NAV Apps Tools'
 
     if ($global:NAVJobManager -eq $null) {
         $global:NAVJobManager = New-Object PSObject        
@@ -40,18 +40,23 @@ function Start-NAVVersionModuleSearch {
             Register-ObjectEvent -InputObject $global:NAVJobManager.MVS.Jobs[$counter] -EventName StateChanged -Action  { 
 
                 try {
+                    
                     if($sender.State -ne [System.Management.Automation.JobState]::Completed) {
-                        throw "Task has not completed correctly."
+                        throw "Task has failed: " + $sender.ChildJobs[0].JobStateInfo.Reason.Message
                     }
 
                     $global:NAVJobManager.MVS.Results += Receive-Job $Sender -Keep
+                }
+                catch {
+                    $global:NAVJobManager.MVS.Errors += $_.Exception
+                }
+                finally {
+
                     $global:NAVJobManager.MVS.Jobs = $global:NAVJobManager.MVS.Jobs | Where-Object { $_.Id -ne $sender.Id }
 
                     Unregister-Event $eventsubscriber.SourceIdentifier                    
                     Remove-Job $Sender
-                }
-                catch {
-                    $global:NAVJobManager.MVS.Errors += $_.Exception
+
                 }
 
             } | Out-Null

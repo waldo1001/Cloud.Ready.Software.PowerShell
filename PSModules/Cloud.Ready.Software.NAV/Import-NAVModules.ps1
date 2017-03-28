@@ -36,6 +36,8 @@ function Import-NAVModules {
     
     if ($useSyncSearchFallback -eq $false) {
         # Wait if still caching in the background...
+        Write-Verbose "Checking `$Global:NAVJobManager.MVS status."
+
         $writeWait = $true
         while (($Global:NAVJobManager.MVS.Jobs.Count -ne 0) -and ($Global:NAVJobManager.MVS.Errors.Count -eq 0)) {
             if ($writeWait) {
@@ -46,11 +48,11 @@ function Import-NAVModules {
         }
     }
 
-    if (($useSyncSearchFallback = $false) -and ($Global:NAVJobManager.MVS.Errors.Count -ne 0)) {
+    if (($useSyncSearchFallback -eq $false) -and ($Global:NAVJobManager.MVS.Errors.Count -ne 0)) {
         $useSyncSearchFallback = $true
         Write-Verbose "Falling back to synchronous search because `$Global:NAVJobManager.MVS.Errors contains the following errors"
         foreach ($error in $Global:NAVJobManager.MVS.Errors) {
-            Write-Verbose "`t - " + $error
+            Write-Verbose "`t - $error"
         }
     }
     

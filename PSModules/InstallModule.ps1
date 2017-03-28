@@ -3,8 +3,6 @@
     $env:PSModulePath = $env:PSModulePath + ';' + $PSScriptRoot
 }
 
-Write-host "Loading Cloud.Ready.Software.NAV.General..." -ForegroundColor Green
-Import-module Cloud.Ready.Software.NAV.General -Force 
 Write-host "Loading Cloud.Ready.Software.NAV..." -ForegroundColor Green
 Import-module Cloud.Ready.Software.NAV -Force 
 Write-host "Loading Cloud.Ready.Software.PowerShell..." -ForegroundColor Green
@@ -13,4 +11,3 @@ Write-host "Loading Cloud.Ready.Software.SQL..." -ForegroundColor Green
 Import-module Cloud.Ready.Software.SQL -Force
 Write-host "Loading Cloud.Ready.Software.Windows..." -ForegroundColor Green
 Import-module Cloud.Ready.Software.Windows -Force
-

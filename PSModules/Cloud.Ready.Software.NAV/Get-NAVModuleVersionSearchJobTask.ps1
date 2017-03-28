@@ -1,4 +1,4 @@
-function Get-SearchNAVModuleJobTask {
+function Get-NAVModuleVersionSearchJobTask {
     <#
         .SYNOPSIS
 

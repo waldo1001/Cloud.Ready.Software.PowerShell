@@ -43,7 +43,7 @@ function Select-NAVVersion {
             for ($y = 0; $y -lt $yValues.Count; $y++) {
                 
                 $matrixElement = New-Object PSObject
-                $matrixElement | Add-Member NoteProperty Index ($y + 1)
+                $matrixElement | Add-Member NoteProperty Index ("[" + ($y + 1) + "]")
                 $matrixElement | Add-Member NoteProperty VersionNo $yValues[$y].VersionNo
 
                 for ($x = 0; $x -lt $xValues.Count; $x++) {
