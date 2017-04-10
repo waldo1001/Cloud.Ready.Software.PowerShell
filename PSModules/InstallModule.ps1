@@ -11,4 +11,3 @@ Write-host "Loading Cloud.Ready.Software.SQL..." -ForegroundColor Green
 Import-module Cloud.Ready.Software.SQL -Force
 Write-host "Loading Cloud.Ready.Software.Windows..." -ForegroundColor Green
 Import-module Cloud.Ready.Software.Windows -Force
-
