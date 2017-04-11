@@ -28,7 +28,7 @@ function Select-NAVVersion {
     $xValues = $versions | Select-Object ModuleTitle | Sort-Object -Property ModuleTitle -Unique
     $yValues = $versions | Select-Object VersionNo | Sort-Object -Property VersionNo -Unique
 
-    switch ($yValues.Count) {
+    switch (($yValues | measure).Count) {
         0 {
             Write-Error "NAV is probably missing or has been installed in an unusual folder!"
         } 
