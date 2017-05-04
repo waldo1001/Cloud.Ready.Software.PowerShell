@@ -13,7 +13,8 @@
         [String] $WebServicePrefix='',
         [String] $BackupPath,
         [String] $Dependencies = $null,
-        [String[]] $IncludeFilesInNavApp)
+        [String[]] $IncludeFilesInNavApp,
+        [Int[]] $ExportTableDataFromTableIds)
 
     # Set Variables
     $BuildFolder = (join-path $BuildFolder 'Create-NAVXFromDB')
@@ -62,6 +63,13 @@
     Write-Host -Foregroundcolor Green "Starting to create deltas between $OriginalServerInstance and $ModifiedServerInstance ..."
     $navAppFileDirectory = Create-NAVAppFiles `                                    -OriginalServerInstance $OriginalServerInstance `                                    -ModifiedServerInstance $ModifiedServerInstance `                                    -BuildPath $BuildFolder `                                    -PermissionSetId $PermissionSetId `                                    -IncludeFilesInNavApp $IncludeFilesInNavApp `                                    -WebServicePrefix $WebServicePrefix
 
+    if ($ExportTableDataFromTableIds){
+        Write-Host -Foregroundcolor Green "Exporting TableData for:"
+        foreach($ExportTableDataFromTableId in $ExportTableDataFromTableIds){
+            Write-Host -Foregroundcolor Gray "Table $ExportTableDataFromTableId"            Export-NAVAppTableData `                -ServerInstance $ModifiedServerInstance `                -TableId $ExportTableDataFromTableId `                -Path $navAppFileDirectory
+        }
+    }
+    
     # Create NavX Package
     $navAppPackageFile = $AppName + '_v' + $MyNewManifest.AppVersion.ToString() + '.navx'
     $navAppPackageFile = Join-Path -Path $packageFolder -ChildPath $navAppPackageFile
