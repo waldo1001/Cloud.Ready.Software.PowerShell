@@ -43,19 +43,29 @@
             BEGIN
                 CREATE USER [$($ServerInstanceObject.ServiceAccount)] FOR LOGIN [$($ServerInstanceObject.ServiceAccount)]                    
             END"#>
-    $SQLCommand = "CREATE USER [$($ServerInstanceObject.ServiceAccount)] FOR LOGIN [$($ServerInstanceObject.ServiceAccount)]"        
-    Invoke-SQL `
-        -DatabaseServer $ServerInstanceObject.DatabaseServer `
-        -DatabaseInstance $ServerInstanceObject.DatabaseInstance `
-        -DatabaseName $ServerInstanceObject.DatabaseName `
-        -SQLCommand $SQLCommand `
-        -ErrorAction SilentlyContinue
-    Invoke-SQL `
-        -DatabaseServer $ServerInstanceObject.DatabaseServer `
-        -DatabaseInstance $ServerInstanceObject.DatabaseInstance `
-        -DatabaseName $ServerInstanceObject.DatabaseName `
-        -SQLCommand "ALTER ROLE [db_owner] ADD MEMBER [$($ServerInstanceObject.ServiceAccount)]" `
-        -ErrorAction SilentlyContinue
+    try{
+        $SQLCommand = "CREATE USER [$($ServerInstanceObject.ServiceAccount)] FOR LOGIN [$($ServerInstanceObject.ServiceAccount)]"        
+        Invoke-SQL `
+            -DatabaseServer $ServerInstanceObject.DatabaseServer `
+            -DatabaseInstance $ServerInstanceObject.DatabaseInstance `
+            -DatabaseName $ServerInstanceObject.DatabaseName `
+            -SQLCommand $SQLCommand `
+            -ErrorAction SilentlyContinue
+    }
+    catch{
+        Write-Warning "Error when creating user $($ServerInstanceObject.ServiceAccount): $($Error[0])"
+    }
+    try{
+       Invoke-SQL `
+            -DatabaseServer $ServerInstanceObject.DatabaseServer `
+            -DatabaseInstance $ServerInstanceObject.DatabaseInstance `
+            -DatabaseName $ServerInstanceObject.DatabaseName `
+            -SQLCommand "ALTER ROLE [db_owner] ADD MEMBER [$($ServerInstanceObject.ServiceAccount)]" `
+            -ErrorAction SilentlyContinue
+    }
+    catch{
+        Write-Warning "Error when altering user $($ServerInstanceObject.ServiceAccount): $($Error[0])"
+    }
          
     $null = Set-NAVServerInstance -Start -ServerInstance $ServerInstance
     if($CreateWebServerInstance){
