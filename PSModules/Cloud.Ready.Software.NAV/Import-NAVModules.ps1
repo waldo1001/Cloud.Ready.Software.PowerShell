@@ -60,6 +60,7 @@ function Import-NAVModules {
         $navModuleVersions += Get-NAVModuleVersions 'Microsoft.Dynamics.Nav.Management.psm1' 'Microsoft.Dynamics.Nav.Management.dll' 'NAV Management'
         $navModuleVersions += Get-NAVModuleVersions 'Microsoft.Dynamics.NAV.Model.Tools.psd1' 'Microsoft.Dynamics.NAV.Model.Tools.dll' 'NAV Model Tools'
         $navModuleVersions += Get-NAVModuleVersions 'Microsoft.Dynamics.Nav.Apps.Tools.psd1' 'Microsoft.Dynamics.Nav.Apps.Tools.dll' 'NAV Apps Tools'
+        $navModuleVersions += Get-NAVModuleVersions 'Microsoft.Dynamics.NAV.Apps.Management.psd1' 'Microsoft.Dynamics.Nav.Apps.Management.dll' 'NAV Apps Management'
     } else {
         $navModuleVersions += $Global:NAVJobManager.MVS.Results
     }
