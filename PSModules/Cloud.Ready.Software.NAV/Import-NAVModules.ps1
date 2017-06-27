@@ -21,13 +21,15 @@ function Import-NAVModules {
         [String[]]$searchInNavAdminModule,
         
         [parameter(Mandatory=$false)]
-        [String[]]$searchInNavToolsModule
+        [String[]]$searchInNavToolsModule,
 
+        [parameter(Mandatory=$false)]
+        [switch]$RunAsJob
     )
 
 
     $navModuleVersions = @()
-    $useSyncSearchFallback = $false
+    $useSyncSearchFallback = -not $RunAsJob
 
     if (($useSyncSearchFallback -eq $false) -and (($Global:NAVJobManager -eq $null) -or ($Global:NAVJobManager.MVS -eq $null))) {
         Write-Verbose "Starting background search process because `$Global:NAVJobManager.MVS does not exist yet."
@@ -71,6 +73,7 @@ function Import-NAVModules {
         try {
             Import-Module $moduleToImport.ModuleFileFullName -DisableNameChecking -Global
             Write-Verbose "$($moduleToImport.ModuleTitle) module has been imported"
+            
         } catch {
             Write-Error "$($moduleToImport.ModuleTitle) module has not been imported due to the following error: $($_.Exception.Message)"
         }

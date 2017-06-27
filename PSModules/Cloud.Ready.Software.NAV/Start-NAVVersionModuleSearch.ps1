@@ -13,6 +13,7 @@ function Start-NAVVersionModuleSearch {
     $Scripts += Get-NAVModuleVersionSearchJobTask 'Microsoft.Dynamics.Nav.Management.psm1' 'Microsoft.Dynamics.Nav.Management.dll' 'NAV Management'
     $Scripts += Get-NAVModuleVersionSearchJobTask 'Microsoft.Dynamics.NAV.Model.Tools.psd1' 'Microsoft.Dynamics.NAV.Model.Tools.dll' 'NAV Model Tools'
     $Scripts += Get-NAVModuleVersionSearchJobTask 'Microsoft.Dynamics.Nav.Apps.Tools.psd1' 'Microsoft.Dynamics.Nav.Apps.Tools.dll' 'NAV Apps Tools'
+    $Scripts += Get-NAVModuleVersionSearchJobTask 'Microsoft.Dynamics.NAV.Apps.Management.psd1' 'Microsoft.Dynamics.Nav.Apps.Management.dll' 'NAV Apps Management'
 
     if ($global:NAVJobManager -eq $null) {
         $global:NAVJobManager = New-Object PSObject        
