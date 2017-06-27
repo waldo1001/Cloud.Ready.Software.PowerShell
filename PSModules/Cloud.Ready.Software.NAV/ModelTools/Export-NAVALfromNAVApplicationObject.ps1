@@ -5,7 +5,8 @@
         [String]$WorkingFolder,
         [String]$TargetPath,
         [String]$Filter,
-        [Switch]$OpenResultFolderInVSCode
+        [Switch]$OpenResultFolderInVSCode,
+        [int]$extensionStartId = 70000000
           )
  
     #Import NAV Modules - we need the $NAVIde
@@ -65,17 +66,19 @@
     #Split
     $SplitDir = "$WorkingFolder\Split"
     Write-Host "Splitting objects to $SplitDir"
-    Split-NAVApplicationObjectFile -Source $ExportFile -Destination $SplitDir
+    Split-NAVApplicationObjectFile -Source $ExportFile -Destination $SplitDir -Force 
 
     #Convert
     $NAVFolder = [io.path]::GetDirectoryName($NAVIDE)
-    $Convertcommand = """$NAVFolder\txt2al.exe"" ""$SplitDir"" ""$TargetPath"" -rename"
+    $Convertcommand = """$NAVFolder\txt2al.exe"" --source=""$SplitDir"" --target=""$TargetPath"" --rename --extensionStartId=$extensionStartId"
     $Command = $Convertcommand
  
     Write-Host -ForegroundColor Green "Convert objects with:" 
     Write-host -ForegroundColor Gray "  $Command"
-    cmd /c $Command
-
+    try{
+        cmd /c $Command 
+    } catch {
+    }
     #Open
     if($OpenResultFolderInVSCode){
         code $TargetPath
