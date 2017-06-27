@@ -5,7 +5,7 @@ Step 2: Copy the the files to a local machine in the folder 'C:\_Installs'
 Step 3: Execute the script "InstallOnLocalEnvironment.ps1" on the local environment.
 #>
 
-Find-Module | where author -eq waldo | Install-Module
+Find-Module | where author -eq waldo | Install-Module -Force #Make sure you trust my modules
 Import-Module -Name Cloud.Ready.Software.NAV
 
 #DVD
