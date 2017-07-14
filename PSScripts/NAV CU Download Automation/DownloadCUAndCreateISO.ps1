@@ -1,7 +1,7 @@
 ﻿$CULibrary = '\\waldonas2\public\Software\$Microsoft\Dynamics NAV'
 $LocalDownloadFolder = 'C:\_Downloads'
 $LocalTmpLocation = 'C:\TmpIsoCreation'
-$CountryVersion = 'BE', 'W1'
+$CountryVersions = 'BE', 'W1'
 $NAVVersion = '2017'
 
 foreach ($CountryVersion in $CountryVersions){
