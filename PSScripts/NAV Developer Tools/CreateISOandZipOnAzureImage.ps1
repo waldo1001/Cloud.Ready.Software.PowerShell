@@ -10,7 +10,7 @@ Import-Module -Name Cloud.Ready.Software.NAV
 
 #DVD
 Create-FolderIfNotExist -MyFolder 'C:\DOWNLOAD\' | Out-Null
-New-ISOFileFromFolder -FilePath 'C:\NAVDVD\US' -Name 'NAVDVD' -ResultFullFileName 'C:\DOWNLOAD\NAVDVD.iso'
+New-ISOFileFromFolder -FilePath 'C:\NAVDVD\W1' -Name 'NAVDVD' -ResultFullFileName 'C:\DOWNLOAD\NAVDVD.iso'
 
 #DEVTools
 Get-ChildItem -Path 'C:\DEMO\New Developer Experience' | Create-ZipFileFromPipedItems -zipfilename 'C:\DOWNLOAD\NewDEVTools.zip'
