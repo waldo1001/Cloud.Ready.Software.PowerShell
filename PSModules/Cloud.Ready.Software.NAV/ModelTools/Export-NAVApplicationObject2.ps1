@@ -16,7 +16,11 @@ function Export-NAVApplicationObject2 {
         [Parameter(Mandatory=$false)]
         [String] $LogPath,
         [Parameter(Mandatory=$false)]
-        [String] $Filter
+        [String] $Filter,
+        [Parameter(Mandatory=$false)]
+        [switch] $ExportToNewSyntax,
+        [Parameter(Mandatory=$false)]
+        [switch] $ExportTxtSkipUnlicensed
 
     )
     
@@ -29,7 +33,13 @@ function Export-NAVApplicationObject2 {
         }
 
         Export-NAVApplicationObject `
-            -DatabaseName $ServerInstanceObject.DatabaseName `            -DatabaseServer $DatabaseServer `            -Path $Path `            -LogPath $LogPath `            -Filter $Filter   
+            -DatabaseName $ServerInstanceObject.DatabaseName `
+            -DatabaseServer $DatabaseServer `
+            -Path $Path `
+            -LogPath $LogPath `
+            -Filter $Filter `
+            -ExportToNewSyntax:$ExportToNewSyntax `
+            -ExportTxtSkipUnlicensed:$ExportTxtSkipUnlicensed
         
     }
 }

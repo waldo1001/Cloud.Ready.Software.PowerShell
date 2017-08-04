@@ -42,7 +42,9 @@
         [Parameter(Mandatory=$False)]
         [String] $Name,
         [parameter(Mandatory=$false)]
-        [Switch] $CompleteReset
+        [Switch] $CompleteReset,
+        [parameter(Mandatory=$False)]
+        [switch] $IncludeFilesInNewSyntax
         
     )
     Process{
@@ -59,11 +61,11 @@
                 $ObjectFilter = $CustomFilter
             }
         }
-        $BackupFiles = @()
         
         if ([String]::IsNullOrEmpty($Name)){$Name = $ServerInstance}
         $Backupfiletxt = join-path $BackupPath "$($Name)_$($BackupOption).txt"
-        $Backupfilefob = join-path $BackupPath "$($Name)_$($BackupOption).fob"     
+        $Backupfilefob = join-path $BackupPath "$($Name)_$($BackupOption).fob"
+        $BackupFiletxtNewSyntax = join-path $BackupPath "$($Name)_$($BackupOption)_NewSyntax.txt"
         
 
         if ([String]::IsNullOrEmpty($ObjectFilter)){
@@ -71,13 +73,20 @@
             Export-NAVApplicationObject -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfiletxt -Force
             Write-host -ForegroundColor Green "Creating $Backupfilefob"
             Export-NAVApplicationObject -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfilefob -Force        
+            if ($IncludeFilesInNewSyntax){
+                Write-host -ForegroundColor Green "Creating $Backupfiletxt in New Syntax"
+                Export-NAVApplicationObject -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $BackupFiletxtNewSyntax -Force -ExportToNewSyntax
+            }            
         }
         Else {
             Write-host -ForegroundColor Green "Creating $Backupfiletxt"
             Export-NAVApplicationObject -Filter $ObjectFilter -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfiletxt -Force
             Write-host -ForegroundColor Green "Creating $Backupfilefob"
-            Export-NAVApplicationObject -Filter $ObjectFilter -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfilefob -Force
-        
+            Export-NAVApplicationObject -Filter $ObjectFilter -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $Backupfilefob -Force        
+            if ($IncludeFilesInNewSyntax){
+                Write-host -ForegroundColor Green "Creating $Backupfiletxt in New Syntax"
+                Export-NAVApplicationObject -Filter $ObjectFilter -DatabaseServer "$($ServerInstanceObject.DatabaseServer)\$($ServerInstanceObject.DatabaseInstance)" -DatabaseName $ServerInstanceObject.DatabaseName -Path $BackupFiletxtNewSyntax -Force -ExportToNewSyntax
+            }  
         }
         if($CompleteReset) {
             $RemoveDestinationPath = "$BackupPath\Split\"
@@ -97,7 +106,8 @@
                     -ModifiedServerInstance $ServerInstance `
                     -WorkingFolder $NavAppWorkingFolder `
                     -CreateReverseDeltas `
-                    -CompleteReset:$CompleteReset
+                    -CompleteReset:$CompleteReset `
+                    -IncludeFilesInNewSyntax:$IncludeFilesInNewSyntax
 
             foreach($Folder in $Folders){
                 if($CompleteReset) {
