@@ -32,14 +32,26 @@ function Export-NAVApplicationObject2 {
             $DatabaseServer += "\$($ServerInstanceObject.DatabaseInstance)"
         }
 
-        Export-NAVApplicationObject `
-            -DatabaseName $ServerInstanceObject.DatabaseName `
-            -DatabaseServer $DatabaseServer `
-            -Path $Path `
-            -LogPath $LogPath `
-            -Filter $Filter `
-            -ExportToNewSyntax:$ExportToNewSyntax `
-            -ExportTxtSkipUnlicensed:$ExportTxtSkipUnlicensed
+        if (!$ExportToNewSyntax){
+            Export-NAVApplicationObject `
+                -DatabaseName $ServerInstanceObject.DatabaseName `
+                -DatabaseServer $DatabaseServer `
+                -Path $Path `
+                -LogPath $LogPath `
+                -Filter $Filter `
+                -ExportTxtSkipUnlicensed:$ExportTxtSkipUnlicensed
+        
+        } else {
+            Export-NAVApplicationObject `
+                        -DatabaseName $ServerInstanceObject.DatabaseName `
+                        -DatabaseServer $DatabaseServer `
+                        -Path $Path `
+                        -LogPath $LogPath `
+                        -Filter $Filter `
+                        -ExportToNewSyntax:$ExportToNewSyntax `
+                        -ExportTxtSkipUnlicensed:$ExportTxtSkipUnlicensed        
+        }
+
         
     }
 }
