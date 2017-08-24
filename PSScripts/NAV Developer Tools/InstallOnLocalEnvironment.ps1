@@ -11,6 +11,7 @@ $FullInstallNAV2017Config = '<Configuration><Component Id="ClickOnceInstallerToo
 $NAVLicenseFile = "C:\Users\Administrator\Dropbox\Dynamics NAV\Licenses\2017 DEV License.flf"
 $ZipFile = "C:\_Installs\NewDEVTools.zip"
 $Destination = 'C:\_Installs'
+$DevServerInstance = 'W1'
 
 
 #CreateConfigFile
@@ -75,22 +76,22 @@ if ([Environment]::UserName -ne "SYSTEM") {
         }
     }
 }
-#Create Navision_main instance
+#Create DEV instance
 Import-Module 'C:\Program Files\Microsoft Dynamics NAV\100\Service\NavAdminTool.ps1' -WarningAction SilentlyContinue -Scope Global -Force| out-null
 Import-Module 'C:\Program Files (x86)\Microsoft Dynamics NAV\100\RoleTailored Client\Microsoft.Dynamics.NAV.Model.Tools.psd1' -WarningAction SilentlyContinue -Scope Global -Force | out-null
 Import-Module 'C:\Program Files (x86)\Microsoft Dynamics NAV\100\RoleTailored Client\Microsoft.Dynamics.Nav.Apps.Tools.psd1' -WarningAction SilentlyContinue -Scope Global -Force | out-null
-Get-NAVServerInstance -ServerInstance NAV | Copy-NAVEnvironment -ToServerInstance Navision_main
+Get-NAVServerInstance -ServerInstance NAV | Copy-NAVEnvironment -ToServerInstance $DevServerInstance
 
-New-NAVWebServerInstance -ServerInstance Navision_main -WebServerInstance Navision_main -Server localhost 
+New-NAVWebServerInstance -ServerInstance $DevServerInstance -WebServerInstance $DevServerInstance -Server localhost 
 
-Set-NAVServerConfiguration -ServerInstance Navision_main -KeyName DeveloperServicesEnabled -KeyValue True
-Set-NAVServerConfiguration -ServerInstance Navision_main -KeyName PublicWebBaseUrl -KeyValue ((Get-NAVWebServerInstance -WebServerInstance Navision_main).Uri)
-Set-NAVServerInstance -ServerInstance Navision_main -Restart
+Set-NAVServerConfiguration -ServerInstance $DevServerInstance -KeyName DeveloperServicesEnabled -KeyValue True
+Set-NAVServerConfiguration -ServerInstance $DevServerInstance -KeyName PublicWebBaseUrl -KeyValue ((Get-NAVWebServerInstance -WebServerInstance $DevServerInstance).Uri)
+Set-NAVServerInstance -ServerInstance $DevServerInstance -Restart
 
-write-host -ForegroundColor Green "Start the test environment with: 'Start $((Get-NAVWebServerInstance -WebServerInstance Navision_main).Uri)'"
+write-host -ForegroundColor Green "Start the test environment with: 'Start $((Get-NAVWebServerInstance -WebServerInstance $DevServerInstance).Uri)'"
 
 #Enable In-Client Designer
-$NAVWebConfigFile = "C:\inetpub\wwwroot\Navision_main\Web.config"
+$NAVWebConfigFile = "C:\inetpub\wwwroot\$DevServerInstance\Web.config"
 $NAVWebConfig = [xml](Get-Content $NAVWebConfigFile)
 $designerKey = $NAVWebConfig.SelectSingleNode("//configuration/DynamicsNAVSettings/add[@key='designer']")
 if ($designerkey) {
@@ -106,3 +107,11 @@ if ($designerkey) {
     $NAVWebConfig.configuration.DynamicsNAVSettings.AppendChild($addelm) | Out-Null
 }
 $NAVWebConfig.Save($NAVWebConfigFile)
+
+#Enable Debugger
+$serviceTierFolder = (Get-Item "C:\Program Files\Microsoft Dynamics NAV\*\Service").FullName
+$serverConfigFile = Join-Path $ServiceTierFolder "Microsoft.Dynamics.Nav.Server.exe.config"
+$serverConfig = [xml](Get-Content -Path $serverConfigFile)
+$serverConfig.SelectSingleNode("//configuration/runtime/NetFx40_LegacySecurityPolicy").enabled = "false"
+$serverConfig.Save($serverConfigFile)
+Set-NavServerInstance -serverInstance $DevServerInstance -restart
