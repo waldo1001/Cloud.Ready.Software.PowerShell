@@ -120,7 +120,8 @@
         -SynchronizeSchemaChanges No `
         -NavServerName ([net.dns]::GetHostName()) `
         -NavServerInstance $SandboxServerInstance `
-        -Confirm:$false `        -Filter 'Id=<2000000000'   
+        -Confirm:$false `
+        -Filter 'Id=<2000000000'   
 
    
     #Delete tables
@@ -162,7 +163,8 @@
             -LogPath $LogImportObjects `
             -NavServerName ([net.dns]::GetHostName()) `
             -NavServerInstance $SandboxServerInstance `
-            -confirm:$false `            -ImportAction Overwrite
+            -confirm:$false `
+            -ImportAction Overwrite
     }
 
     #Sync
@@ -176,30 +178,11 @@
 
     #Start Dataupgrade
     if ($UpgradeToolkit){
+
         Write-Host 'Starting Data Upgrade' -ForegroundColor Green
         Start-NAVDataUpgrade -ServerInstance $SandboxServerInstance -SkipCompanyInitialization -ContinueOnError -Force -FunctionExecutionMode $FunctionExecutionMode 
     
-        $Stop = $false
-        while (!$Stop){
-            $NAVDataUpgradeStatus = Get-NAVDataUpgrade -ServerInstance $SandboxServerInstance 
-            Write-Host "$($NAVDataUpgradeStatus.State) -- $($NAVDataUpgradeStatus.Progress)" -ForeGroundColor Gray
-            if ($NAVDataUpgradeStatus.State -eq 'Suspended') {
-                Resume-NAVDataUpgrade -ServerInstance $SandboxServerInstance 
-            }
-            if (($NAVDataUpgradeStatus.State -eq 'Stopped') -or ($NAVDataUpgradeStatus.State -eq 'Completed')) {
-                $Stop = $true
-            }
-            $ErrorsDataUpgrade = Get-NAVDataUpgrade -ServerInstance $SandboxServerInstance -ErrorOnly
-            if ($ErrorsDataUpgrade) {
-                foreach($ErrorDataUpgrade in $ErrorsDataUpgrade){
-                    Write-Error "Error in function $($ErrorDataUpgrade.FunctionName) and Company $($ErrorDataUpgrade.CompanyName)`r`n $($ErrorDataUpgrade.Error)"
-                }
-                $Stop = $true
-            }
-            Start-Sleep 2
-        }
-    
-        write-host "Data upgrade status: $($NAVDataUpgradeStatus.State)" -ForegroundColor Green
+        Get-NAVDataUpgradeContinuous -ServerInstance $SandboxServerInstance
     }
 
     #Start RTC
