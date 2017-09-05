@@ -5,6 +5,7 @@ $AppDescription = 'HelloWorld'
 $InitialAppVersion = '1.0.0.0'
 $IncludeFilesInNavApp = ''
 $WebServicePrefix = 'HWW'
+$Logo = get-item '..\Images\Icon.png'
 
 #The build environment
 $WorkingFolder = 'C:\_Workingfolder'

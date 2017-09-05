@@ -14,7 +14,9 @@
         [String] $BackupPath,
         [String] $Dependencies = $null,
         [String[]] $IncludeFilesInNavApp,
-        [Int[]] $ExportTableDataFromTableIds)
+        [Int[]] $ExportTableDataFromTableIds,
+        [String] $Logo),
+
 
     # Set Variables
     $BuildFolder = (join-path $BuildFolder 'Create-NAVXFromDB')
@@ -44,15 +46,41 @@
     {
         Write-Host -Foregroundcolor Green 'Create APP Package'
         $MyNewManifest = Create-NAVAppPackage `
-                                -AppName $AppName `                                -BuildFolder $BuildFolder `                                -Version $InitialVersion `                                -Publisher $AppPublisher `                                -Description $AppDescription
+                                -AppName $AppName `
+                                -BuildFolder $BuildFolder `
+                                -Version $InitialVersion `
+                                -Publisher $AppPublisher `
+                                -Description $AppDescription
     } else {
         Write-Host -Foregroundcolor Green 'Update APP Package'
         $newAppVersion = $MyNewManifest.AppVersion.Major.ToString() + '.' + $MyNewManifest.AppVersion.Minor.ToString() + '.' + $MyNewManifest.AppVersion.Build.ToString() + '.' + ($MyNewManifest.AppVersion.Revision + 1).ToString()
         if ([String]::IsNullOrEmpty($Dependencies)){
-            $MyNewManifest = Set-NAVAppManifest `                                -Manifest $MyNewManifest `                                -Version $newAppVersion `                                -PrivacyStatement 'http://www.waldo.Be' `                                -Eula 'http://www.waldo.Be' `                                -Help 'http://www.waldo.Be' `                                -Url 'http://www.waldo.Be'            if ($Dependencies){                $MyNewManifest = Set-NAVAppManifest `                                    -Manifest $MyNewManifest `                                    -Dependencies $Dependencies            }                                
+            $MyNewManifest = Set-NAVAppManifest `
+                                -Manifest $MyNewManifest `
+                                -Version $newAppVersion `
+                                -PrivacyStatement 'http://www.waldo.Be' `
+                                -Eula 'http://www.waldo.Be' `
+                                -Help 'http://www.waldo.Be' `
+                                -Url 'http://www.waldo.Be'
+            if ($Dependencies){
+                $MyNewManifest = Set-NAVAppManifest `
+                                    -Manifest $MyNewManifest `
+                                    -Dependencies $Dependencies
+            }
+                                
         } else {
-            $MyNewManifest = Set-NAVAppManifest `                                        -Manifest $MyNewManifest `                                        -Version $newAppVersion `                                        -PrivacyStatement 'http://www.waldo.Be' `                                        -Eula 'http://www.waldo.Be' `                                        -Help 'http://www.waldo.Be' `                                        -Url 'http://www.waldo.Be'
-            if ($Dependencies){                $MyNewManifest = Set-NAVAppManifest `                                    -Manifest $MyNewManifest `                                    -Dependencies $Dependencies            }      
+            $MyNewManifest = Set-NAVAppManifest `
+                                        -Manifest $MyNewManifest `
+                                        -Version $newAppVersion `
+                                        -PrivacyStatement 'http://www.waldo.Be' `
+                                        -Eula 'http://www.waldo.Be' `
+                                        -Help 'http://www.waldo.Be' `
+                                        -Url 'http://www.waldo.Be'
+            if ($Dependencies){
+                $MyNewManifest = Set-NAVAppManifest `
+                                    -Manifest $MyNewManifest `
+                                    -Dependencies $Dependencies
+            }      
         }
         
     }
@@ -61,12 +89,22 @@
         
     # Extract Applications and Create Deltas
     Write-Host -Foregroundcolor Green "Starting to create deltas between $OriginalServerInstance and $ModifiedServerInstance ..."
-    $navAppFileDirectory = Create-NAVAppFiles `                                    -OriginalServerInstance $OriginalServerInstance `                                    -ModifiedServerInstance $ModifiedServerInstance `                                    -BuildPath $BuildFolder `                                    -PermissionSetId $PermissionSetId `                                    -IncludeFilesInNavApp $IncludeFilesInNavApp `                                    -WebServicePrefix $WebServicePrefix
+    $navAppFileDirectory = Create-NAVAppFiles `
+                                    -OriginalServerInstance $OriginalServerInstance `
+                                    -ModifiedServerInstance $ModifiedServerInstance `
+                                    -BuildPath $BuildFolder `
+                                    -PermissionSetId $PermissionSetId `
+                                    -IncludeFilesInNavApp $IncludeFilesInNavApp `
+                                    -WebServicePrefix $WebServicePrefix
 
     if ($ExportTableDataFromTableIds){
         Write-Host -Foregroundcolor Green "Exporting TableData for:"
         foreach($ExportTableDataFromTableId in $ExportTableDataFromTableIds){
-            Write-Host -Foregroundcolor Gray "Table $ExportTableDataFromTableId"            Export-NAVAppTableData `                -ServerInstance $ModifiedServerInstance `                -TableId $ExportTableDataFromTableId `                -Path $navAppFileDirectory
+            Write-Host -Foregroundcolor Gray "Table $ExportTableDataFromTableId"
+            Export-NAVAppTableData `
+                -ServerInstance $ModifiedServerInstance `
+                -TableId $ExportTableDataFromTableId `
+                -Path $navAppFileDirectory
         }
     }
     
@@ -77,8 +115,14 @@
     {
         Remove-item $navAppPackageFile
     }
+    
     Write-Host -Foregroundcolor Green "DeltaDir: $navAppFileDirectory"    
-    $AppPackage = New-NAVAppPackage -Manifest $MyNewManifest -SourcePath $navAppFileDirectory -Path $navAppPackageFile -PassThru 
+    if ([String]::IsNullOrEmpty($logo)){
+        $AppPackage = New-NAVAppPackage -Manifest $MyNewManifest -SourcePath $navAppFileDirectory -Path $navAppPackageFile -PassThru 
+    } else {
+        $AppPackage = New-NAVAppPackage -Manifest $MyNewManifest -SourcePath $navAppFileDirectory -Path $navAppPackageFile -logo $logo -PassThru 
+    }
+
     Write-Host -Foregroundcolor Green "NavX Package File: $navAppPackageFile"
     
     if ($BackupPath){

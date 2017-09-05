@@ -6,15 +6,19 @@ $StartedDateTime = Get-Date
 
 Write-Host 'Creating NavX Package.. ' -ForegroundColor Green
 $AppPackage = Create-NAVXFromDB `
-                    -AppName $AppName `                    -BuildFolder $NavAppWorkingFolder `
+                    -AppName $AppName `
+                    -BuildFolder $NavAppWorkingFolder `
                     -OriginalServerInstance $OriginalServerInstance `
                     -ModifiedServerInstance $ModifiedServerInstance `
                     -InitialVersion $InitialAppVersion `
                     -AppDescription $AppDescription `
                     -AppPublisher $AppPublisher `
-                    -PermissionSetId $AppName `                    -BackupPath $BackupPath `
+                    -PermissionSetId $AppName `
+                    -BackupPath $BackupPath `
                     -ErrorAction Stop `
-                    -IncludeFilesInNavApp $IncludeFilesInNavApp `                    -WebServicePrefix $WebServicePrefix
+                    -IncludeFilesInNavApp $IncludeFilesInNavApp `
+                    -WebServicePrefix $WebServicePrefix `
+                    -Logo $Logo.FullName
 
 # Install NAV Package
 Write-Host 'Installing NavX Package.. ' -ForegroundColor Green
@@ -23,7 +27,8 @@ $InstalledApp = Deploy-NAVXPackage `
                     -ServerInstance $TargetServerInstance `
                     -Tenant $TargetTenant `
                     -Force `
-                    -Verbose `                    -SkipVerification
+                    -Verbose `
+                    -SkipVerification
 
 $StoppedDateTime = Get-Date
 Write-Host 'Total Duration' ([Math]::Round(($StoppedDateTime - $StartedDateTime).TotalSeconds)) 'seconds' -ForegroundColor Green
