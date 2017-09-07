@@ -23,14 +23,19 @@
         } else {
             $DatabaseInstance  = $ServerInstanceObject.DatabaseInstance
         }
-    
+        
+        try{
+            $BaseReg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, $ServerInstanceObject.DatabaseServer)
+            $RegKey  = $BaseReg.OpenSubKey('SOFTWARE\\Microsoft\\Microsoft SQL Server\\Instance Names\\SQL')
+            $SQLinstancename = $RegKey.GetValue($DatabaseInstance)
+            $RegKey  = $BaseReg.OpenSubKey("SOFTWARE\\Microsoft\\Microsoft SQL Server\\$SQLInstancename\\MSSQLServer")
+            $Backuplocation = $RegKey.GetValue('BackupDirectory')
+        } catch {
+            #Try Local (probably Docker)
+            $SQLInstanceName = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL').$DatabaseInstance 
+            $Backuplocation = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$SQLInstanceName\MSSQLSERVER").BackupDirectory
+        }
 
-        $BaseReg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, $ServerInstanceObject.DatabaseServer)
-        $RegKey  = $BaseReg.OpenSubKey('SOFTWARE\\Microsoft\\Microsoft SQL Server\\Instance Names\\SQL')
-        $SQLinstancename = $RegKey.GetValue($DatabaseInstance)
-        $RegKey  = $BaseReg.OpenSubKey("SOFTWARE\\Microsoft\\Microsoft SQL Server\\$SQLInstancename\\MSSQLServer")
-        $Backuplocation = $RegKey.GetValue('BackupDirectory')
-    
         $BackupFile = "$ServerInstance.bak"
         $BackupFileFullPath = Join-Path $Backuplocation $BackupFile
     
