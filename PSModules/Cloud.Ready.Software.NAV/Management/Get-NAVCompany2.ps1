@@ -7,10 +7,6 @@
         [parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
         [String]$Id="Default"
     )
-    BEGIN
-    {
-        $ResultObjectArray =  @()   
-    }
     PROCESS
     {   
         $CurrentTenant = Get-NAVTenant -ServerInstance $ServerInstance -Tenant $Id
@@ -18,15 +14,11 @@
         
         foreach ($Company in $AllCompaniesInTenant)
         {
-            $ResultObject = New-Object System.Object
-            $ResultObject | Add-Member -type NoteProperty -name ServerInstance -value $CurrentTenant.ServerInstance
-            $ResultObject | Add-Member -type NoteProperty -name Tenant -value $CurrentTenant.Id
-            $ResultObject | Add-Member -Type NoteProperty -Name CompanyName -Value $Company.CompanyName
-            $ResultObjectArray += $ResultObject
+            $Company | Add-Member -type NoteProperty -name ServerInstance -value $CurrentTenant.ServerInstance
+            $Company | Add-Member -type NoteProperty -name Tenant -value $CurrentTenant.Id
+            
+            $Company
         }
     }
-    END
-    {
-        $ResultObjectArray
-    }
 }
+
