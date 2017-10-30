@@ -1,4 +1,4 @@
-﻿$Name = 'NAV_11_CTP1'
+﻿$Name = 'NAV_11_CTP08'
 $isofile = "C:\_Installs\$Name.iso"
 $ConfigFile     = join-path $PSScriptRoot 'FullInstallNAV2018.xml'
 $Licensefile    = "C:\Users\Administrator\Dropbox\Dynamics NAV\Licenses\2017 DEV License.flf"

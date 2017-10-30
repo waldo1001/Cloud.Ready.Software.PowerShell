@@ -1,4 +1,4 @@
-﻿$Name = 'NAV_10_15140_W1_CU03'
+﻿$Name = 'NAV_10_18197_W1_CU10'
 $isofile = "C:\_Installs\$Name.iso"
 $ConfigFile     = join-path $PSScriptRoot 'FullInstallNAV2017_ReplaceDB.xml'
 $Licensefile    = "C:\Users\Administrator\Dropbox\Dynamics NAV\Licenses\5230132_003 and 004 IFACTO_NAV2017_BELGIUM_2016 10 24.flf"
