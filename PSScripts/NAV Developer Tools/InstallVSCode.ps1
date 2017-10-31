@@ -37,8 +37,6 @@ start "https://marketplace.visualstudio.com/items?itemName=humao.rest-client"
 Write-Host "  vscode.PowerShell  " -ForegroundColor Gray
 start "https://marketplace.visualstudio.com/items?itemName=ms-vscode.PowerShell"
        https://marketplace.visualstudio.com/items?itemName=vscode.PowerShell
-Install-VSIX -PackageGuid 'ms-vscode.PowerShell'
-
 
 #Install VSIX
 $VSIXFiles = Get-ChildItem $VSIXfolder
@@ -61,6 +59,7 @@ foreach ($VSIXFile in $VSIXFiles)
 
 
 #Install Git
+Write-Host "Installing Git" -ForegroundColor Green
 $GitExec = "$Folder\Git.exe"
 $GitDownloadURL = 'https://github.com/git-for-windows/git/releases/download/v2.14.3.windows.1/Git-2.14.3-64-bit.exe'
 
