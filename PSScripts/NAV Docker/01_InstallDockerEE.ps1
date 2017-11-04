@@ -21,7 +21,11 @@
         Requires   : PowerShell V2 CTP3
 
     .NOTES
+        # Silent install:
         .\01_InstallDockerEE.ps1
+        
+        # Use verbose to see the progress:
+        .\01_InstallDockerEE.ps1 -Verbose
     
 #>
 [CmdletBinding()]
@@ -46,23 +50,23 @@ if ($osMajorVersion -lt 10) {
 Write-Verbose "Your platform should be Docker EE compatible."
 
 
-# Check end eventually install DockerMsftProvider.
-if ((Get-Module DockerMsftProvider -ListAvailable | Measure-Object).Count -eq 0) {
-    # Install DockerMsftProvider because is missing.
-    Write-Verbose "Installing DockerMsftProvider because it is being missing."
-    Install-Module -Name DockerMsftProvider -Repository PSGallery -Force
+# Check end eventually install DockerProvider.
+if ((Get-Module DockerProvider -ListAvailable | Measure-Object).Count -eq 0) {
+    # Install DockerProvider because is missing.
+    Write-Verbose "Installing DockerProvider because it is being missing."
+    Install-Module DockerProvider -Force
 }
 
 # Installed version check
 Write-Verbose "Checking your Docker host to detect previous installations."
-$installedVersion = Get-Package -Name Docker -ProviderName DockerMsftProvider
+$installedVersion = Get-Package -Name Docker -ProviderName DockerProvider
 
 if (($installedVersion | Measure-Object).Count = 1) {
 
     # Docker version upgrade
     Write-Verbose "You have Docker EE already installed. Starting upgrade process."
 
-    $latestVersion = Find-Package -Name Docker -ProviderName DockerMsftProvider
+    $latestVersion = Find-Package -Name Docker -ProviderName DockerProvider
 
     if ($latestVersion.Version -eq $installedVersion.Version) {
 
@@ -81,7 +85,7 @@ if (($installedVersion | Measure-Object).Count = 1) {
         switch ($upgradeAnswer) {
             "yes" {
                 Write-Verbose "Upgrading an existing Docker EE version."
-                Install-Package -Name docker -ProviderName DockerMsftProvider -Update -Force
+                Install-Package -Name docker -ProviderName DockerProvider -Update -Force
                 Write-Verbose "The upgrading has finished."
                 Write-Verbose "Starting Docker EE service."
                 Start-Service Docker
@@ -101,7 +105,7 @@ if (($installedVersion | Measure-Object).Count = 1) {
 } else {
     # Install Docker Version
     Write-Verbose "Starting fresh installation as there is no Docker EE release installed on the system yet."
-    Install-Package -Name docker -ProviderName DockerMsftProvider
+    Install-Package -Name docker -ProviderName DockerProvider
     Write-Warning "You should reboot the server to finish the installation process."
     exit 0
 }
