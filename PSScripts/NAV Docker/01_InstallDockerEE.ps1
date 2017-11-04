@@ -23,7 +23,7 @@
     .NOTES
         # Silent install:
         .\01_InstallDockerEE.ps1
-        
+
         # Use verbose to see the progress:
         .\01_InstallDockerEE.ps1 -Verbose
     
@@ -49,6 +49,23 @@ if ($osMajorVersion -lt 10) {
 }
 Write-Verbose "Your platform should be Docker EE compatible."
 
+# Check and activate Containers Windows Feature.
+Write-Verbose "Checking if Containers Windows Feature is present."
+if ((Get-WindowsFeature Containers).Installed -eq $true) {
+    Write-Verbose "Containers Windows Feature is present."
+} else {
+    Write-Verbose "Installing Containers Windows Feature."
+    Add-WindowsFeature Containers    
+    if ((Add-WindowsFeature Containers).Success -eq $false) {
+        Write-Error "Containers Windows Feature hasn`t been installed correctly. Please, check your system logs."
+        exit 1
+    }
+    if (((Add-WindowsFeature Containers).RestartNeeded -eq 'No')) {
+        Write-Verbose "Containers Windows Feature has been installed"
+    } else {
+        Write-Verbose "Containers Windows Feature has been installed but you will need to restart the server."
+    }
+}
 
 # Check end eventually install DockerProvider.
 if ((Get-Module DockerProvider -ListAvailable | Measure-Object).Count -eq 0) {
