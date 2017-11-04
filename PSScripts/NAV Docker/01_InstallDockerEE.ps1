@@ -20,16 +20,20 @@
         Author     : Jakub Vanak (https://github.com/Koubek)  
         Requires   : PowerShell V2 CTP3
 
-    .NOTES
-        # Silent install:
+    .EXAMPLE
+        Silent install:
         .\01_InstallDockerEE.ps1
 
-        # Use verbose to see the progress:
+        Use verbose to see the progress:
         .\01_InstallDockerEE.ps1 -Verbose
+
+        Automate the script`s behavior (useful for automatic updates):
+        .\01_InstallDockerEE.ps1 -Force
     
 #>
 [CmdletBinding()]
 param(
+    [switch] $Force
 )
 
 Write-Verbose "Starting Docker EE installation/upgrade process."
@@ -88,15 +92,20 @@ if (($installedVersion | Measure-Object).Count = 1) {
     if ($latestVersion.Version -eq $installedVersion.Version) {
 
         Write-Verbose "You have been already running the latest version, nothing to upgrade."
+        exit 0
 
     } else {
 
-        $upgradeQuestion = "Do you want to upgrade from $($installedVersion.Version) to $($latestVersion.Version), Yes or No?"
-        $upgradeAnswer = Read-Host $upgradeQuestion
-
-        while("yes","no" -notcontains $upgradeAnswer)
-        {
+        if (!$Force) {            
+            $upgradeQuestion = "Do you want to upgrade from $($installedVersion.Version) to $($latestVersion.Version), Yes or No?"
             $upgradeAnswer = Read-Host $upgradeQuestion
+
+            while("yes","no" -notcontains $upgradeAnswer)
+            {
+                $upgradeAnswer = Read-Host $upgradeQuestion
+            }
+        } else {
+            $upgradeAnswer = "yes"
         }
 
         switch ($upgradeAnswer) {
