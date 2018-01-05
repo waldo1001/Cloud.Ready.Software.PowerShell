@@ -11,3 +11,4 @@ if ($VMAdminUserName -and $VMAdminPassword)
 } 
 
 $session = New-PSSession  169.254.108.158 -Authentication Negotiate -Credential @credential
+
