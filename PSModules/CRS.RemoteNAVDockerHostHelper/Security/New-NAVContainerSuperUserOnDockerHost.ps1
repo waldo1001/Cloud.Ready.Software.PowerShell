@@ -30,7 +30,7 @@ function New-NAVContainerSuperUserOnDockerHost {
             New-NAVServerUser `
                 -ServerInstance NAV `
                 -UserName $username  `
-                -Password (ConvertTo-SecureString $pwd -AsPlainText -Force) `
+                -Password (ConvertTo-SecureString $Password -Force) `
                 -CreateWebServicesKey:$CreateWebServicesKey
         
             New-NAVServerUserPermissionSet `
