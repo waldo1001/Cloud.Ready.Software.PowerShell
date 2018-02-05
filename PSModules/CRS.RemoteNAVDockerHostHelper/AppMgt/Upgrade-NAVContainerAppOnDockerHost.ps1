@@ -5,7 +5,9 @@ function Upgrade-NAVContainerAppOnDockerHost {
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.PSCredential] $DockerHostCredentials,
         [Parameter(Mandatory = $false)]
-        [Switch] $UseSSL,
+        [Switch] $DockerHostUseSSL,
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.Remoting.PSSessionOption] $DockerHostSessionOption,
         [Parameter(Mandatory = $true)]
         [String] $ContainerName,
         [Parameter(Mandatory = $true)]
@@ -16,11 +18,12 @@ function Upgrade-NAVContainerAppOnDockerHost {
         Copy-NAVAppToDockerHost `
             -DockerHost $DockerHost `
             -DockerHostCredentials $DockerHostCredentials `
-            -ContainerName $DockerContainer `
-            -UseSSL:$UseSSL `
+            -DockerHostUseSSL:$DockerHostUseSSL `
+            -DockerHostSessionOption $DockerHostSessionOption `
+            -ContainerName $ContainerName `
             -AppFileName $AppFileName
 
-    Invoke-Command -ComputerName $DockerHost -UseSSL:$UseSSL -Credential $DockerHostCredentials -ScriptBlock {
+    Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
             $ContainerName, $LocalAppPath
         )

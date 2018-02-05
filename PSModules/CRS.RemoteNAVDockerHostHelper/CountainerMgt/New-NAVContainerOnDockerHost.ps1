@@ -5,11 +5,13 @@ function New-NAVContainerOnDockerHost {
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.PSCredential] $DockerHostCredentials,
         [Parameter(Mandatory = $false)]
-        [Switch] $UseSSL,
+        [Switch] $DockerHostUseSSL,
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.Remoting.PSSessionOption] $DockerHostSessionOption,
         [Parameter(Mandatory = $true)]
         [String] $ContainerName,
-        [Parameter(Mandatory = $true)]
-        [String] $ContainerIPAddress, 
+        [Parameter(Mandatory = $false)]
+        [String[]] $ContainerAdditionalParameters=@(), 
         [Parameter(Mandatory = $true)]
         [String] $ContainerDockerImage, 
         [Parameter(Mandatory = $true)]
@@ -23,9 +25,9 @@ function New-NAVContainerOnDockerHost {
     )
     
 
-    Invoke-Command -ComputerName $DockerHost -UseSSL:$UseSSL -Credential $DockerHostCredentials -ScriptBlock {
+    Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
-            $ContainerName, $ContainerIPAddress, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, [System.Management.Automation.PSCredential] $ContainerCredential, [bool] $ContainerAlwaysPull
+            $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, [System.Management.Automation.PSCredential] $ContainerCredential, [bool] $ContainerAlwaysPull
         ) 
 
         New-NavContainer `
@@ -34,7 +36,7 @@ function New-NAVContainerOnDockerHost {
             -imageName $ContainerDockerImage `
             -licenseFile $ContainerLicenseFile `
             -doNotExportObjectsToText `
-            -additionalParameters @("--network=tlan", "--ip $ContainerIPAddress") `
+            -additionalParameters $ContainerAdditionalParameters `
             -memoryLimit $ContainerMemory `
             -alwaysPull:$ContainerAlwaysPull `
             -updateHosts `
@@ -42,6 +44,6 @@ function New-NAVContainerOnDockerHost {
             -includeCSide `
             -Verbose `
             -Credential $ContainerCredential 
-    } -ArgumentList $ContainerName, $ContainerIPAddress, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, $ContainerCredential, $ContainerAlwaysPull
+    } -ArgumentList $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, $ContainerCredential, $ContainerAlwaysPull
 
 }

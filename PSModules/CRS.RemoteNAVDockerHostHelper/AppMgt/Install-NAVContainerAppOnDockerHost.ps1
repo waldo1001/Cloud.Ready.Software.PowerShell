@@ -5,22 +5,28 @@ function Install-NAVContainerAppOnDockerHost {
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.PSCredential] $DockerHostCredentials,
         [Parameter(Mandatory = $false)]
-        [Switch] $UseSSL,
+        [Switch] $DockerHostUseSSL,
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.Remoting.PSSessionOption] $DockerHostSessionOption,
         [Parameter(Mandatory = $true)]
         [String] $ContainerName,
         [Parameter(Mandatory = $true)]
-        [String] $AppFileName
+        [String] $AppFileName,
+        [Parameter(Mandatory = $false)]
+        [Switch] $DoNotDeleteAppFile
     )
 
     $LocalAppPath = 
-        Copy-NAVAppToDockerHost `
-            -DockerHost $DockerHost `
-            -DockerHostCredentials $DockerHostCredentials `
-            -ContainerName $DockerContainer `
-            -UseSSL:$UseSSL `
-            -AppFileName $AppFileName
+    Copy-NAVAppToDockerHost `
+        -DockerHost $DockerHost `
+        -DockerHostCredentials $DockerHostCredentials `
+        -DockerHostUseSSL:$DockerHostUseSSL `
+        -DockerHostSessionOption $DockerHostSessionOption `
+        -ContainerName $ContainerName `
+        -AppFileName $AppFileName `
+        -ErrorAction Stop
 
-    Invoke-Command -ComputerName $DockerHost -UseSSL:$UseSSL -Credential $DockerHostCredentials -ScriptBlock {
+    Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
             $ContainerName, $LocalAppPath
         )
@@ -56,6 +62,9 @@ function Install-NAVContainerAppOnDockerHost {
                 -Publisher $App.Publisher `
                 -Version $App.Version                
 
+            if (-not $DoNotDeleteAppFile) {
+                Remove-Item -Path $LocalAppPath -Force
+            }
         }   -ArgumentList $LocalAppPath
     }   -ArgumentList $ContainerName, $LocalAppPath
 

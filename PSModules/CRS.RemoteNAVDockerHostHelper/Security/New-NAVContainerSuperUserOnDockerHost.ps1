@@ -5,7 +5,9 @@ function New-NAVContainerSuperUserOnDockerHost {
         [Parameter(Mandatory=$false)]
         [System.Management.Automation.PSCredential] $DockerHostCredentials,
         [Parameter(Mandatory = $false)]
-        [Switch] $UseSSL,
+        [Switch] $DockerHostUseSSL,
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.Remoting.PSSessionOption] $DockerHostSessionOption,
         [Parameter(Mandatory=$true)]
         [String] $ContainerName,
         [Parameter(Mandatory=$true)]
@@ -16,7 +18,7 @@ function New-NAVContainerSuperUserOnDockerHost {
         [switch] $CreateWebServicesKey        
     )
     
-    Invoke-Command -ComputerName $DockerHost -UseSSL:$UseSSL -Credential $DockerHostCredentials -ScriptBlock {
+    Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
             $ContainerName,$CreateWebServicesKey,$Username,[SecureString] $Password
         )

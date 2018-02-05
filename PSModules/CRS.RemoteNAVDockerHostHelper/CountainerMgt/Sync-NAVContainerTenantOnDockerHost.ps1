@@ -1,4 +1,4 @@
-function Clean-NAVCustomContainerAppsOnDockerHost {
+function Sync-NAVContainerTenantOnDockerHost {
     param(
         [Parameter(Mandatory = $true)]
         [String] $DockerHost,
@@ -11,23 +11,23 @@ function Clean-NAVCustomContainerAppsOnDockerHost {
         [Parameter(Mandatory = $true)]
         [String] $ContainerName
     )
+    
 
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
             $ContainerName
-        )
-        
+        ) 
+
         $Session = Get-NavContainerSession -containerName $ContainerName
         Invoke-Command -Session $Session -ScriptBlock {
-       
-            $Apps = Get-NAVAppInfo -ServerInstance NAV | Where Publisher -ne 'Microsoft'
-                
-            foreach ($App in $Apps){
-                $App | Uninstall-NAVApp -DoNotSaveData
-                $App | Sync-NAVApp -ServerInstance NAV -Mode Clean -force
-                $App | UnPublish-NAVApp            
-                Sync-NAVTenant -ServerInstance NAV -Tenant Default -Mode ForceSync -force    
-            }       
-        }  
-    }   -ArgumentList $ContainerName
+            param(
+                $LocalAppPath
+            )
+
+            Sync-NAVTenant -ServerInstance nav -Force
+
+        } -ArgumentList $ContainerName
+
+    } -ArgumentList $ContainerName
+
 }
