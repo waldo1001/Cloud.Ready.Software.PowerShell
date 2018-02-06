@@ -1,11 +1,15 @@
-#Example of settings for local docker machine
+#Example of settings for when your dockerhost is installed on a local VM
+
+$SecretSettings = Get-ObjectFromJSON (Join-Path $PSScriptRoot "_SecretSettings.json") #Secret Settings, stored in a .json file, and ignored by git
+
 $DockerHost = 'waldocorevm'
 $DockerHostUseSSL = $false
 $DockerHostSessionOption = New-PSSessionOption
 
 $UserName = 'administrator'
-$Password = ConvertTo-SecureString (Get-content (Join-Path $PSScriptRoot '.\password.txt')) -AsPlainText -Force
+$Password = ConvertTo-SecureString $SecretSettings.password -AsPlainText -Force
 $DockerHostCredentials = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
 
-$ContainerLicenseFile = 'https://www.dropbox.com/s/8r85nc2oq5r1mal/CRS%20NAV2018%20DEV%20%20License.flf?dl=1'
+$ContainerLicenseFile = $SecretSettings.containerLicenseFile
 $ContainerAdditionalParameters = @("--network=tlan","--ip 172.21.31.4")
+
