@@ -1,4 +1,33 @@
 function Upgrade-RDHNAVApp {
+    <#
+    .SYNOPSIS
+    Upgrades an App on a NAV Container on a remote Docker Host.
+    
+    .DESCRIPTION
+    Before installing/upgrading the app on the NAV ServerInstance of a Container on a remote Docker Host, the function will copy the local AppFile to the remote Docker Host.
+    
+    .PARAMETER DockerHost
+    The DockerHost VM name to reach the server that runs docker and hosts the container
+    
+    .PARAMETER DockerHostCredentials
+    The credentials to log into your docker host
+    
+    .PARAMETER DockerHostUseSSL
+    Switch: use SSL or not
+    
+    .PARAMETER DockerHostSessionOption
+    SessionOptions if necessary
+        
+    .PARAMETER ContainerName
+    ContainerName
+    
+    .PARAMETER AppFileName
+    The path to the local .app-file
+    
+    .PARAMETER DoNotDeleteAppFile
+    Will not delete the AppFile from the RemoteDockerHost.
+    
+    #>
     param(
         [Parameter(Mandatory = $true)]
         [String] $DockerHost,
@@ -11,7 +40,9 @@ function Upgrade-RDHNAVApp {
         [Parameter(Mandatory = $true)]
         [String] $ContainerName,
         [Parameter(Mandatory = $true)]
-        [String] $AppFileName
+        [String] $AppFileName,
+        [Parameter(Mandatory = $false)]
+        [Switch] $DoNotDeleteAppFile
     )
 
 Copy-FileToDockerHost `
@@ -61,6 +92,9 @@ Copy-FileToDockerHost `
                 -Publisher $App.Publisher `
                 -Version $App.Version                
 
+            if (-not $DoNotDeleteAppFile) {
+                Remove-Item -Path $LocalAppPath -Force
+            }
         }   -ArgumentList $LocalAppPath
     }   -ArgumentList $ContainerName, $LocalAppPath
 
