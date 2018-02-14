@@ -2,7 +2,7 @@
 
 $Containername = 'devpreview'
 
-Clean-NAVCustomContainerAppsOnDockerHost `
+Clean-RDHNAVApps `
     -DockerHost $DockerHost `
     -DockerHostCredentials $DockerHostCredentials `
     -DockerHostUseSSL:$DockerHostUseSSL `

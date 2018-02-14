@@ -1,11 +1,11 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $Containername = 'devpreview'
-$Appfilename = 'C:\Users\Waldo\Dropbox\Cloud Ready Software\Projects\Microsoft\HDI Videos\waldo\HDI add upgrade logic to an extension\Apps\Books\Cloud Ready Software GmbH_BookShelf_1.0.0.0.app'
+$Appfilename = 'C:\Users\ericw\Dropbox\Cloud Ready Software\Projects\Microsoft\HDI Videos\waldo\HDI add upgrade logic to an extension\Apps\Books\Cloud Ready Software GmbH_BookShelf_1.0.0.0.app'
 
 <#
 
-Sync-NAVContainerTenantOnDockerHost `
+Sync-RDHNAVTenant `
     -DockerHost $DockerHost `
     -DockerHostCredentials $DockerHostCredentials `
     -DockerHostUseSSL:$DockerHostUseSSL `
@@ -14,7 +14,7 @@ Sync-NAVContainerTenantOnDockerHost `
 
 #>
 
-Install-NAVContainerAppOnDockerHost `
+Install-RDHNAVApp `
     -DockerHost $DockerHost `
     -DockerHostCredentials $DockerHostCredentials `
     -DockerHostUseSSL:$DockerHostUseSSL `

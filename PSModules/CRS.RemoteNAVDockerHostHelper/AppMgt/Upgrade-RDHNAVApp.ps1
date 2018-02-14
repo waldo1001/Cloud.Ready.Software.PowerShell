@@ -1,4 +1,4 @@
-function Upgrade-NAVContainerAppOnDockerHost {
+function Upgrade-RDHNAVApp {
     param(
         [Parameter(Mandatory = $true)]
         [String] $DockerHost,
@@ -14,14 +14,16 @@ function Upgrade-NAVContainerAppOnDockerHost {
         [String] $AppFileName
     )
 
-    $LocalAppPath = 
-        Copy-NAVAppToDockerHost `
-            -DockerHost $DockerHost `
-            -DockerHostCredentials $DockerHostCredentials `
-            -DockerHostUseSSL:$DockerHostUseSSL `
-            -DockerHostSessionOption $DockerHostSessionOption `
-            -ContainerName $ContainerName `
-            -AppFileName $AppFileName
+Copy-FileToDockerHost `
+        -DockerHost $DockerHost `
+        -DockerHostCredentials $DockerHostCredentials `
+        -DockerHostUseSSL:$DockerHostUseSSL `
+        -DockerHostSessionOption $DockerHostSessionOption `
+        -ContainerDestinationFolder "C:\ProgramData\navcontainerhelper\" `
+        -FileName $AppFileName `
+        -ErrorAction Stop
+
+    $LocalAppPath = "C:\ProgramData\navcontainerhelper\" + (get-item $AppFileName).Name
 
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(

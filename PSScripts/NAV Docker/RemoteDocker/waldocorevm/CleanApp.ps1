@@ -1,8 +1,9 @@
+
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $Containername = 'devpreview'
 
-Clean-NAVCustomContainerAppsOnDockerHost `
+Clean-RDHNAVApps `
     -DockerHost $DockerHost `
     -DockerHostCredentials $DockerHostCredentials `
     -DockerHostUseSSL:$DockerHostUseSSL `

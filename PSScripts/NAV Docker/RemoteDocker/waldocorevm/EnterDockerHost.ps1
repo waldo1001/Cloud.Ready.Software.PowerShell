@@ -6,3 +6,4 @@ Enter-PSSession `
     -UseSSL:$DockerHostUseSSL `
     -SessionOption $DockerHostSessionOption
 
+Enter-NavContainer -containerName 'devpreview'

@@ -7,7 +7,7 @@ $UserName = 'waldo'
 $Password = ConvertTo-SecureString 'waldo1234' -AsPlainText -Force
 $ContainerCredential = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
 
-New-NAVContainerOnDockerHost `
+New-RDHNAVContainer `
     -DockerHost $DockerHost `
     -DockerHostCredentials $DockerHostCredentials `
     -DockerHostUseSSL:$DockerHostUseSSL `
@@ -18,3 +18,20 @@ New-NAVContainerOnDockerHost `
     -ContainerCredential $ContainerCredential `
     -ContainerAlwaysPull `
     -ContainerAdditionalParameters $ContainerAdditionalParameters
+
+Install-RDHDependentModules `
+    -DockerHost $DockerHost `
+    -DockerHostCredentials $DockerHostCredentials `
+    -DockerHostUseSSL:$DockerHostUseSSL `
+    -DockerHostSessionOption $DockerHostSessionOption `
+    -ContainerName $Containername
+
+New-RDHNAVSuperUser `
+    -DockerHost $DockerHost `
+    -DockerHostCredentials $DockerHostCredentials `
+    -DockerHostUseSSL:$DockerHostUseSSL `
+    -DockerHostSessionOption $DockerHostSessionOption `
+    -ContainerName $Containername `
+    -Username 'waldo2' `
+    -Password (ConvertTo-SecureString 'waldo1234' -AsPlainText -Force) `
+    -CreateWebServicesKey
