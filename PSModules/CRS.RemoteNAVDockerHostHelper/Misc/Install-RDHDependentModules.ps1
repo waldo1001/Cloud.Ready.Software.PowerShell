@@ -37,21 +37,27 @@ function Install-RDHDependentModules {
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.Remoting.PSSessionOption] $DockerHostSessionOption,
         [Parameter(Mandatory = $false)]
-        [String] $ContainerName
+        [String] $ContainerName,
+        [Parameter(Mandatory = $false)]
+        [Switch] $ContainerModulesOnly
     )
 
-    Write-host "Installing dependent modules on DockerHost $DockerHost" -ForegroundColor Green
+    Write-host "Installing dependent modules." -ForegroundColor Green
 
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
-            $ContainerName
+            $ContainerName,$ContainerModulesOnly
         ) 
 
-        $FindModule = Find-Module 'navcontainerhelper'
-        write-host -Object "  Installing $($FindModule.Name) version $($FindModule.Version) on Docker Host." -ForegroundColor Gray
-        Install-Module 'navcontainerhelper' -Force 
+        if (!$ContainerModulesOnly) {
+            $null = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+            
+            $FindModule = Find-Module 'navcontainerhelper'
+            write-host -Object "  Installing $($FindModule.Name) version $($FindModule.Version) on Docker Host." -ForegroundColor Gray
+            Install-Module 'navcontainerhelper' -Force 
+        }
 
-        if ($ContainerName){
+        if ($ContainerName) {
             $Session = Get-NavContainerSession -containerName $ContainerName
             Invoke-Command -Session $Session -ScriptBlock {
                 param(
@@ -64,6 +70,8 @@ function Install-RDHDependentModules {
                 }
 
                 Write-host "Installing dependent modules on Container $ContainerName" -ForegroundColor Green
+                
+                $null = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 
                 InstallModuleFromPSGallery -Module Cloud.Ready.Software.NAV 
                 InstallModuleFromPSGallery -Module Cloud.Ready.Software.SQL 
@@ -71,5 +79,5 @@ function Install-RDHDependentModules {
                 InstallModuleFromPSGallery -Module Cloud.Ready.Software.PowerShell 
             } -ArgumentList $ContainerName
         }
-    } -ArgumentList $ContainerName
+    } -ArgumentList $ContainerName,$ContainerModulesOnly
 }

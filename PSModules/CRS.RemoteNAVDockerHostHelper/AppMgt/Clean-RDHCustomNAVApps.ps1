@@ -1,4 +1,4 @@
-function Clean-RDHNAVApps {
+function Clean-RDHCustomNAVApps {
     <#
     .SYNOPSIS
     Removes all non-Microsoft Apps from a Container on a remote Docker Host
@@ -22,7 +22,7 @@ function Clean-RDHNAVApps {
     The Container
     
     .EXAMPLE
-    Clean-RDHNAVApps `
+    Clean-RDHCustomNAVApps `
         -DockerHost $DockerHost `
         -DockerHostCredentials $DockerHostCredentials `
         -DockerHostUseSSL:$DockerHostUseSSL `

@@ -105,7 +105,7 @@ function Merge-RDHNAVApplicationObjects {
             if (Test-Path $UpgradeSettings.ResultFolder) {
                 Remove-Item -Path $UpgradeSettings.ResultFolder -Recurse -ErrorAction Stop -Confirm
             }
-            
+
             Write-Host -ForegroundColor Green "Starting upgrade with following parameters:"
             write-host -ForegroundColor Gray -Object (ConvertTo-Json $UpgradeSettings)
 
@@ -126,6 +126,9 @@ function Merge-RDHNAVApplicationObjects {
             $MergeResult | ConvertTo-Json | Set-Content -Path (Join-Path $UpgradeSettings.ResultFolder 'Mergeresult.json')
             $MergeResult | Export-Clixml -Path (Join-Path $UpgradeSettings.ResultFolder 'Mergeresult.xml')
             
+            #Save Used Settings
+            $UpgradeSettings | ConvertTo-Json | Set-Content -Path (Join-Path $UpgradeSettings.ResultFolder 'UpgradeSettings.json')
+
             #List Conflicts
             $NumberOfConflicts = ($MergeResult.Mergeresult | Where-Object {$_.MergeResult -eq 'Conflict'}).Count
             Write-host -foregroundcolor Magenta -Object "There are $NumberOfConflicts conflicts."                

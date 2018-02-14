@@ -72,7 +72,9 @@ function New-RDHNAVContainer {
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential] $ContainerCredential, 
         [Parameter(Mandatory = $true)]
-        [switch] $ContainerAlwaysPull
+        [Switch] $ContainerAlwaysPull,
+        [Parameter(Mandatory = $false)]
+        [Switch] $DoNotInstallDependentModules
     )
     Write-host "Installing Container $ContainerName from image $ContainerDockerImage on remote dockerhost $DockerHost" -ForegroundColor Green
 
@@ -95,6 +97,23 @@ function New-RDHNAVContainer {
             -includeCSide `
             -Verbose `
             -Credential $ContainerCredential 
+
     } -ArgumentList $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, $ContainerCredential, $ContainerAlwaysPull
 
+    if (!$DoNotInstallDependentModules){
+        Install-RDHDependentModules `
+            -DockerHost $DockerHost `
+            -DockerHostCredentials $DockerHostCredentials `
+            -DockerHostUseSSL:$DockerHostUseSSL `
+            -DockerHostSessionOption $DockerHostSessionOption `
+            -ContainerName $ContainerName `
+            -ContainerModulesOnly
+    }
+
+    Sync-RDHNAVTenant `
+        -DockerHost $DockerHost `
+        -DockerHostCredentials $DockerHostCredentials `
+        -DockerHostUseSSL:$DockerHostUseSSL `
+        -DockerHostSessionOption $DockerHostSessionOption `
+        -ContainerName $ContainerName 
 }

@@ -3,7 +3,16 @@
 
 $Containername = 'devpreview'
 
-Clean-RDHNAVApps `
+
+Get-RDHCustomNAVApps `
+    -DockerHost $DockerHost `
+    -DockerHostCredentials $DockerHostCredentials `
+    -DockerHostUseSSL:$DockerHostUseSSL `
+    -DockerHostSessionOption $DockerHostSessionOption `
+    -ContainerName $Containername 
+
+
+Clean-RDHCustomNAVApps `
     -DockerHost $DockerHost `
     -DockerHostCredentials $DockerHostCredentials `
     -DockerHostUseSSL:$DockerHostUseSSL `

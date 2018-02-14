@@ -19,13 +19,6 @@ New-RDHNAVContainer `
     -ContainerAlwaysPull `
     -ContainerAdditionalParameters $ContainerAdditionalParameters
 
-Install-RDHDependentModules `
-    -DockerHost $DockerHost `
-    -DockerHostCredentials $DockerHostCredentials `
-    -DockerHostUseSSL:$DockerHostUseSSL `
-    -DockerHostSessionOption $DockerHostSessionOption `
-    -ContainerName $Containername
-
 New-RDHNAVSuperUser `
     -DockerHost $DockerHost `
     -DockerHostCredentials $DockerHostCredentials `
