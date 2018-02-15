@@ -47,11 +47,25 @@ function Copy-FileToDockerHost {
         $ZippedFileName = $FileName
     }
     
+    #Create folder if not exists
+    Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
+        param(
+            $ContainerDestinationFolder
+        )
+        
+        #Create Folder if not exists
+        If (!(Test-Path $ContainerDestinationFolder)){
+            Write-Host -ForegroundColor Gray "  Creating folder $ContainerDestinationFolder on Docker Host"
+            New-Item -Path $ContainerDestinationFolder -ItemType Directory -Force
+        }
+
+    } -ArgumentList $ContainerDestinationFolder -ErrorAction Stop
+
     #Copy
     $ZippedDestinationFileName = Join-Path $ContainerDestinationFolder (get-item $ZippedFileName).Name
     Write-Host "  Copying $ZippedFileName to $ZippedDestinationFileName on $DockerHost ..." -ForegroundColor Gray
     $cs = New-PSSession -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption    
-    Copy-Item $ZippedFileName -Destination $ZippedDestinationFileName -ToSession $cs
+    Copy-Item $ZippedFileName -Destination $ZippedDestinationFileName -ToSession $cs -Recurse
 
     #    $FileContent = get-content $ZippedFileName -Raw
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {

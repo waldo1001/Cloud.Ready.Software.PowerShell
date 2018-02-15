@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$ContainerDockerImage = 'microsoft/dynamics-nav:devpreview'
+$ContainerDockerImage = 'microsoft/dynamics-nav:devpreview-be'
 $Containername = 'devpreview'
 
 $UserName = 'waldo'

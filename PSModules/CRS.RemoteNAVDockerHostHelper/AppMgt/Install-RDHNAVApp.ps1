@@ -50,11 +50,11 @@ function Install-RDHNAVApp {
         -DockerHostCredentials $DockerHostCredentials `
         -DockerHostUseSSL:$DockerHostUseSSL `
         -DockerHostSessionOption $DockerHostSessionOption `
-        -ContainerDestinationFolder "C:\ProgramData\navcontainerhelper\" `
+        -ContainerDestinationFolder "C:\ProgramData\navcontainerhelper\Apps" `
         -FileName $AppFileName `
         -ErrorAction Stop
     
-    $LocalAppPath = "C:\ProgramData\navcontainerhelper\" + (get-item $AppFileName).Name
+    $LocalAppPath = Join-Path "C:\ProgramData\navcontainerhelper\Apps" (get-item $AppFileName).Name
     
     Write-host "Installing App $AppFileName on $ContainerName on remote dockerhost $DockerHost" -ForegroundColor Green
 
