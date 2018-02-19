@@ -2,7 +2,10 @@ function New-RDHNAVContainer {
     <#
     .SYNOPSIS
     Installs a new container using the navcontainerhelper module (from Freddy) on a remote docker host.
-        
+            
+    .DESCRIPTION
+    Just a wrapper for the "New-NCHNAVContainer" (Module "CRS.NavContainerHelperExtension" that should be installed on the Docker Host).
+
     .PARAMETER DockerHost
     The DockerHost VM name to reach the server that runs docker and hosts the container
     
@@ -49,6 +52,7 @@ function New-RDHNAVContainer {
         -ContainerAlwaysPull `
         -ContainerAdditionalParameters $ContainerAdditionalParameters
     
+    
     #>
     param(
         [Parameter(Mandatory = $true)]
@@ -74,46 +78,31 @@ function New-RDHNAVContainer {
         [Parameter(Mandatory = $true)]
         [Switch] $ContainerAlwaysPull,
         [Parameter(Mandatory = $false)]
-        [Switch] $DoNotInstallDependentModules
+        [Switch] $DoNotInstallDependentModules,
+        [Parameter(Mandatory = $false)]
+        [Switch] $doNotExportObjectsToText
     )
-    Write-host "Installing Container $ContainerName from image $ContainerDockerImage on remote dockerhost $DockerHost" -ForegroundColor Green
+
+    Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
 
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
-            $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, [System.Management.Automation.PSCredential] $ContainerCredential, [bool] $ContainerAlwaysPull
+            $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, [System.Management.Automation.PSCredential] $ContainerCredential, [bool] $ContainerAlwaysPull,$DoNotInstallDependentModules,$doNotExportObjectsToText
         ) 
 
-        New-NavContainer `
-            -accept_eula `
+        Import-Module "CRS.NavContainerHelperExtension" -Force
+
+        New-NCHNAVContainer `
             -containerName $ContainerName `
+            -additionalParameters $ContainerAdditionalParameters `
             -imageName $ContainerDockerImage `
             -licenseFile $ContainerLicenseFile `
-            -doNotExportObjectsToText `
-            -additionalParameters $ContainerAdditionalParameters `
             -memoryLimit $ContainerMemory `
+            -Credential $ContainerCredential `
             -alwaysPull:$ContainerAlwaysPull `
-            -updateHosts `
-            -auth NavUserPassword `
-            -includeCSide `
-            -Verbose `
-            -Credential $ContainerCredential 
+            -doNotExportObjectsToText:$doNotExportObjectsToText `
+            -accept_eula `
+            -DoNotInstallDependentModules:$DoNotInstallDependentModules
 
-    } -ArgumentList $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, $ContainerCredential, $ContainerAlwaysPull
-
-    if (!$DoNotInstallDependentModules){
-        Install-RDHDependentModules `
-            -DockerHost $DockerHost `
-            -DockerHostCredentials $DockerHostCredentials `
-            -DockerHostUseSSL:$DockerHostUseSSL `
-            -DockerHostSessionOption $DockerHostSessionOption `
-            -ContainerName $ContainerName `
-            -ContainerModulesOnly
-    }
-
-    Sync-RDHNAVTenant `
-        -DockerHost $DockerHost `
-        -DockerHostCredentials $DockerHostCredentials `
-        -DockerHostUseSSL:$DockerHostUseSSL `
-        -DockerHostSessionOption $DockerHostSessionOption `
-        -ContainerName $ContainerName 
+    } -ArgumentList $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, $ContainerCredential, $ContainerAlwaysPull,$DoNotInstallDependentModules,$doNotExportObjectsToText
 }

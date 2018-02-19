@@ -1,4 +1,41 @@
 function Convert-RDHTxtToAl {
+    <#
+    .SYNOPSIS
+    Converts txt to al on a remote dockerhost.
+    
+    .DESCRIPTION
+    Just a wrapper for the "Convert-NCHTxtToAl" (Module "CRS.NavContainerHelperExtension" that should be installed on the Docker Host).
+    
+    .PARAMETER DockerHost
+    The DockerHost VM name to reach the server that runs docker and hosts the container
+    
+    .PARAMETER DockerHostCredentials
+    The credentials to log into your docker host
+    
+    .PARAMETER DockerHostUseSSL
+    Switch: use SSL or not
+    
+    .PARAMETER DockerHostSessionOption
+    SessionOptions if necessary
+            
+    .PARAMETER ContainerName
+    The Container
+    
+    .PARAMETER TxtFile
+    Path to the txt-file that needs to be converted
+    
+    .PARAMETER sqlCredential
+    SQL credential to be able to use the finsql
+    
+    .PARAMETER startId
+    The startID for extension objects
+    
+    .PARAMETER objectsFilter
+    The object filter that would identify all objects
+    
+    .PARAMETER LocalResultFolder
+    The resultfolder to copy the result to
+    #>
     param(
         [Parameter(Mandatory = $true)]
         [String] $DockerHost,
@@ -10,7 +47,7 @@ function Convert-RDHTxtToAl {
         [System.Management.Automation.Remoting.PSSessionOption] $DockerHostSessionOption,
         [Parameter(Mandatory = $true)]
         [String] $ContainerName,
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
         [String] $TxtFile,
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential] $sqlCredential,
@@ -22,15 +59,15 @@ function Convert-RDHTxtToAl {
         [String] $LocalResultFolder
     )
 
-    Write-host "Converting $TxtFile on Container $ContainerName on remote dockerhost $DockerHost" -ForegroundColor Green
+    Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
 
     Copy-FileToDockerHost `
         -DockerHost $DockerHost `
         -DockerHostCredentials $DockerHostCredentials `
         -DockerHostUseSSL:$DockerHostUseSSL `
         -DockerHostSessionOption $DockerHostSessionOption `
-        -ContainerDestinationFolder "C:\ProgramData\navcontainerhelper\ConvertTxt2Al" `
-        -FileName $TxtFile `
+        -RemotePath "C:\ProgramData\navcontainerhelper\ConvertTxt2Al" `
+        -LocalPath $TxtFile `
         -ErrorAction Stop
     
     $LocalTxtFile = Join-Path "C:\ProgramData\navcontainerhelper\ConvertTxt2Al" (get-item $TxtFile).Name
@@ -40,66 +77,14 @@ function Convert-RDHTxtToAl {
             $ContainerName, $LocalTxtFile, $sqlCredential, $startId, $objectsFilter
         )
 
-        $OriginalFolder = "C:\ProgramData\navcontainerhelper\ConvertTxt2Al\Original"
-        $ModifiedFolder = "C:\ProgramData\navcontainerhelper\ConvertTxt2Al\Modified"
-        $DeltaFolder = "C:\ProgramData\navcontainerhelper\ConvertTxt2Al\Delta"
-        $AlFolder = "C:\ProgramData\navcontainerhelper\ConvertTxt2Al\Al"
-        
-        $OriginalObjectsStore = "C:\ProgramData\NavContainerHelper\Extensions\Original-$(Get-NavContainerNavVersion -containerOrImageName $ContainerName)-newsyntax"
+        Import-Module "CRS.NavContainerHelperExtension" -Force
 
-        if (!(Test-path $OriginalObjectsStore)) {
-            Export-NavContainerObjects `
-                -containerName $ContainerName `
-                -objectsFolder $OriginalObjectsStore `
-                -sqlCredential $sqlCredential `
-                -exportTo 'txt folder (new syntax)' `
-                -filter ''
-        }
-
-        Import-ObjectsToNavContainer `
-            -containerName $ContainerName `
-            -ObjectsFile $LocalTxtFile `
-            -sqlCredential $sqlCredential
-
-        Compile-ObjectsInNavContainer `
-            -containerName $ContainerName `
-            -filter 'Compiled=0' `
-            -sqlCredential $sqlCredential `
-            -ErrorAction Continue
-
-        Remove-Item -Path $OriginalFolder -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item -Path $ModifiedFolder -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item -Path $DeltaFolder -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item -Path $AlFolder -Recurse -Force -ErrorAction SilentlyContinue
-        
-        Export-NavContainerObjects `
-            -containerName $ContainerName `
-            -objectsFolder $ModifiedFolder `
-            -sqlCredential $sqlCredential `
-            -exportTo 'txt file (new syntax)' `
-            -filter $objectsFilter 
-        
-        Create-MyOriginalFolder `
-            -originalFolder $OriginalObjectsStore `
-            -modifiedFolder $ModifiedFolder `
-            -myOriginalFolder $OriginalFolder
-
-        Create-MyDeltaFolder `
-            -containerName $ContainerName `
-            -modifiedFolder $ModifiedFolder `
-            -myOriginalFolder $OriginalFolder `
-            -myDeltaFolder $DeltaFolder 
-        
-        Convert-Txt2Al `
-            -containerName $ContainerName `
-            -myDeltaFolder $DeltaFolder `
-            -myAlFolder $AlFolder `
-            -startId $startId
-
-        Compress-Archive `
-            -Path "$AlFolder\*.*" `
-            -DestinationPath "$AlFolder.zip" `
-            -Force
+        Convert-NCHTxtToAl `
+            -ComputerName $ContainerName `
+            -TxtFile LocalTxtFile`
+            -sqlCredential $sqlCredential ´
+            -startId $StartId `
+            -objectFilter $objectsFilter 
 
     }   -ArgumentList $ContainerName, $LocalTxtFile, $sqlCredential, $startId, $objectsFilter
 

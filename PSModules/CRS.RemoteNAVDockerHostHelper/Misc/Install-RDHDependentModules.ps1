@@ -2,6 +2,9 @@ function Install-RDHDependentModules {
     <#
     .SYNOPSIS
     Installs waldo's modules on the container
+
+    .DESCRIPTION
+    Just a wrapper for the "Install-NCHDependentModules" (Module "CRS.NavContainerHelperExtension" that should be installed on the Docker Host).
     
     .PARAMETER DockerHost
     The DockerHost VM name to reach the server that runs docker and hosts the container
@@ -26,7 +29,12 @@ function Install-RDHDependentModules {
         -DockerHostSessionOption $DockerHostSessionOption `
         -ContainerName $DockerContainerName
     
+    .NOTES
+    DockerHost should have module "CRS.NavContainerHelperExtension" installed.  
+    Prep the DockerHost simply by running "Install-RDHDependentModules"
+
     #>
+    
     param(        
         [Parameter(Mandatory = $true)]
         [String] $DockerHost,
@@ -42,42 +50,32 @@ function Install-RDHDependentModules {
         [Switch] $ContainerModulesOnly
     )
 
-    Write-host "Installing dependent modules." -ForegroundColor Green
-
+    Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
-            $ContainerName,$ContainerModulesOnly
+            $ContainerName, $ContainerModulesOnly
         ) 
 
         if (!$ContainerModulesOnly) {
             $null = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
             
-            $FindModule = Find-Module 'navcontainerhelper'
-            write-host -Object "  Installing $($FindModule.Name) version $($FindModule.Version) on Docker Host." -ForegroundColor Gray
-            Install-Module 'navcontainerhelper' -Force 
+            #navcontainerhelper
+            $FindModule = Find-Module 'navcontainerhelper'            
+            if($FindModule){
+                write-host -Object "  Installing $($FindModule.Name) version $($FindModule.Version) on Docker Host." -ForegroundColor Gray
+                Install-Module 'navcontainerhelper' -Force 
+            }
+            
+            #CRS.NavContainerHelperExtension
+            $FindModule = Find-Module 'CRS.NavContainerHelperExtension'           
+            if($FindModule){
+                write-host -Object "  Installing $($FindModule.Name) version $($FindModule.Version) on Docker Host." -ForegroundColor Gray
+                Install-Module 'CRS.NavContainerHelperExtension' -Force 
+            }
         }
-
-        if ($ContainerName) {
-            $Session = Get-NavContainerSession -containerName $ContainerName
-            Invoke-Command -Session $Session -ScriptBlock {
-                param(
-                    $ContainerName
-                )
-                function InstallModuleFromPSGallery ([String] $Module) {
-                    $FindModule = Find-Module $Module
-                    write-host -Object "  Installing $($FindModule.Name) version $($FindModule.Version) from $($FindModule.Repository) on Container $ContainerName" -ForegroundColor Gray
-                    Install-Module $Module -Force 
-                }
-
-                Write-host "Installing dependent modules on Container $ContainerName" -ForegroundColor Green
-                
-                $null = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-
-                InstallModuleFromPSGallery -Module Cloud.Ready.Software.NAV 
-                InstallModuleFromPSGallery -Module Cloud.Ready.Software.SQL 
-                InstallModuleFromPSGallery -Module Cloud.Ready.Software.Windows 
-                InstallModuleFromPSGallery -Module Cloud.Ready.Software.PowerShell 
-            } -ArgumentList $ContainerName
-        }
-    } -ArgumentList $ContainerName,$ContainerModulesOnly
+        
+        Import-Module "CRS.NavContainerHelperExtension" -Force
+        Install-NCHDependentModules -ContainerName $ContainerName -ContainerModulesOnly
+        
+    } -ArgumentList $ContainerName, $ContainerModulesOnly
 }

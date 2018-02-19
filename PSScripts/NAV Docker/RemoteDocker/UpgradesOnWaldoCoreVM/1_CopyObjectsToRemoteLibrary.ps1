@@ -6,24 +6,24 @@ $Filename =
         -DockerHost $Dockerhost `
         -DockerHostCredentials $DockerHostCredentials `
         -DockerHostSessionOption $DockerHostSessionOption `
-        -ContainerDestinationFolder $UpgradeSettings.ObjectLibrary `
-        -FileName $UpgradeSettings.LocalOriginalFile
+        -RemotePath $UpgradeSettings.ObjectLibrary `
+        -LocalPath $UpgradeSettings.LocalOriginalFile
 
 $Filename = 
     Copy-FileToDockerHost `
         -DockerHost $Dockerhost `
         -DockerHostCredentials $DockerHostCredentials `
         -DockerHostSessionOption $DockerHostSessionOption `
-        -ContainerDestinationFolder $UpgradeSettings.ObjectLibrary `
-        -FileName $UpgradeSettings.LocalTargetFile
+        -RemotePath $UpgradeSettings.ObjectLibrary `
+        -LocalPath $UpgradeSettings.LocalTargetFile
         
 $Filename = 
     Copy-FileToDockerHost `
         -DockerHost $Dockerhost `
         -DockerHostCredentials $DockerHostCredentials `
         -DockerHostSessionOption $DockerHostSessionOption `
-        -ContainerDestinationFolder $UpgradeSettings.ObjectLibrary `
-        -FileName "C:\temp\VARO2013R2.txt"
+        -RemotePath $UpgradeSettings.ObjectLibrary `
+        -LocalPath "C:\temp\VARO2013R2.txt"
         
         
 

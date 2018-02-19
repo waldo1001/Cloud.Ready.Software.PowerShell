@@ -1,11 +1,11 @@
-function Sync-RDHNAVTenant {
+function Remove-RDHNAVContainer {
     <#
     .SYNOPSIS
-    Execute Sync-NAVTenant on a container that's running on a remote docker host.
-    
+    Removes a Container on a remote Docker Host.
+
     .DESCRIPTION
-    Execute Sync-NAVTenant on a container that's running on a remote docker host.
-    
+    Just a wrapper for the "Remove-NAVContainer" (Module "NavContainerHelper" that should be installed on the Docker Host).
+
     .PARAMETER DockerHost
     The DockerHost VM name to reach the server that runs docker and hosts the container
     
@@ -19,7 +19,7 @@ function Sync-RDHNAVTenant {
     SessionOptions if necessary
     
     .PARAMETER ContainerName
-    The container you want to run this function on
+    ContainerName
     
     #>
     param(
@@ -34,7 +34,7 @@ function Sync-RDHNAVTenant {
         [Parameter(Mandatory = $true)]
         [String] $ContainerName
     )
-    
+
     Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
 
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
@@ -42,8 +42,7 @@ function Sync-RDHNAVTenant {
             $ContainerName
         ) 
 
-        Import-Module "CRS.NavContainerHelperExtension" -Force
-        Sync-NCHNAVTenant -ContainerName $ContainerName
+        Remove-NavContainer -containerName $ContainerName
 
     } -ArgumentList $ContainerName
 

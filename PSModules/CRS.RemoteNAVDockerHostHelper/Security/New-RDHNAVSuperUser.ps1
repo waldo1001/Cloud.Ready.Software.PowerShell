@@ -3,6 +3,9 @@ function New-RDHNAVSuperUser {
     .SYNOPSIS
     Create a super user on a NAVContainer on a Remote Docker Host
     
+    .DESCRIPTION
+    Just a wrapper for the "New-NCHNAVSuperUser" (Module "CRS.NavContainerHelperExtension" that should be installed on the Docker Host).
+
     .PARAMETER DockerHost
     The DockerHost VM name to reach the server that runs docker and hosts the container
     
@@ -28,6 +31,8 @@ function New-RDHNAVSuperUser {
     Switch to create a webserviceskey on the way..
     
     .EXAMPLE
+    Create a new user "waldo2"
+    
     New-RDHNAVSuperUser `
         -DockerHost $DockerHost `
         -DockerHostCredentials $DockerHostCredentials `
@@ -56,39 +61,22 @@ function New-RDHNAVSuperUser {
         [Parameter(Mandatory=$false)]
         [switch] $CreateWebServicesKey        
     )
-    
+
+    Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
+
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
             $ContainerName,$CreateWebServicesKey,$Username,[SecureString] $Password
         )
-    
-        $Session = Get-NavContainerSession -containerName $ContainerName
-        Invoke-Command -Session $Session -ScriptBlock {
-            param(
-                $CreateWebServicesKey,$Username,[SecureString] $Password
-            )
-            
-            New-NAVServerUser `
-                -ServerInstance NAV `
-                -UserName $username  `
-                -Password $Password `
-                -CreateWebServicesKey:$CreateWebServicesKey 
-                
-            New-NAVServerUserPermissionSet `
-                -Scope System `
-                -ServerInstance NAV `
-                -PermissionSetId SUPER `
-                -UserName $username 
-            
-            Write-Host "UID: $username successfully created!"
-            
-            if ($CreateWebServicesKey) {
-                write-Host "  WS-Key: $((Get-NAVServerUser -ServerInstance NAV | where username -like $username).WebServicesKey)"
-            }
-                
-        }  -ArgumentList $CreateWebServicesKey,$Username,$Password
         
-    
-    } -ArgumentList $ContainerName,$CreateWebServicesKey,$Username,$Password
+        Import-Module "CRS.NavContainerHelperExtension" -Force
+
+        New-NCHNAVSuperUser `
+            -ContainerName $ContainerName `
+            -Username $Username `
+            -Password $Password `
+            -CreateWebServicesKey:$CreateWebServicesKey
+                
+    }  -ArgumentList  $ContainerName,$CreateWebServicesKey,$Username,$Password
 }
 

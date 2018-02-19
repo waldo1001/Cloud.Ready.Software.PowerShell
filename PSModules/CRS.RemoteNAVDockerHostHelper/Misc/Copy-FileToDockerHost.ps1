@@ -15,10 +15,10 @@ function Copy-FileToDockerHost {
     .PARAMETER DockerHostSessionOption
     SessionOptions if necessary
     
-    .PARAMETER ContainerDestinationFolder
+    .PARAMETER RemotePath
     The folder where the file needs to end up on the remote Computer
     
-    .PARAMETER FileName
+    .PARAMETER LocalPath
     The local filename that needs to be copied
     #>
     param(
@@ -31,38 +31,39 @@ function Copy-FileToDockerHost {
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.Remoting.PSSessionOption] $DockerHostSessionOption,
         [Parameter(Mandatory = $true)]
-        [String] $ContainerDestinationFolder,
+        [String] $RemotePath,
         [Parameter(Mandatory = $true)]
-        [String] $FileName        
+        [String] $LocalPath        
     )
-    
-    Write-Host "Copying $FileName to Container $ContainerName on Docker Host $DockerHost" -ForegroundColor Green
+
+    Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
+    Write-Host -ForegroundColor Green "Copying $LocalPath to Container $ContainerName on Docker Host $DockerHost" 
 
     #Zip
-    if ([io.path]::GetExtension($FileName) -ne '.zip'){
-        $ZippedFileName = "$FileName.zip"
-        Write-Host "  Compressing $FileName..." -ForegroundColor Gray
-        Compress-Archive -Path $FileName -DestinationPath $ZippedFileName -Force
+    if ([io.path]::GetExtension($LocalPath) -ne '.zip'){
+        $ZippedFileName = "$LocalPath.zip"
+        Write-Host "  Compressing $LocalPath..." -ForegroundColor Gray
+        Compress-Archive -Path $LocalPath -DestinationPath $ZippedFileName -Force
     } else {
-        $ZippedFileName = $FileName
+        $ZippedFileName = $LocalPath
     }
     
     #Create folder if not exists
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
-            $ContainerDestinationFolder
+            $RemotePath
         )
         
         #Create Folder if not exists
-        If (!(Test-Path $ContainerDestinationFolder)){
-            Write-Host -ForegroundColor Gray "  Creating folder $ContainerDestinationFolder on Docker Host"
-            New-Item -Path $ContainerDestinationFolder -ItemType Directory -Force
+        If (!(Test-Path $RemotePath)){
+            Write-Host -ForegroundColor Gray "  Creating folder $RemotePath on Docker Host"
+            New-Item -Path $RemotePath -ItemType Directory -Force
         }
 
-    } -ArgumentList $ContainerDestinationFolder -ErrorAction Stop
+    } -ArgumentList $RemotePath -ErrorAction Stop
 
     #Copy
-    $ZippedDestinationFileName = Join-Path $ContainerDestinationFolder (get-item $ZippedFileName).Name
+    $ZippedDestinationFileName = Join-Path $RemotePath (get-item $ZippedFileName).Name
     Write-Host "  Copying $ZippedFileName to $ZippedDestinationFileName on $DockerHost ..." -ForegroundColor Gray
     $cs = New-PSSession -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption    
     Copy-Item $ZippedFileName -Destination $ZippedDestinationFileName -ToSession $cs -Recurse
@@ -70,17 +71,17 @@ function Copy-FileToDockerHost {
     #    $FileContent = get-content $ZippedFileName -Raw
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
-            $ContainerName, $ContainerDestinationFolder, $FileName, $ZippedDestinationFileName
+            $ContainerName, $RemotePath, $LocalPath, $ZippedDestinationFileName
         )
         
         #Unzip
         Write-Host "  Extracting $ZippedDestinationFileName..." -ForegroundColor Gray
         Unblock-File $ZippedDestinationFileName
-        Expand-Archive $ZippedDestinationFileName $ContainerDestinationFolder -Force
+        Expand-Archive $ZippedDestinationFileName $RemotePath -Force
         
         #Remove Zip
         Write-Host "  Removing $ZippedDestinationFileName..." -ForegroundColor Gray
         Remove-Item $ZippedDestinationFileName -Force
 
-    } -ArgumentList $ContainerName, $ContainerDestinationFolder, (get-item $FileName).Name , $ZippedDestinationFileName
+    } -ArgumentList $ContainerName, $RemotePath, (get-item $LocalPath).Name , $ZippedDestinationFileName
 }

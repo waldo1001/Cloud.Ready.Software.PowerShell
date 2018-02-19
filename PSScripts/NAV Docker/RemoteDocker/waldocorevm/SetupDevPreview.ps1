@@ -2,6 +2,7 @@
 
 $ContainerDockerImage = 'microsoft/dynamics-nav:devpreview-be'
 $Containername = 'devpreview'
+$ContainerAdditionalParameters += "--ip 172.21.31.4"
 
 $UserName = 'waldo'
 $Password = ConvertTo-SecureString 'waldo1234' -AsPlainText -Force
@@ -17,7 +18,8 @@ New-RDHNAVContainer `
     -ContainerLicenseFile $ContainerLicenseFile `
     -ContainerCredential $ContainerCredential `
     -ContainerAlwaysPull `
-    -ContainerAdditionalParameters $ContainerAdditionalParameters
+    -ContainerAdditionalParameters $ContainerAdditionalParameters `
+    -doNotExportObjectsToText 
 
 New-RDHNAVSuperUser `
     -DockerHost $DockerHost `

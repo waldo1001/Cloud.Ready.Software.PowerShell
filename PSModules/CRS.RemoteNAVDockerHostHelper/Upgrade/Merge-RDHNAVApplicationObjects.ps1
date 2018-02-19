@@ -4,6 +4,7 @@ function Merge-RDHNAVApplicationObjects {
     Merge objects using a NAV Container on a remote Docker Host.
     
     .DESCRIPTION
+    Just a wrapper for the "Merge-NCHNAVApplicationObjects" (Module "CRS.NavContainerHelperExtension" that should be installed on the Docker Host).
     It is using the default merge commandlets coming from Microsoft, and the Cloud.Ready.Software.NAV module from waldo to merge objects.
     Things it considers/executes:
     - Merge the objects
@@ -90,69 +91,18 @@ function Merge-RDHNAVApplicationObjects {
         [Array] $UpgradeSettings
     )
 
+    Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
+
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
             $ContainerName, $UpgradeSettings
         ) 
 
-        $Session = Get-NavContainerSession -containerName $ContainerName
-        Invoke-Command -Session $Session -ScriptBlock {
-            param(
-                $UpgradeSettings
-            )
-            $StartedDateTime = Get-Date
+        Import-Module "CRS.NavContainerHelperExtension" -Force
 
-            if (Test-Path $UpgradeSettings.ResultFolder) {
-                Remove-Item -Path $UpgradeSettings.ResultFolder -Recurse -ErrorAction Stop -Confirm
-            }
-
-            Write-Host -ForegroundColor Green "Starting upgrade with following parameters:"
-            write-host -ForegroundColor Gray -Object (ConvertTo-Json $UpgradeSettings)
-
-            $MergeResult = Merge-NAVUpgradeObjects `
-                -OriginalObjects $UpgradeSettings.OriginalObjects `
-                -ModifiedObjects $UpgradeSettings.ModifiedObjects `
-                -TargetObjects $UpgradeSettings.TargetObjects `
-                -WorkingFolder $UpgradeSettings.ResultFolder `
-                -CreateDeltas `
-                -VersionListPrefixes $UpgradeSettings.VersionListPrefixes `
-                -Force `
-                -DoNotOpenMergeResultFolder `
-                -AvoidConflictsForLanguages $UpgradeSettings.AvoidConflictsForLanguages
-            
-            $FilteredMergeResultFolder = Copy-NAVChangedMergedResultFiles -MergeResultObjects $MergeResult.MergeResult
-            
-            #Save Result
-            $MergeResult | ConvertTo-Json | Set-Content -Path (Join-Path $UpgradeSettings.ResultFolder 'Mergeresult.json')
-            $MergeResult | Export-Clixml -Path (Join-Path $UpgradeSettings.ResultFolder 'Mergeresult.xml')
-            
-            #Save Used Settings
-            $UpgradeSettings | ConvertTo-Json | Set-Content -Path (Join-Path $UpgradeSettings.ResultFolder 'UpgradeSettings.json')
-
-            #List Conflicts
-            $NumberOfConflicts = ($MergeResult.Mergeresult | Where-Object {$_.MergeResult -eq 'Conflict'}).Count
-            Write-host -foregroundcolor Magenta -Object "There are $NumberOfConflicts conflicts."                
-            if ($NumberOfConflicts -ge 1) {
-                $MergeresultSummary = $MergeResult.Mergeresult | Where-Object {$_.MergeResult -eq 'Conflict'} | Group-Object {$_.ObjectType} 
-                foreach ($Item in $MergeresultSummary) {
-                    Write-Host "  $($Item.Count) $($Item.Name) Conflicts" -ForeGroundColor Gray
-                }
-            }
-
-            #List Failed
-            $NumberOfFails = ($MergeResult.Mergeresult | Where-Object {$_.MergeResult -eq 'Failed'}).Count
-            Write-host -foregroundcolor Magenta -Object "There are $NumberOfFails failed objects"
-            if ($NumberOfFails -ge 1) {
-                Foreach ($item in ($MergeResult.Mergeresult | Where-Object {$_.MergeResult -eq 'Failed'})) {
-                    Write-Host "  $($Item.ObjectType) - $($Item.Id): $($Item.Error)" -ForeGroundColor Gray
-                }
-            }
-
-
-            $StoppedDateTime = Get-Date
-            Write-Host 'Total Duration' ([Math]::Round(($StoppedDateTime - $StartedDateTime).TotalSeconds)) 'seconds' -ForegroundColor Yellow
-
-        } -ArgumentList $UpgradeSettings
-
+        Merge-NCHNAVApplicationObjects `
+            -ContainerName $ContainerName `
+            -UpgradeSettings $UpgradeSettings
+        
     } -ArgumentList $ContainerName, $UpgradeSettings
 } 

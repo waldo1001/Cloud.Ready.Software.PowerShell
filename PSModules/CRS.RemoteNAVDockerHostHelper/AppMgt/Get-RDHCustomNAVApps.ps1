@@ -4,7 +4,7 @@ function Get-RDHCustomNAVApps {
     Gets all non-Microsoft Apps from a Container on a remote Docker Host
     
     .DESCRIPTION
-    Gets all non-Microsoft Apps from a Container on a remote Docker Host
+    Just a wrapper for the "Get-NCHCustomNAVApps" (Module "CRS.NavContainerHelperExtension" that should be installed on the Docker Host).
     
     .PARAMETER DockerHost
     The DockerHost VM name to reach the server that runs docker and hosts the container
@@ -42,18 +42,16 @@ function Get-RDHCustomNAVApps {
         [String] $ContainerName
     )
 
-    Write-host "Getting all non-Microsoft Apps from Container $ContainerName on remote dockerhost $DockerHost" -ForegroundColor Green
+    Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
 
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
             $ContainerName
         )
         
-        $Session = Get-NavContainerSession -containerName $ContainerName
-        Invoke-Command -Session $Session -ScriptBlock {
-       
-            Return Get-NAVAppInfo -ServerInstance NAV | Where Publisher -ne 'Microsoft'
+        Import-Module "CRS.NavContainerHelperExtension" -Force
+
+        Get-NCHCustomNAVApps -ContainerName $ContainerName
  
-        }  
     }   -ArgumentList $ContainerName
 }

@@ -36,8 +36,9 @@ function Copy-FileFromDockerHost {
         [Parameter(Mandatory = $true)]
         [String] $LocalPath
     )
-    
-    Write-Host "Copying $RemotePath from Docker Host to local path: $LocalPath." -ForegroundColor Green
+
+    Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
+    Write-Host -ForegroundColor Green "Copying $RemotePath from Docker Host to local path: $LocalPath." 
 
     $cs = New-PSSession -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption    
     Copy-Item -Path $RemotePath -Destination $LocalPath -FromSession $cs -Recurse
