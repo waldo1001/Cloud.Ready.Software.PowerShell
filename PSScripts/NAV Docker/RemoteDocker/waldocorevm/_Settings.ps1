@@ -9,7 +9,6 @@ $UserName = 'administrator'
 $Password = ConvertTo-SecureString $SecretSettings.password -AsPlainText -Force
 $DockerHostCredentials = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
 
-$ContainerLicenseFile = $SecretSettings.containerLicenseFile
 $ContainerAdditionalParameters = @("--network=tlan")
 
 

@@ -1,6 +1,9 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$ContainerDockerImage = 'microsoft/dynamics-nav:devpreview-be'
+$ContainerDockerImage = 'navinsider.azurecr.io/dynamics-nav:11.0.20977.0-finus'
+$ContainerRegistryUserName = $SecretSettings.containerRegistryUserName
+$ContainerRegistryPwd = $SecretSettings.containerRegistryPassword
+
 $Containername = 'devpreview'
 $ContainerAdditionalParameters += "--ip 172.21.31.4"
 
@@ -14,8 +17,10 @@ New-RDHNAVContainer `
     -DockerHostUseSSL:$DockerHostUseSSL `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerDockerImage $ContainerDockerImage `
+    -ContainerRegistryUserName $ContainerRegistryUserName `
+    -ContainerRegistryPwd $ContainerRegistryPwd `
     -ContainerName $Containername `
-    -ContainerLicenseFile $ContainerLicenseFile `
+    -ContainerLicenseFile $SecretSettings.containerLicenseFile `
     -ContainerCredential $ContainerCredential `
     -ContainerAlwaysPull `
     -ContainerAdditionalParameters $ContainerAdditionalParameters `

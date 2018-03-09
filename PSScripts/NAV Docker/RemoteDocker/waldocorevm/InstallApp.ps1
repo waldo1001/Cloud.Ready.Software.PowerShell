@@ -1,7 +1,7 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'devpreview'
-$Appfilename = "$env:USERPROFILE\Dropbox\Cloud Ready Software\Projects\Microsoft\HDI Videos\waldo\HDI add upgrade logic to an extension\Apps\Books\Cloud Ready Software GmbH_BookShelf_1.0.0.0.app"
+$Containername = 'RBA'
+$Appfilename = "C:\Users\Waldo\Documents\My Received Files\Cloud Ready Software GmbH_ReceiptBank_1.0.1.1\Cloud Ready Software GmbH_ReceiptBank_1.0.1.1.app"
 
 Install-RDHNAVApp `
     -DockerHost $DockerHost `

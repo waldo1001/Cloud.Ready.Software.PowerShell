@@ -5,18 +5,18 @@ $SecretSettings = Get-ObjectFromJSON (Join-Path $PSScriptRoot "_SecretSettings.j
 $UpgradeSettings = @{}
 
 #General
-$UpgradeSettings.UpgradeName = 'VARO'
+$UpgradeSettings.UpgradeName = 'Beneparts105'
 
-$UpgradeSettings.OriginalVersion = 'Distri81' 
-$UpgradeSettings.ModifiedVersion = 'VARO2013R2'
-$UpgradeSettings.TargetVersion = 'Distri110'
+$UpgradeSettings.OriginalVersion = 'Distri104' 
+$UpgradeSettings.ModifiedVersion = 'Distri105'
+$UpgradeSettings.TargetVersion = 'Beneparts'
 
 $UpgradeSettings.LocalOriginalFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.OriginalVersion).zip"
-$UpgradeSettings.LocalModifiedFile = $null
-$UpgradeSettings.LocalTargetFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.TargetVersion).zip"
+$UpgradeSettings.LocalModifiedFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.ModifiedVersion).zip"
+$UpgradeSettings.LocalTargetFile = 'C:\temp\Beneparts.zip' #"$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.TargetVersion).zip" 
 
-$UpgradeSettings.VersionListPrefixes = 'NAVW1', 'NAVBE', 'I'
-$UpgradeSettings.AvoidConflictsForLanguages = 'NLB','FRB','ENU','ESP'
+$UpgradeSettings.VersionListPrefixes = 'NAVW1', 'NAVBE', 'Test', 'I'
+$UpgradeSettings.AvoidConflictsForLanguages = $null #'NLB','FRB','ENU'
 
 #Semi-fixed settings (scope within container)
 $UpgradeSettings.UpgradeFolder = 'C:\ProgramData\NavContainerHelper\Upgrades' #locally in the container
@@ -41,7 +41,7 @@ $ContainerName = 'Upgrade'
 $ContainerUserName = 'waldo'
 $ContainerPassword = ConvertTo-SecureString 'waldo1234' -AsPlainText -Force
 $ContainerCredentials = New-Object System.Management.Automation.PSCredential ($ContainerUserName, $ContainerPassword)
-$ContainerImage = 'microsoft/dynamics-nav:devpreview' 
+$ContainerImage = 'microsoft/dynamics-nav:2018-be' 
 $ContainerIP = '172.21.31.19'
 $ContainerLicenseFile = $SecretSettings.containerLicenseFile
 
