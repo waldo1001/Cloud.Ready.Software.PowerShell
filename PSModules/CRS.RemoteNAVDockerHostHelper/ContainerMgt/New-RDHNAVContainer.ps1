@@ -27,6 +27,12 @@ function New-RDHNAVContainer {
     .PARAMETER ContainerDockerImage
     The docker image
     
+    .PARAMETER ContainerRegistryUserName
+    Login username to login to the private registry that hosts the ContainerDockerImage
+
+    .PARAMETER ContainerRegistryPwd
+    Password to login to the private registry that hosts the ContainerDockerImage
+
     .PARAMETER ContainerLicenseFile
     The NAV License File
     
@@ -66,16 +72,20 @@ function New-RDHNAVContainer {
         [Parameter(Mandatory = $true)]
         [String] $ContainerName,
         [Parameter(Mandatory = $false)]
-        [String[]] $ContainerAdditionalParameters=@(), 
+        [String[]] $ContainerAdditionalParameters = @(), 
         [Parameter(Mandatory = $true)]
         [String] $ContainerDockerImage, 
+        [Parameter(Mandatory = $false)]
+        [String] $ContainerRegistryUserName, 
+        [Parameter(Mandatory = $false)]
+        [String] $ContainerRegistryPwd,         
         [Parameter(Mandatory = $true)]
         [String] $ContainerLicenseFile, 
         [Parameter(Mandatory = $false)]
-        [String] $ContainerMemory = '3G', 
+        [String] $ContainerMemory, 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential] $ContainerCredential, 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [Switch] $ContainerAlwaysPull,
         [Parameter(Mandatory = $false)]
         [Switch] $DoNotInstallDependentModules,
@@ -87,15 +97,17 @@ function New-RDHNAVContainer {
 
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
-            $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, [System.Management.Automation.PSCredential] $ContainerCredential, [bool] $ContainerAlwaysPull,$DoNotInstallDependentModules,$doNotExportObjectsToText
+            $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerRegistryUserName, $ContainerRegistryPwd, $ContainerLicenseFile, $ContainerMemory, [System.Management.Automation.PSCredential] $ContainerCredential, [bool] $ContainerAlwaysPull, $DoNotInstallDependentModules, $doNotExportObjectsToText
         ) 
 
         Import-Module "CRS.NavContainerHelperExtension" -Force
-
+        
         New-NCHNAVContainer `
             -containerName $ContainerName `
             -additionalParameters $ContainerAdditionalParameters `
             -imageName $ContainerDockerImage `
+            -registryUserName $ContainerRegistryUserName `
+            -registryPwd $ContainerRegistryPwd `
             -licenseFile $ContainerLicenseFile `
             -memoryLimit $ContainerMemory `
             -Credential $ContainerCredential `
@@ -104,5 +116,5 @@ function New-RDHNAVContainer {
             -accept_eula `
             -DoNotInstallDependentModules:$DoNotInstallDependentModules
 
-    } -ArgumentList $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerLicenseFile, $ContainerMemory, $ContainerCredential, $ContainerAlwaysPull,$DoNotInstallDependentModules,$doNotExportObjectsToText
+    } -ArgumentList $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerRegistryUserName, $ContainerRegistryPwd, $ContainerLicenseFile, $ContainerMemory, $ContainerCredential, $ContainerAlwaysPull, $DoNotInstallDependentModules, $doNotExportObjectsToText
 }

@@ -88,7 +88,7 @@ function Merge-RDHNAVApplicationObjects {
         [Parameter(Mandatory = $true)]
         [String] $ContainerName,
         [Parameter(Mandatory = $true)]
-        [Array] $UpgradeSettings
+        [Object] $UpgradeSettings
     )
 
     Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"

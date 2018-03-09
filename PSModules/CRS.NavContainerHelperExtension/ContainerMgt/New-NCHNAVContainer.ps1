@@ -9,22 +9,28 @@ function New-NCHNAVContainer {
     .PARAMETER ContainerName
     ContainerName
     
-    .PARAMETER ContainerAdditionalParameters
+    .PARAMETER AdditionalParameters
     Additional Docker parameters
     
-    .PARAMETER ContainerDockerImage
+    .PARAMETER imageName
     The docker image
+
+    .PARAMETER registryUserName
+    Login username to login to the private registry that hosts the ContainerDockerImage
     
-    .PARAMETER ContainerLicenseFile
+    .PARAMETER registryPwd
+    Password to login to the private registry that hosts the ContainerDockerImage
+    
+    .PARAMETER LicenseFile
     The NAV License File
     
-    .PARAMETER ContainerMemory
+    .PARAMETER memoryLimit
     The memory the container is limited to use (Default: 3G)
     
-    .PARAMETER ContainerCredential
+    .PARAMETER Credential
     Credential for the container
     
-    .PARAMETER ContainerAlwaysPull
+    .PARAMETER alwaysPull
     Always pull a new version or not (switch)
         
     .PARAMETER DoNotInstallDependentModules
@@ -47,14 +53,18 @@ function New-NCHNAVContainer {
         [Parameter(Mandatory = $false)]
         [String[]] $AdditionalParameters=@(), 
         [Parameter(Mandatory = $true)]
-        [String] $imageName, 
+        [String] $imageName,        
+        [Parameter(Mandatory = $false)]
+        [String] $registryUserName, 
+        [Parameter(Mandatory = $false)]
+        [string] $registryPwd,         
         [Parameter(Mandatory = $true)]
         [String] $LicenseFile, 
         [Parameter(Mandatory = $false)]
-        [String] $memoryLimit = '3G', 
+        [String] $memoryLimit, 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential] $Credential, 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [Switch] $alwaysPull,
         [Parameter(Mandatory = $false)]
         [Switch] $accept_eula,
@@ -65,6 +75,12 @@ function New-NCHNAVContainer {
     )
 
     Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
+
+    if ($registryUserName) {
+        $registry = $imageName.Substring(0,$imageName.IndexOf('/'))
+        Write-Host -ForegroundColor Gray "Connecting docker to $registry user: $registryUserName pwd: $registryPwd"
+        docker login "$registry" -u "$registryUserName" -p "$registryPwd"
+    }
 
     New-NavContainer `
         -accept_eula:$accept_eula `
@@ -79,7 +95,7 @@ function New-NCHNAVContainer {
         -updateHosts `
         -auth NavUserPassword `
         -includeCSide `
-        -Verbose 
+        -Verbose
 
     if (!$DoNotInstallDependentModules){
         Install-NCHDependentModules `
