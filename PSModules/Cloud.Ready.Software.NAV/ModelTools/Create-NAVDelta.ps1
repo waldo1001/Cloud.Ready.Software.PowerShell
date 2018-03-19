@@ -136,7 +136,7 @@
     if ($IncludeFilesInNewSyntax){
         Write-Host -Foregroundcolor Green 'Comparing and creating Deltas...(NewSyntax)'
         Get-ChildItem -Path $AppFilesFolderNewSyntax -Include *.* -File -Recurse | Remove-Item
-        $result = Compare-NAVApplicationObject -OriginalPath ($originalFolderNewSyntax.FullName + '\*.txt') -ModifiedPath ($modifiedFolderNewSyntax.FullName + '\*.txt') -DeltaPath $AppFilesFolderNewSyntax -NoCodeCompression -Force 
+        $result = Compare-NAVApplicationObject -OriginalPath ($originalFolderNewSyntax.FullName + '\*.txt') -ModifiedPath ($modifiedFolderNewSyntax.FullName + '\*.txt') -DeltaPath $AppFilesFolderNewSyntax -NoCodeCompression -Force -ExportToNewSyntax
         Write-Host -Foregroundcolor Green "Deltas extracted to $AppFilesFolderNewSyntax (NewSyntax)"
     }
 
