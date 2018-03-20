@@ -16,13 +16,13 @@ Invoke-Command -Session $Session -ScriptBlock {
 
     $DatabaseName = ((Get-NAVServerConfiguration -ServerInstance NAV -AsXml).configuration.appSettings.add | Where Key -eq DatabaseName).value
 
-    Write-Host "Export Objects to normal syntax"
+<#     Write-Host "Export Objects to normal syntax"
     Export-NAVApplicationObject `
         -DatabaseName $DatabaseName `
         -Path "$ModifiedPath.txt" `
         -LogPath "$ModifiedPath.Log" `
         -ExportTxtSkipUnlicensed `
-        -Filter $Filter
+        -Filter $Filter #>
     
     Write-Host "Export Objects to new syntax"
     Export-NAVApplicationObject `
@@ -33,10 +33,10 @@ Invoke-Command -Session $Session -ScriptBlock {
         -Filter $Filter `
         -ExportToNewSyntax
 
-    Write-Host "Split the objects"
+<#     Write-Host "Split the objects"
     Split-NAVApplicationObjectFile `
         -Source "$ModifiedPath.txt" `
-        -Destination $ModifiedPath 
+        -Destination $ModifiedPath  #>
 
     Split-NAVApplicationObjectFile `
         -Source "$ModifiedNewSyntaxPath.txt" `
