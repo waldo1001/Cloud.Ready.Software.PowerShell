@@ -18,7 +18,7 @@ function Get-AlSymbolFile {
 
     $TargetFile = Join-Path -Path $DownloadFolder -ChildPath "$($Publisher)_$($AppName)_$($AppVersion).app"
 
-    if ($Authentication = 'NavUserPassword') {
+    if ($Authentication -eq 'NavUserPassword') {
         $PasswordTemplate = "$($Credential.UserName):$($Credential.GetNetworkCredential().Password)"
         $PasswordBytes = [System.Text.Encoding]::Default.GetBytes($PasswordTemplate)
         $EncodedText = [Convert]::ToBase64String($PasswordBytes)
