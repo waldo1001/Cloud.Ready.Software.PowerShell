@@ -5,9 +5,9 @@
         Based on the Microsoft Dynamics NAV Team Blog, this function is going to download a cumulative update to a download folder.
         The function uses the download helper (Load-NAVCumulativeUpdateHelper)
     .EXAMPLE
-        Get-NAVCumulativeUpdateFile -versions 2017 -Locale fr-FR -CountryCode BE -DownloadFolder C:\_Download
+        Get-NAVCumulativeUpdateFile -versions 2018 -Locale fr-FR -CountryCode BE -DownloadFolder C:\_Download
     .EXAMPLE
-        Get-NAVCumulativeUpdateFile -versions 2017 -CountryCode BE
+        Get-NAVCumulativeUpdateFile -versions 2018 -CountryCode BE
     .OUTPUT
         - Objects with info about the downloaded cumulative updates
         - the downloaded CU update
@@ -19,11 +19,13 @@ function Get-NAVCumulativeUpdateFile
         [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
         [String]$CountryCode,
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName)]
-        [ValidateSet('2013','2013 R2','2015','2016','2017')]
+        [ValidateSet('2013','2013 R2','2015','2016','2017','2018')]
         [String]$version = '2017',
         [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
         [String]$CUNo,
-        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]        [String]$DownloadFolder = $env:TEMP,                [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
+        [String]$DownloadFolder = $env:TEMP,        
+        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
         [Switch]$ShowDownloadFolder,
         [Parameter(Mandatory=$false)]        
         [Switch]$GetInfoOnly
@@ -130,6 +132,7 @@ function Get-NAVCumulativeUpdateFile
                 '2015'   {$Edition = '8.0'}
                 '2016'   {$Edition = '9.0'}
                 '2017'   {$Edition = '10.0'}
+                '2018'   {$Edition = '11.0'}
                 Default  {$Edition = $version}
             }
             $filename = (Join-Path -Path $DownloadFolder -ChildPath ("NAV.$($Edition).$($Build).$($CountryCode).DVD.CU$($updateno.Value)$([io.path]::GetExtension($DownloadLink.DownloadUrl))"))
