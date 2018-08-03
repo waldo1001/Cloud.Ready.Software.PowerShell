@@ -37,7 +37,7 @@ function New-RDHNAVContainer {
     The NAV License File
     
     .PARAMETER ContainerMemory
-    The memory the container is limited to use (Default: 3G)
+    The memory the container is limited to use
     
     .PARAMETER ContainerCredential
     Credential for the container

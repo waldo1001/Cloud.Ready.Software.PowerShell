@@ -25,7 +25,7 @@ function New-NCHNAVContainer {
     The NAV License File
     
     .PARAMETER memoryLimit
-    The memory the container is limited to use (Default: 3G)
+    The memory the container is limited to use
     
     .PARAMETER Credential
     Credential for the container
