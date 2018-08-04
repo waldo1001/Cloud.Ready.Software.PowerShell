@@ -1,15 +1,23 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$ContainerDockerImage = 'navinsider.azurecr.io/dynamics-nav:11.0.20977.0-finus'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
+#$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox'
+$ContainerAlwaysPull = $true
+$SecretSettings.containerLicenseFile = "c:\programdata\navcontainerhelper\NAV2018License.flf"
+
 $ContainerRegistryUserName = $SecretSettings.containerRegistryUserName
 $ContainerRegistryPwd = $SecretSettings.containerRegistryPassword
 
 $Containername = 'devpreview'
 $ContainerAdditionalParameters += "--ip 172.21.31.4"
 
+<# 
+part of settings (or should be at least)
+
 $UserName = 'waldo'
-$Password = ConvertTo-SecureString 'waldo1234' -AsPlainText -Force
+$Password = ConvertTo-SecureString 'Waldo1234' -AsPlainText -Force
 $ContainerCredential = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
+ #>
 
 New-RDHNAVContainer `
     -DockerHost $DockerHost `
@@ -22,16 +30,6 @@ New-RDHNAVContainer `
     -ContainerName $Containername `
     -ContainerLicenseFile $SecretSettings.containerLicenseFile `
     -ContainerCredential $ContainerCredential `
-    -ContainerAlwaysPull `
+    -ContainerAlwaysPull:$ContainerAlwaysPull `
     -ContainerAdditionalParameters $ContainerAdditionalParameters `
-    -doNotExportObjectsToText 
-
-New-RDHNAVSuperUser `
-    -DockerHost $DockerHost `
-    -DockerHostCredentials $DockerHostCredentials `
-    -DockerHostUseSSL:$DockerHostUseSSL `
-    -DockerHostSessionOption $DockerHostSessionOption `
-    -ContainerName $Containername `
-    -Username 'waldo2' `
-    -Password (ConvertTo-SecureString 'waldo1234' -AsPlainText -Force) `
-    -CreateWebServicesKey
+    -doNotExportObjectsToText

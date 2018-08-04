@@ -6,6 +6,6 @@ Enter-PSSession `
     -UseSSL:$DockerHostUseSSL `
     -SessionOption $DockerHostSessionOption
 
-<#
+break
+
 Enter-NavContainer -ContainerName psdevenv
-#>

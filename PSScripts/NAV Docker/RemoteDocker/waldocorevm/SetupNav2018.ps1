@@ -1,13 +1,11 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$ContainerDockerImage = 'microsoft/bcsandbox'
-$Containername = 'navserver'
-$ContainerAdditionalParameters += "--ip 172.21.31.3"
-$ContainerAlwaysPull = $false
-$SecretSettings.containerLicenseFile = "c:\programdata\navcontainerhelper\NAV2018License.flf"
+$ContainerDockerImage = 'microsoft/dynamics-nav:2018-be'
+$Containername = 'nav2018'
+$ContainerAdditionalParameters += "--ip 172.21.31.12"
 
 $UserName = 'waldo'
-$Password = ConvertTo-SecureString 'Waldo1234' -AsPlainText -Force
+$Password = ConvertTo-SecureString 'waldo1234' -AsPlainText -Force
 $ContainerCredential = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
 
 $UserName = 'sa'
@@ -20,8 +18,8 @@ New-RDHNAVContainer `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerDockerImage $ContainerDockerImage `
     -ContainerName $Containername `
-    -ContainerLicenseFile $SecretSettings.containerLicenseFile `
+    -ContainerLicenseFile "https://www.dropbox.com/s/ustqbztx5reznzx/5230132_003%20and%20004%20IFACTO_NAV2018_BELGIUM_2017%2012%2001.flf?dl=1" `
     -ContainerCredential $ContainerCredential `
-    -ContainerAlwaysPull:$ContainerAlwaysPull `
+    -ContainerAlwaysPull:$false `
     -ContainerAdditionalParameters $ContainerAdditionalParameters `
-    -doNotExportObjectsToText
+    -doNotExportObjectsToText 

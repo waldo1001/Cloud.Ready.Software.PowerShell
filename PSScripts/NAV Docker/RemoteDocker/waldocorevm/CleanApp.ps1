@@ -4,13 +4,13 @@
 $Containername = 'navserver'
 
 
-Get-RDHCustomNAVApps `
+<# Get-RDHCustomNAVApps `
     -DockerHost $DockerHost `
     -DockerHostCredentials $DockerHostCredentials `
     -DockerHostUseSSL:$DockerHostUseSSL `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerName $Containername 
-
+ #>
 
 Clean-RDHCustomNAVApps `
     -DockerHost $DockerHost `

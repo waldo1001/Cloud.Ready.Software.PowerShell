@@ -2,14 +2,14 @@
 $SecretSettings = Get-ObjectFromJSON (Join-Path $PSScriptRoot "_SecretSettings.json") #Secret Settings, stored in a .json file, and ignored by git
 
 $DockerHost = 'waldocorevm'
-$DockerHostUseSSL = $false
-$DockerHostSessionOption = New-PSSessionOption
+$DockerHostUseSSL = $true
+$DockerHostSessionOption = New-PSSessionOption -SkipCACheck -SkipCNCheck
 
 $UserName = 'administrator'
 $Password = ConvertTo-SecureString $SecretSettings.password -AsPlainText -Force
 $DockerHostCredentials = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
 
-$ContainerDockerImage = 'microsoft/dynamics-nav:devpreview'
+$ContainerDockerImage = 'microsoft/dynamics-nav'
 $Containername = 'psdevenv'
 $ContainerLicenseFile = $SecretSettings.containerLicenseFile
 $ContainerAdditionalParameters = @("--network=tlan")

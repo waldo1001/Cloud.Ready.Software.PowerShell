@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$ContainerDockerImage = 'microsoft/dynamics-nav:devpreview-finbe'
+$ContainerDockerImage = 'microsoft/bcsandbox:be'
 $Containername = 'dyn365be'
 $ContainerAdditionalParameters += "--ip 172.21.31.7"
 
