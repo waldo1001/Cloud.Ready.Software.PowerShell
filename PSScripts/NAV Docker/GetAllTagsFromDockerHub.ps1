@@ -1,6 +1,7 @@
 $ResultingObject = @()
 
-$result = Invoke-WebRequest -Uri "https://registry.hub.docker.com/v2/repositories/microsoft/dynamics-nav/tags/" 
+$result = Invoke-WebRequest -Uri "https://registry.hub.docker.com/v2/repositories/microsoft/dynamics-nav/tags/?page_size=250" 
+#$result = Invoke-WebRequest -Uri "https://registry.hub.docker.com/v2/repositories/microsoft/bcsandbox/tags/?page_size=250" 
 $JsonObject = ConvertFrom-Json -InputObject $result.Content
 $ResultingObject = $JsonObject.results
 $ParentId = 1
