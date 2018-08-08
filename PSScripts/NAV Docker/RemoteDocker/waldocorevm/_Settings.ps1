@@ -18,6 +18,5 @@ $ContainerSqlCredential = New-Object System.Management.Automation.PSCredential (
 
 $ContainerAdditionalParameters = @("--network=tlan")
 
-
 #Just to update the modules to my local latest uncommitted version to be able to test them
 import-module "$env:USERPROFILE\Dropbox\GitHub\Cloud.Ready.Software.PowerShell\PSModules\CRS.RemoteNAVDockerHostHelper\CRS.RemoteNAVDockerHostHelper.psm1" -Force -WarningAction SilentlyContinue

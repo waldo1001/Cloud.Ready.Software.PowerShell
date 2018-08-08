@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'devpreview'
+$Containername = 'nav2018'
 
 Export-RDHNAVApplicationObjects `
     -DockerHost $DockerHost `

@@ -1,15 +1,11 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$ContainerDockerImage = 'microsoft/dynamics-nav:2018-be'
 $Containername = 'nav2018'
 $ContainerAdditionalParameters += "--ip 172.21.31.12"
 
-$UserName = 'waldo'
-$Password = ConvertTo-SecureString 'waldo1234' -AsPlainText -Force
-$ContainerCredential = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
-
-$UserName = 'sa'
-$ContainerSqlCredential = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
+#$ContainerDockerImage = 'microsoft/dynamics-nav:2018'
+$ContainerDockerImage = 'microsoft/dynamics-nav:2018-be'
+$ContainerAlwaysPull = $true
 
 New-RDHNAVContainer `
     -DockerHost $DockerHost `
@@ -18,7 +14,7 @@ New-RDHNAVContainer `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerDockerImage $ContainerDockerImage `
     -ContainerName $Containername `
-    -ContainerLicenseFile "https://www.dropbox.com/s/ustqbztx5reznzx/5230132_003%20and%20004%20IFACTO_NAV2018_BELGIUM_2017%2012%2001.flf?dl=1" `
+    -ContainerLicenseFile $SecretSettings.containerLicenseFile `
     -ContainerCredential $ContainerCredential `
     -ContainerAlwaysPull:$false `
     -ContainerAdditionalParameters $ContainerAdditionalParameters `
