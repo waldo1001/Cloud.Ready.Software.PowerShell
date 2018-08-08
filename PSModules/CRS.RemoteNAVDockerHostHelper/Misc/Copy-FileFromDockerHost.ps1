@@ -70,6 +70,9 @@ function Copy-FileFromDockerHost {
     Unblock-File $ZippedDestinationFileName
     Expand-Archive $ZippedDestinationFileName $LocalPath -Force
 
+    $UnzippedFileName = Join-Path $LocalPath (get-item $ZippedDestinationFileName).Name
+    $UnzippedFileName = $UnzippedFileName.Substring(0, $UnzippedFileName.Length - 4)
+    
     #Clean Zip Files
     Remove-Item -Path $ZippedDestinationFileName -ErrorAction SilentlyContinue -Force
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
@@ -79,4 +82,6 @@ function Copy-FileFromDockerHost {
 
         Remove-Item -Path $ZippedFileName -ErrorAction SilentlyContinue -Force
     } -ArgumentList $ZippedFileName -ErrorAction Stop
+
+    return $UnzippedFileName
 }
