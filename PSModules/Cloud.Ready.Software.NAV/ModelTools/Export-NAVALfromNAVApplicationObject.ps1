@@ -1,5 +1,5 @@
-﻿function Export-NAVALfromNAVApplicationObject
-{
+﻿function Export-NAVALfromNAVApplicationObject {
+    [CmdletBinding()]
     param (
         [String]$ServerInstance,
         [String]$WorkingFolder,
@@ -7,11 +7,11 @@
         [String]$Filter,
         [Switch]$OpenResultFolderInVSCode,
         [int]$extensionStartId = 70000000
-          )
+    )
  
     #Import NAV Modules - we need the $NAVIde
     Import-NAVModules | Out-Null
-    if ([String]::IsNullOrEmpty($NAVIDE)){
+    if ([String]::IsNullOrEmpty($NAVIDE)) {
         Write-Error "Please make sure the module 'Microsoft.Dynamics.NAV.Model.Tools' is present on this machine"
     }
 
@@ -25,7 +25,7 @@
  
     #Get DatabaseServer
     $Servername = $NAVServerInstanceObject.DatabaseServer
-    if (-not([string]::IsNullOrEmpty($NAVServerInstanceObject.DatabaseInstance))){
+    if (-not([string]::IsNullOrEmpty($NAVServerInstanceObject.DatabaseInstance))) {
         $Servername += "\$($NAVServerInstanceObject.DatabaseInstance)"
     }
 
@@ -33,7 +33,7 @@
     $exportfinsqlcommand = """$NAVIde"" command=ExportToNewSyntax,file=$ExportFile,servername=""$Servername"",database=""$($NAVServerInstanceObject.DatabaseName)"",Logfile=$LogFile"
     
     if ($Filter -ne "")
-        {$exportfinsqlcommand = "$exportfinsqlcommand,filter=$Filter"} 
+    {$exportfinsqlcommand = "$exportfinsqlcommand,filter=$Filter"} 
  
     $Command = $exportfinsqlcommand
  
@@ -42,23 +42,19 @@
     cmd /c $Command
  
     $ExportFileExists = Test-Path "$ExportFile"
-    If (-not $ExportFileExists) 
-    {
-            write-error "Error on exporting to $ExportFile.  Look at the information below."
-            if (Test-Path "$WorkingFolder\navcommandresult.txt"){Type "$WorkingFolder\navcommandresult.txt"}
-            if (Test-Path $LogFile) {type $LogFile}
-            break
+    If (-not $ExportFileExists) {
+        write-error "Error on exporting to $ExportFile.  Look at the information below."
+        if (Test-Path "$WorkingFolder\navcommandresult.txt") {Type "$WorkingFolder\navcommandresult.txt"}
+        if (Test-Path $LogFile) {type $LogFile}
+        break
     }
-    else
-    {
+    else {
         $NAVObjectFile = Get-ChildItem $ExportFile
-        if ($NAVObjectFile.Length -eq 0)
-        {
+        if ($NAVObjectFile.Length -eq 0) {
             Remove-Item $NAVObjectFile
         } 
  
-        if (Test-Path "$WorkingFolder\navcommandresult.txt")
-        {
+        if (Test-Path "$WorkingFolder\navcommandresult.txt") {
             Type "$WorkingFolder\navcommandresult.txt"
         }
     }
@@ -75,14 +71,10 @@
  
     Write-Host -ForegroundColor Green "Convert objects with:" 
     Write-host -ForegroundColor Gray "  $Command"
-    try{
-        cmd /c $Command 
-    } catch {
-    }
+    cmd /c $Command 
+
     #Open
-    if($OpenResultFolderInVSCode){
+    if ($OpenResultFolderInVSCode) {
         code $TargetPath
-    } else {
-        start $TargetPath
     }
 } 
