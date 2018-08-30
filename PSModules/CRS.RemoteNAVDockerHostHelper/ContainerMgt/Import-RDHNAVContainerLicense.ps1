@@ -38,10 +38,7 @@ function Import-RDHNAVContainerLicense {
         [String] $LicenseFile
     )
 
-    
-    $containerName = 'devpreview'
     $RemoteFolder = 'C:\ProgramData\navcontainerhelper'
-
 
     Copy-FileToDockerHost `
         -DockerHost $DockerHost `

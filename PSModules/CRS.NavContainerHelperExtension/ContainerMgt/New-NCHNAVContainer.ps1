@@ -51,7 +51,7 @@ function New-NCHNAVContainer {
         [Parameter(Mandatory = $true)]
         [String] $ContainerName,
         [Parameter(Mandatory = $false)]
-        [String[]] $AdditionalParameters=@(), 
+        [String[]] $AdditionalParameters = @(), 
         [Parameter(Mandatory = $true)]
         [String] $imageName,        
         [Parameter(Mandatory = $false)]
@@ -71,13 +71,16 @@ function New-NCHNAVContainer {
         [Parameter(Mandatory = $false)]
         [Switch] $DoNotInstallDependentModules,
         [Parameter(Mandatory = $false)]
-        [Switch] $doNotExportObjectsToText
+        [Switch] $doNotExportObjectsToText,        
+        [Parameter(Mandatory = $false)]
+        [Switch] $enableSymbolLoading
+
     )
 
     Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
 
     if ($registryUserName) {
-        $registry = $imageName.Substring(0,$imageName.IndexOf('/'))
+        $registry = $imageName.Substring(0, $imageName.IndexOf('/'))
         Write-Host -ForegroundColor Gray "Connecting docker to $registry user: $registryUserName pwd: $registryPwd"
         docker login "$registry" -u "$registryUserName" -p "$registryPwd"
     }
@@ -95,9 +98,10 @@ function New-NCHNAVContainer {
         -updateHosts `
         -auth NavUserPassword `
         -includeCSide `
+        -enableSymbolLoading:$enableSymbolLoading `
         -Verbose
 
-    if (!$DoNotInstallDependentModules){
+    if (!$DoNotInstallDependentModules) {
         Install-NCHDependentModules `
             -ContainerName $ContainerName `
             -ContainerModulesOnly

@@ -90,14 +90,16 @@ function New-RDHNAVContainer {
         [Parameter(Mandatory = $false)]
         [Switch] $DoNotInstallDependentModules,
         [Parameter(Mandatory = $false)]
-        [Switch] $doNotExportObjectsToText
+        [Switch] $doNotExportObjectsToText,        
+        [Parameter(Mandatory = $false)]
+        [Switch] $enableSymbolLoading
     )
 
     Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
 
     Invoke-Command -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption -ScriptBlock {
         param(
-            $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerRegistryUserName, $ContainerRegistryPwd, $ContainerLicenseFile, $ContainerMemory, [System.Management.Automation.PSCredential] $ContainerCredential, [bool] $ContainerAlwaysPull, $DoNotInstallDependentModules, $doNotExportObjectsToText
+            $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerRegistryUserName, $ContainerRegistryPwd, $ContainerLicenseFile, $ContainerMemory, [System.Management.Automation.PSCredential] $ContainerCredential, [bool] $ContainerAlwaysPull, $DoNotInstallDependentModules, $doNotExportObjectsToText, $enableSymbolLoading
         ) 
 
         Import-Module "CRS.NavContainerHelperExtension" -Force
@@ -114,7 +116,8 @@ function New-RDHNAVContainer {
             -alwaysPull:$ContainerAlwaysPull `
             -doNotExportObjectsToText:$doNotExportObjectsToText `
             -accept_eula `
-            -DoNotInstallDependentModules:$DoNotInstallDependentModules
+            -DoNotInstallDependentModules:$DoNotInstallDependentModules `
+            -enableSymbolLoading:$enableSymbolLoading
 
-    } -ArgumentList $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerRegistryUserName, $ContainerRegistryPwd, $ContainerLicenseFile, $ContainerMemory, $ContainerCredential, $ContainerAlwaysPull, $DoNotInstallDependentModules, $doNotExportObjectsToText
+    } -ArgumentList $ContainerName, $ContainerAdditionalParameters, $ContainerDockerImage, $ContainerRegistryUserName, $ContainerRegistryPwd, $ContainerLicenseFile, $ContainerMemory, $ContainerCredential, $ContainerAlwaysPull, $DoNotInstallDependentModules, $doNotExportObjectsToText, $enableSymbolLoading
 }
