@@ -3,8 +3,8 @@
 $Containername = 'devpreview'
 $ContainerAdditionalParameters += "--ip 172.21.31.4"
 
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
-#$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:base'
+#$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:base'
 $ContainerAlwaysPull = $true
 
 New-RDHNAVContainer `

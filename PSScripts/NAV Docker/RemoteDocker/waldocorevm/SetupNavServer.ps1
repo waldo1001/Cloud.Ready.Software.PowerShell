@@ -3,8 +3,8 @@
 $Containername = 'navserver'
 $ContainerAdditionalParameters += "--ip 172.21.31.3"
 
-$ContainerDockerImage = 'microsoft/bcsandbox:be'
-$ContainerAlwaysPull = $false
+$ContainerDockerImage = 'microsoft/bcsandbox:base'
+$ContainerAlwaysPull = $true
 
 New-RDHNAVContainer `
     -DockerHost $DockerHost `
