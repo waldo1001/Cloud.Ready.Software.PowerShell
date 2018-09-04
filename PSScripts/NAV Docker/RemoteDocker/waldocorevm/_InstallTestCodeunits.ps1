@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'devpreview'
+$Containername = 'navserver'
 
 Import-RDHTestToolkitToNavContainer `
     -DockerHost $DockerHost `

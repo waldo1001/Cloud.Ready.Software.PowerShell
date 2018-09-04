@@ -4,7 +4,7 @@ $ProductVersion = 'I10.1'
 $ModifiedOnly   = $true
 
 switch ($CurrentProduct)
-{
+{ 
     'Food' {    
         $VersionPrefix  = 'NAVW1','NAVBE','I7','I8','IB','SI','IF' 
     }

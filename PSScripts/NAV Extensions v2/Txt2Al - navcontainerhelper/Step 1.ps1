@@ -4,7 +4,7 @@ Create an isolated environment in which we will convert the code
 #>
 
 $ContainerName = 'tempdev'
-$imageName = 'microsoft/dynamics-nav:devpreview-finus'
+$imageName = 'microsoft/dynamics-nav:11.0.20723.0-finus'
 $licenseFile = 'C:\ProgramData\NavContainerHelper\NAV2018License.flf'
 $DeltaPath = 'C:\ProgramData\NavContainerHelper\Migration\DELTA'
 
@@ -23,4 +23,6 @@ New-NavContainer `
     -licensefile $licenseFile `
     -imageName $imageName `
     -updateHosts `
-    -additionalParameters $additionalParameters
+    -additionalParameters $additionalParameters `
+    -accept_outdated
+

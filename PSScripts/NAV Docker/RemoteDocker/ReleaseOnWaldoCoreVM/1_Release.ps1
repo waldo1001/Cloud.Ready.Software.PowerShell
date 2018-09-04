@@ -1,20 +1,19 @@
 . '.\_Settings.ps1'
 
-$ReleaseSettings.Product = 'Distri'
-$ReleaseSettings.LocalPath = "C:\temp\Distri.txt"
-$ReleaseSettings.ProductVersion = 'I10.5'
+$ReleaseSettings.Product = 'Food'
+$ReleaseSettings.LocalPath = "C:\temp\Food60301ModifiedDEV.txt"
+$ReleaseSettings.ProductVersion = 'IF6.3.1'
 $ReleaseSettings.ModifiedOnly = $true
 
-switch ($ReleaseSettings.Product)
-{
+switch ($ReleaseSettings.Product) {
     'Food' {    
-        $ReleaseSettings.VersionPrefix  = 'NAVW1','NAVBE','I7','I8','IB','SI','IF' 
+        $ReleaseSettings.VersionPrefix = 'NAVW1', 'NAVBE', 'I7', 'I8', 'IB', 'SI', 'IF' 
     }
     'Distri' {  
-        $ReleaseSettings.VersionPrefix  = 'NAVW1','NAVBE','Test','I' 
+        $ReleaseSettings.VersionPrefix = 'NAVW1', 'NAVBE', 'Test', 'I' 
     }
     'Base' {
-        $ReleaseSettings.VersionPrefix  = 'NAVW1','NAVBE','Test','I7','I8','I9','IB' 
+        $ReleaseSettings.VersionPrefix = 'NAVW1', 'NAVBE', 'Test', 'I7', 'I8', 'I9', 'IB' 
     }
     Default {
         write-error "Unknown product '$($ReleaseSettings.Product)'"
@@ -23,13 +22,13 @@ switch ($ReleaseSettings.Product)
 }
 
 $ReleaseResult = 
-    Release-RDHNAVApplicationObjects `
-        -DockerHost $DockerHost `
-        -DockerHostCredentials $DockerHostCredentials `
-        -DockerHostUseSSL:$DockerHostUseSSL `
-        -DockerHostSessionOption $DockerHostSessionOption `
-        -ContainerName $ContainerName `
-        -ReleaseSettings $ReleaseSettings
+Release-RDHNAVApplicationObjects `
+    -DockerHost $DockerHost `
+    -DockerHostCredentials $DockerHostCredentials `
+    -DockerHostUseSSL:$DockerHostUseSSL `
+    -DockerHostSessionOption $DockerHostSessionOption `
+    -ContainerName $ContainerName `
+    -ReleaseSettings $ReleaseSettings
 
 
 $ReleaseResult.VersionlistCompare | 

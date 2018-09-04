@@ -9,5 +9,3 @@ Enter-PSSession `
 break
 
 Enter-NavContainer -containerName 'devpreview'
-
-winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname = "waldocorevm"; CertificateThumbprint = "DE18102C8F12DB2956B932380775C1CED4DB7051"}

@@ -18,7 +18,7 @@ $ContainerName = 'psdevenv'
 $ContainerUserName = 'waldo'
 $ContainerPassword = ConvertTo-SecureString 'waldo1234' -AsPlainText -Force
 $ContainerCredential = New-Object System.Management.Automation.PSCredential ($ContainerUserName, $ContainerPassword)
-$ContainerImage = 'microsoft/dynamics-nav:devpreview' 
+$ContainerImage = 'microsoft/bcsandbox' 
 $ContainerLicenseFile = $SecretSettings.containerLicenseFile
 $ContainerAdditionalParameters = @("--network=tlan")
 $ContainerAdditionalParameters += "--ip 172.21.31.6"

@@ -6,6 +6,7 @@ $ContainerAdditionalParameters += "--ip 172.21.31.12"
 #$ContainerDockerImage = 'microsoft/dynamics-nav:2018'
 $ContainerDockerImage = 'microsoft/dynamics-nav:2018-be'
 $ContainerAlwaysPull = $true
+$enableSymbolLoading = $true
 
 New-RDHNAVContainer `
     -DockerHost $DockerHost `
@@ -16,6 +17,7 @@ New-RDHNAVContainer `
     -ContainerName $Containername `
     -ContainerLicenseFile $SecretSettings.containerLicenseFile `
     -ContainerCredential $ContainerCredential `
-    -ContainerAlwaysPull:$false `
+    -ContainerAlwaysPull:$ContainerAlwaysPull `
     -ContainerAdditionalParameters $ContainerAdditionalParameters `
-    -doNotExportObjectsToText 
+    -doNotExportObjectsToText `
+    -enableSymbolLoading:$enableSymbolLoading

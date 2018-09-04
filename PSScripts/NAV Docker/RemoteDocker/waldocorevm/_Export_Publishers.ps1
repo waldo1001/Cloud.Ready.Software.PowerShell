@@ -1,9 +1,9 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $ObjectsFolder = "C:\temp"
-$ContainerDockerImage = 'microsoft/bcsandbox'
+#$ContainerDockerImage = 'microsoft/bcsandbox:us'
 #$ContainerDockerImage = 'microsoft/dynamics-nav:2018-be'
-#$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
 #$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox'
 
 #Fixed params
@@ -18,7 +18,7 @@ switch ($true) {
         break
     }  
     ($ContainerDockerImage.StartsWith('bcinsider.azurecr.io/bcsandbox')) {  
-        $ExportTo = join-path $ExportToBase 'Business Central (Next)'
+        $ExportTo = join-path $ExportToBase 'Business Central (Insider Next)'
         break
     }
     ($ContainerDockerImage.Contains('2018')) {  

@@ -13,5 +13,5 @@ $Credential = New-Object System.Management.Automation.PSCredential ($UserName, $
 Import-DeltasToNavContainer -containerName $ContainerName -deltaFolder $DeltaPath -sqlCredential $Credential
 
 Compile-ObjectsInNavContainer -containerName $ContainerName `
-                              -filter "" `
-                              -sqlCredential $Credential
+    -filter "MOdified=1" `
+    -sqlCredential $Credential

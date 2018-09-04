@@ -4,8 +4,8 @@ $Containername = 'devpreview'
 $ContainerAdditionalParameters += "--ip 172.21.31.4"
 
 $ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:base'
-#$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:base'
 $ContainerAlwaysPull = $true
+$enableSymbolLoading = $true
 
 New-RDHNAVContainer `
     -DockerHost $DockerHost `
@@ -20,4 +20,6 @@ New-RDHNAVContainer `
     -ContainerCredential $ContainerCredential `
     -ContainerAlwaysPull:$ContainerAlwaysPull `
     -ContainerAdditionalParameters $ContainerAdditionalParameters `
-    -doNotExportObjectsToText
+    -doNotExportObjectsToText `
+    -enableSymbolLoading:$enableSymbolLoading
+    

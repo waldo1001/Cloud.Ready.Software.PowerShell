@@ -10,12 +10,12 @@ Enter-PSSession -ComputerName $DockerHost  -Credential (Get-Credential)
 Enter-NavContainer -containerName $DockerContainerName
 #>
 
-$ResultWithoutLanguages = Join-Path $ResultFolder "ResultWithoutLanguages.txt"
-$ResultWithLanguages = Join-Path $ResultFolder "ResultWithLanguages.txt"
+$ResultWithoutLanguages = Join-Path $UpgradeSettings.ResultFolder "ResultWithoutLanguages.txt"
+$ResultWithLanguages = Join-Path $UpgradeSettings.ResultFolder "ResultWithLanguages.txt"
 
 #Join First (languages need to be added all in the same destination)
 Join-NAVApplicationObjectFile `
-    -Source (Join-Path $ResultFolder "MergeResult_ChangedOnly\*.txt") `
+    -Source (Join-Path $UpgradeSettings.ResultFolder "MergeResult_ChangedOnly\*.txt") `
     -Destination $ResultWithoutLanguages
 
 #Original First
@@ -26,12 +26,18 @@ get-childitem $LanguageFolder -Filter "$OriginalVersion*" |
     
 #Then Modified
 $LanguageFiles = get-childitem $LanguageFolder -Filter "$ModifiedVersion*"
+    foreach {
+        Import-NAVApplicationObjectLanguage `
+    }
 
 #Target Last
 $LanguageFiles = get-childitem $LanguageFolder -Filter "$TargetVersion*"
+    foreach {
+        Import-NAVApplicationObjectLanguage `
+    }
 
 #Split
-$ResultWithLanguagesFolder = Join-Path $ResultFolder "ResultWithLanguages"
+$ResultWithLanguagesFolder = Join-Path $UpgradeSettings.ResultFolder "ResultWithLanguages"
 Split-NAVApplicationObjectFile `
     -Source $ResultWithLanguages `
     -Destination $ResultWithLanguagesFolder

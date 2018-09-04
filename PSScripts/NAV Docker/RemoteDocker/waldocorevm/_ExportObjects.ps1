@@ -1,6 +1,6 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'nav2018'
+$Containername = 'navserver'
 
 Export-RDHNAVApplicationObjects `
     -DockerHost $DockerHost `
@@ -8,4 +8,6 @@ Export-RDHNAVApplicationObjects `
     -DockerHostUseSSL:$DockerHostUseSSL `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerName $Containername `
-    -Path 'C:\Temp\'
+    -Path 'C:\Temp\' `
+    -filter 'Id=459'
+

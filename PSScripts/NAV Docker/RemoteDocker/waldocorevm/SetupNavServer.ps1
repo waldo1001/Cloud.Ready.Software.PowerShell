@@ -5,6 +5,7 @@ $ContainerAdditionalParameters += "--ip 172.21.31.3"
 
 $ContainerDockerImage = 'microsoft/bcsandbox:base'
 $ContainerAlwaysPull = $true
+$enableSymbolLoading = $true
 
 New-RDHNAVContainer `
     -DockerHost $DockerHost `
@@ -17,4 +18,5 @@ New-RDHNAVContainer `
     -ContainerCredential $ContainerCredential `
     -ContainerAlwaysPull:$ContainerAlwaysPull `
     -ContainerAdditionalParameters $ContainerAdditionalParameters `
-    -doNotExportObjectsToText
+    -doNotExportObjectsToText `
+    -enableSymbolLoading:$enableSymbolLoading

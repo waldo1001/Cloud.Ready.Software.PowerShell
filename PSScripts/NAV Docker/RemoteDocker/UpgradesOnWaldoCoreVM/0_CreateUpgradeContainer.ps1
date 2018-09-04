@@ -11,6 +11,5 @@ New-RDHNAVContainer `
     -ContainerAdditionalParameters @("--network=tlan","--ip $ContainerIP") `
     -ContainerCredential $ContainerCredentials `
     -ContainerAlwaysPull `
-    -doNotExportObjectsToText `
-    -ContainerMemory 8G
+    -doNotExportObjectsToText
 

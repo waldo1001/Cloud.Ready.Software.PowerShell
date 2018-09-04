@@ -5,23 +5,25 @@ $SecretSettings = Get-ObjectFromJSON (Join-Path $PSScriptRoot "_SecretSettings.j
 $UpgradeSettings = @{}
 
 #General
-$UpgradeSettings.UpgradeName = 'Beneparts105'
+$UpgradeSettings.UpgradeName = 'iFactoFood6032'
 
-$UpgradeSettings.OriginalVersion = 'Distri104' 
-$UpgradeSettings.ModifiedVersion = 'Distri105'
-$UpgradeSettings.TargetVersion = 'Beneparts'
+$UpgradeSettings.OriginalVersion = 'Foodware602' 
+$UpgradeSettings.ModifiedVersion = 'Foodware603'
+$UpgradeSettings.TargetVersion = 'iFactoFood603'
 
 $UpgradeSettings.LocalOriginalFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.OriginalVersion).zip"
 $UpgradeSettings.LocalModifiedFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.ModifiedVersion).zip"
-$UpgradeSettings.LocalTargetFile = 'C:\temp\Beneparts.zip' #"$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.TargetVersion).zip" 
+$UpgradeSettings.LocalTargetFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.TargetVersion).zip" 
 
-$UpgradeSettings.VersionListPrefixes = 'NAVW1', 'NAVBE', 'Test', 'I'
-$UpgradeSettings.AvoidConflictsForLanguages = $null #'NLB','FRB','ENU'
+$UpgradeSettings.VersionListPrefixes = 'NAVW1', 'NAVBE', 'Test', 'SI', 'IB', 'IF'     #Food
+#$UpgradeSettings.VersionListPrefixes = 'NAVW1', 'NAVBE', 'Test', 'I'                 #Distri
+$UpgradeSettings.AvoidConflictsForLanguages = 'NLB','FRB','ENU','NLD'
 
 #Semi-fixed settings (scope within container)
 $UpgradeSettings.UpgradeFolder = 'C:\ProgramData\NavContainerHelper\Upgrades' #locally in the container
 $UpgradeSettings.ObjectLibrary = Join-Path $UpgradeSettings.UpgradeFolder '_ObjectLibrary'
 $UpgradeSettings.ResultFolder = Join-Path $UpgradeSettings.UpgradeFolder "$($UpgradeSettings.UpgradeName)_Result"
+$UpgradeSettings.LanguagesFolder = Join-Path $UpgradeSettings.ResultFolder "Languages"
 
 $UpgradeSettings.OriginalObjects = Join-Path -Path $UpgradeSettings.ObjectLibrary -ChildPath "$($UpgradeSettings.OriginalVersion).txt"
 $UpgradeSettings.ModifiedObjects = Join-Path -Path $UpgradeSettings.ObjectLibrary -ChildPath "$($UpgradeSettings.ModifiedVersion).txt"
@@ -41,7 +43,7 @@ $ContainerName = 'Upgrade'
 $ContainerUserName = 'waldo'
 $ContainerPassword = ConvertTo-SecureString 'waldo1234' -AsPlainText -Force
 $ContainerCredentials = New-Object System.Management.Automation.PSCredential ($ContainerUserName, $ContainerPassword)
-$ContainerImage = 'microsoft/dynamics-nav:2018-be' 
+$ContainerImage = 'microsoft/dynamics-nav:2018-cu3-be' 
 $ContainerIP = '172.21.31.19'
 $ContainerLicenseFile = $SecretSettings.containerLicenseFile
 

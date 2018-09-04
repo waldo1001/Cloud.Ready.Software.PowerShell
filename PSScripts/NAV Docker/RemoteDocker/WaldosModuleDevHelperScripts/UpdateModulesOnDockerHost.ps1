@@ -5,4 +5,4 @@ $ModulePath = "$env:USERPROFILE\dropbox\github\Cloud.Ready.Software.PowerShell\P
 $cs = New-PSSession -ComputerName $DockerHost -UseSSL:$DockerHostUseSSL -Credential $DockerHostCredentials -SessionOption $DockerHostSessionOption
 
 Get-ChildItem $ModulePath | %{
-    Copy-Item `        -Path $_.FullName `        -Destination 'C:\Program Files\WindowsPowerShell\Modules\CRS.NavContainerHelperExtension\1.0.1.8' `        -ToSession $cs `        -Force `        -Recurse        }        Remove-PSSession $cs
+    Copy-Item `        -Path $_.FullName `        -Destination 'C:\Program Files\WindowsPowerShell\Modules\CRS.NavContainerHelperExtension\1.0.2.0' `        -ToSession $cs `        -Force `        -Recurse        }        Remove-PSSession $cs
