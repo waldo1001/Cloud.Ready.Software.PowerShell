@@ -1,43 +1,77 @@
 . '.\_Settings.ps1'
 
-<#
-"Set-Location $DockerHostScriptLocation" | clip
-Enter-PSSession -ComputerName $DockerHost  -Credential (Get-Credential)
-#>
-<#
-. '.\_Settings.ps1'
-"Set-Location $DockerHostScriptLocation" | clip
-Enter-NavContainer -containerName $DockerContainerName
-#>
-
-$ResultWithoutLanguages = Join-Path $UpgradeSettings.ResultFolder "ResultWithoutLanguages.txt"
-$ResultWithLanguages = Join-Path $UpgradeSettings.ResultFolder "ResultWithLanguages.txt"
-
-#Join First (languages need to be added all in the same destination)
-Join-NAVApplicationObjectFile `
-    -Source (Join-Path $UpgradeSettings.ResultFolder "MergeResult_ChangedOnly\*.txt") `
-    -Destination $ResultWithoutLanguages
-
-#Original First
-get-childitem $LanguageFolder -Filter "$OriginalVersion*" |
-    foreach {
-        Import-NAVApplicationObjectLanguage `
-    }
+Invoke-Command -ComputerName $DockerHost -Credential $DockerHostCredentials -UseSSL:$DockerHostUseSSL -SessionOption $DockerHostSessionOption -ScriptBlock {
+    param(
+        $UpgradeSettings, $ContainerName
+    )
     
-#Then Modified
-$LanguageFiles = get-childitem $LanguageFolder -Filter "$ModifiedVersion*"
-    foreach {
-        Import-NAVApplicationObjectLanguage `
-    }
+    Invoke-Command -Session (Get-NavContainerSession -containerName $ContainerName) -ScriptBlock {
+        param(
+            $UpgradeSettings
+        )
 
-#Target Last
-$LanguageFiles = get-childitem $LanguageFolder -Filter "$TargetVersion*"
-    foreach {
-        Import-NAVApplicationObjectLanguage `
-    }
 
-#Split
-$ResultWithLanguagesFolder = Join-Path $UpgradeSettings.ResultFolder "ResultWithLanguages"
-Split-NAVApplicationObjectFile `
-    -Source $ResultWithLanguages `
-    -Destination $ResultWithLanguagesFolder
+        $ResultWithLanguages = Join-Path $UpgradeSettings.ResultFolder "ResultWithLanguages"
+
+        $null = Remove-Item -Path $ResultWithLanguages -Force -ErrorAction SilentlyContinue
+        $null = New-Item -Path $ResultWithLanguages -ItemType Directory -ErrorAction SilentlyContinue
+
+        Join-NAVApplicationObjectFile -Source (Join-Path $UpgradeSettings.ResultFolder "MergeResult\*.txt") -Destination "$ResultWithLanguages.txt"
+        
+        #Copy-Item -Path (Join-Path $UpgradeSettings.ResultFolder "MergeResult\*.txt") -Destination $ResultWithLanguages
+
+        #Original First
+        get-childitem $UpgradeSettings.LanguagesFolder -Filter "$($UpgradeSettings.OriginalVersion)*" |
+            foreach {
+            $languageId = $_.BaseName.Substring($_.BaseName.Length - 3)
+            $languagePath = $_.FullName
+            Write-host "Processing $languagePath"
+
+            Import-NAVApplicationObjectLanguage `
+                -LanguageId $languageId `
+                -LanguagePath $languagePath `
+                -Source "$ResultWithLanguages.txt" `
+                -Destination "$ResultWithLanguages.txt" `
+                -Force `
+                -WarningAction SilentlyContinue            
+                    
+        }
+
+        #Then Modified
+        get-childitem $UpgradeSettings.LanguagesFolder -Filter "$($UpgradeSettings.ModifiedVersion)*" |
+            foreach {
+            $languageId = $_.BaseName.Substring($_.BaseName.Length - 3)
+            $languagePath = $_.FullName
+            Write-host "Processing $languagePath"
+
+            Import-NAVApplicationObjectLanguage `
+                -LanguageId $languageId `
+                -LanguagePath $languagePath `
+                -Source "$ResultWithLanguages.txt" `
+                -Destination "$ResultWithLanguages.txt" `
+                -Force `
+                -WarningAction SilentlyContinue            
+        }
+
+        #Target Last
+        get-childitem $UpgradeSettings.LanguagesFolder -Filter "$($UpgradeSettings.TargetVersion)*" |
+            foreach {
+            $languageId = $_.BaseName.Substring($_.BaseName.Length - 3)
+            $languagePath = $_.FullName
+            Write-host "Processing $languagePath"
+
+            Import-NAVApplicationObjectLanguage `
+                -LanguageId $languageId `
+                -LanguagePath $languagePath `
+                -Source "$ResultWithLanguages.txt" `
+                -Destination "$ResultWithLanguages.txt" `
+                -Force `
+                -WarningAction SilentlyContinue            
+        }
+
+        #Join-NAVApplicationObjectFile -Source "$ResultWithLanguages\*.txt" -Destination "$ResultWithLanguages.txt"
+        Split-navApplicationObjectFile -Source "$ResultWithLanguages.txt" -Destination "$ResultWithLanguages"
+        
+    } -ArgumentList $UpgradeSettings
+
+} -ArgumentList $UpgradeSettings, $ContainerName
