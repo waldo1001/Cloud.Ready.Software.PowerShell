@@ -1,8 +1,8 @@
 . '.\_Settings.ps1'
 
-$ReleaseSettings.Product = 'Food'
-$ReleaseSettings.LocalPath = "C:\temp\Food60301ModifiedDEV.txt"
-$ReleaseSettings.ProductVersion = 'IF6.3.1'
+$ReleaseSettings.Product = 'Distri'
+$ReleaseSettings.LocalPath = "C:\temp\DistriRelease\Release 11.2\DistriDEV.txt"
+$ReleaseSettings.ProductVersion = 'I11.2'
 $ReleaseSettings.ModifiedOnly = $true
 
 switch ($ReleaseSettings.Product) {
@@ -34,4 +34,4 @@ Release-RDHNAVApplicationObjects `
 $ReleaseResult.VersionlistCompare | 
     Format-Table -AutoSize
 
-Start-Process (get-item $ReleaseResult.LocalPath).directory
+Start-Process $ReleaseResult.LocalPath

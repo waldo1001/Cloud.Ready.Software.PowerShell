@@ -3,4 +3,6 @@
 
 Start-VM -Name $DockerHost
 
+#Restart-VM -Name $DockerHost
+
 

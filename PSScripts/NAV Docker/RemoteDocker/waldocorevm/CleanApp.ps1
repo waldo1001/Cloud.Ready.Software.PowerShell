@@ -9,7 +9,7 @@ $Containername = 'devpreview'
     -DockerHostCredentials $DockerHostCredentials `
     -DockerHostUseSSL:$DockerHostUseSSL `
     -DockerHostSessionOption $DockerHostSessionOption `
-    -ContainerName $Containername 
+    -ContainerName $Containernamein 
  #>
 
 Clean-RDHCustomNAVApps `

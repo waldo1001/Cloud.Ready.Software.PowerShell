@@ -8,4 +8,4 @@ Enter-PSSession `
 
 break
 
-Enter-NavContainer -containerName 'devpreview'
+Enter-NavContainer -containerName 'bconprem'

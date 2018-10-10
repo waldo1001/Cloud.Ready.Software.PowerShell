@@ -3,7 +3,7 @@ STEP 3
 Apply Delta to database & export as new syntax
 #>
 
-$ContainerName = 'tempdev'
+$ContainerName = 'bconprem'
 $DeltaPath = 'C:\ProgramData\NavContainerHelper\Migration\DELTA'
 
 $UserName = 'sa'

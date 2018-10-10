@@ -2,15 +2,15 @@
 
 $ObjectsFolder = "C:\temp"
 #$ContainerDockerImage = 'microsoft/bcsandbox:us'
-#$ContainerDockerImage = 'microsoft/dynamics-nav:2018-be'
+$ContainerDockerImage = 'microsoft/dynamics-nav:2018-cu8'
 #$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox'
+#$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox'
 
 #Fixed params
-$ExportToBase = "$env:USERPROFILE\Dropbox (Personal)\GitHub\Blogs\blog.CALAnalysis\Published Events\"
+$ExportToBase = "$env:USERPROFILE\Dropbox (Personal)\Dynamics NAV\ObjectLibrary\"
 switch ($true) {
     ($ContainerDockerImage.StartsWith('microsoft/bcsandbox')) {  
-        $ExportTo = join-path $ExportToBase 'Business Central'
+        $ExportTo = join-path $ExportToBase 'Business Central (Current)'
         break
     }  
     ($ContainerDockerImage.StartsWith('bcinsider.azurecr.io/bcsandbox-master')) {  
@@ -18,7 +18,7 @@ switch ($true) {
         break
     }  
     ($ContainerDockerImage.StartsWith('bcinsider.azurecr.io/bcsandbox')) {  
-        $ExportTo = join-path $ExportToBase 'Business Central'
+        $ExportTo = join-path $ExportToBase 'Business Central (Insider Next)'
         break
     }
     ($ContainerDockerImage.Contains('2018')) {  
@@ -66,10 +66,3 @@ Remove-RDHNAVContainer `
     -DockerHostUseSSL:$DockerHostUseSSL `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerName $Containername 
-
-Export-NAVEventPublishers `
-    -ModuleToolAPIPath $ModuleToolAPIPath `
-    -SourceFile $ObjectFile `
-    -DestinationFolder $ExportTo 
-
-start $ExportTo 

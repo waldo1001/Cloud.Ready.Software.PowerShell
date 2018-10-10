@@ -5,19 +5,19 @@ $SecretSettings = Get-ObjectFromJSON (Join-Path $PSScriptRoot "_SecretSettings.j
 $UpgradeSettings = @{}
 
 #General
-$UpgradeSettings.UpgradeName = 'iFactoFood6032'
+$UpgradeSettings.UpgradeName = 'DistriBC'
 
-$UpgradeSettings.OriginalVersion = 'Foodware602' 
-$UpgradeSettings.ModifiedVersion = 'Foodware603'
-$UpgradeSettings.TargetVersion = 'iFactoFood603'
+$UpgradeSettings.OriginalVersion = 'NAV2018CU8BE' 
+$UpgradeSettings.ModifiedVersion = 'Distri112'
+$UpgradeSettings.TargetVersion = '13.0.24630.0-be'
 
 $UpgradeSettings.LocalOriginalFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.OriginalVersion).zip"
 $UpgradeSettings.LocalModifiedFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.ModifiedVersion).zip"
 $UpgradeSettings.LocalTargetFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.TargetVersion).zip" 
 
-$UpgradeSettings.VersionListPrefixes = 'NAVW1', 'NAVBE', 'Test', 'SI', 'IB', 'IF'     #Food
-#$UpgradeSettings.VersionListPrefixes = 'NAVW1', 'NAVBE', 'Test', 'I'                 #Distri
-$UpgradeSettings.AvoidConflictsForLanguages = 'NLB','FRB','ENU','NLD'
+#$UpgradeSettings.VersionListPrefixes = 'NAVW1', 'NAVBE', 'Test', 'SI', 'IB', 'IF'     #Food
+$UpgradeSettings.VersionListPrefixes = 'NAVW1', 'NAVBE', 'Test', 'I'                 #Distri
+$UpgradeSettings.AvoidConflictsForLanguages = $null #'NLB', 'FRB', 'ENU', 'NLD'
 
 #Semi-fixed settings (scope within container)
 $UpgradeSettings.UpgradeFolder = 'C:\ProgramData\NavContainerHelper\Upgrades' #locally in the container
@@ -39,7 +39,7 @@ $DockerHostSessionOption = New-PSSessionOption
 $DockerHostUseSSL = $false
 
 #ContainerSettings
-$ContainerName = 'Upgrade'
+$ContainerName = 'bconprem'
 $ContainerUserName = 'waldo'
 $ContainerPassword = ConvertTo-SecureString 'waldo1234' -AsPlainText -Force
 $ContainerCredentials = New-Object System.Management.Automation.PSCredential ($ContainerUserName, $ContainerPassword)

@@ -1,12 +1,12 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'nav2018'
-$ContainerAdditionalParameters += "--ip 172.21.31.12"
+$Containername = 'bccurrent'
+$ContainerAdditionalParameters += "--ip 172.21.31.3"
 
-#$ContainerDockerImage = 'microsoft/dynamics-nav:2018'
-$ContainerDockerImage = 'microsoft/dynamics-nav:2018-cu5-be'
+$ContainerDockerImage = 'microsoft/bcsandbox:base'
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $true
+#$SecretSettings.containerLicenseFile = 'c:\programdata\navcontainerhelper\NAV2018License.flf'
 
 New-RDHNAVContainer `
     -DockerHost $DockerHost `

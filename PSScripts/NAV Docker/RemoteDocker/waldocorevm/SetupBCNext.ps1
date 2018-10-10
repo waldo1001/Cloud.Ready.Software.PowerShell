@@ -1,11 +1,13 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'navserver'
-$ContainerAdditionalParameters += "--ip 172.21.31.3"
+$Containername = 'bcnext'
+$ContainerAdditionalParameters += "--ip 172.21.31.15"
 
-$ContainerDockerImage = 'microsoft/bcsandbox:base'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:base'
 $ContainerAlwaysPull = $true
-$enableSymbolLoading = $true
+$enableSymbolLoading = $false
+#$SecretSettings.containerLicenseFile = 'c:\programdata\navcontainerhelper\NAV2018License.flf'
+
 
 New-RDHNAVContainer `
     -DockerHost $DockerHost `
@@ -13,6 +15,8 @@ New-RDHNAVContainer `
     -DockerHostUseSSL:$DockerHostUseSSL `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerDockerImage $ContainerDockerImage `
+    -ContainerRegistryUserName $SecretSettings.containerRegistryUserName `
+    -ContainerRegistryPwd $SecretSettings.containerRegistryPassword `
     -ContainerName $Containername `
     -ContainerLicenseFile $SecretSettings.containerLicenseFile `
     -ContainerCredential $ContainerCredential `
@@ -20,3 +24,4 @@ New-RDHNAVContainer `
     -ContainerAdditionalParameters $ContainerAdditionalParameters `
     -doNotExportObjectsToText `
     -enableSymbolLoading:$enableSymbolLoading
+    

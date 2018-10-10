@@ -1,7 +1,8 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $containerName = 'devpreview'
-$Path = 'C:\Temp\Reports'
+$Path = 'C:\Temp\DirectionsNA'
+$filter = 'Type=3;Id=1..100'
 
 $result = Export-RDHNAVApplicationObjectsAsAL `
     -DockerHost $DockerHost `
@@ -10,7 +11,6 @@ $result = Export-RDHNAVApplicationObjectsAsAL `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerName $containerName `
     -Path $Path `
-    -extensionStartId 50000 `
-    -filter 'Type=3'  #All Reports
+    -filter $filter
 
 start $result

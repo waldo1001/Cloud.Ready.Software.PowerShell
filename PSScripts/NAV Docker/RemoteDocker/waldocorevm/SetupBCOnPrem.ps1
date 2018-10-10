@@ -1,11 +1,13 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'devpreview'
-$ContainerAdditionalParameters += "--ip 172.21.31.4"
+$Containername = 'bconprem'
+$ContainerAdditionalParameters += "--ip 172.21.31.14"
 
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:base'
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem'
 $ContainerAlwaysPull = $true
-$enableSymbolLoading = $true
+$enableSymbolLoading = $false
+#$SecretSettings.containerLicenseFile = 'c:\programdata\navcontainerhelper\NAV2018License.flf'
+
 
 New-RDHNAVContainer `
     -DockerHost $DockerHost `

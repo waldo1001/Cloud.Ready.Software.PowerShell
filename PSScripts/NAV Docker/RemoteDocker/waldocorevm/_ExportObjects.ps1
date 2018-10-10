@@ -1,6 +1,8 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'navserver'
+$Containername = 'bconprem'
+$Path = 'C:\Temp\'
+$filter = ''
 
 Export-RDHNAVApplicationObjects `
     -DockerHost $DockerHost `
@@ -8,6 +10,7 @@ Export-RDHNAVApplicationObjects `
     -DockerHostUseSSL:$DockerHostUseSSL `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerName $Containername `
-    -Path 'C:\Temp\' `
-    -filter 'Id=459'
+    -Path $Path `
+    -filter $filter
 
+Start $Path
