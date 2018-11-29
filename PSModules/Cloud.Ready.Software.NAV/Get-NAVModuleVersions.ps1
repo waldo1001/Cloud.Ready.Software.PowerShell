@@ -33,7 +33,12 @@ function Get-NAVModuleVersions {
     }
 
     if ($searchIn -eq $null) {
-        $searchIn = @( (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Dynamics NAV'), (Join-Path $env:ProgramFiles 'Microsoft Dynamics NAV') )
+        $searchIn = @( 
+                (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Dynamics NAV'), 
+                (Join-Path $env:ProgramFiles 'Microsoft Dynamics NAV'),
+                (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Dynamics 365 Business Central'), 
+                (Join-Path $env:ProgramFiles 'Microsoft Dynamics 365 Business Central')
+                )
     }
 
     foreach ($searchPath in $searchIn) {
