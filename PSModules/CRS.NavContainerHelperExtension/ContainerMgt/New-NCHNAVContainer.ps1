@@ -35,6 +35,15 @@ function New-NCHNAVContainer {
         
     .PARAMETER DoNotInstallDependentModules
     Switch to avoid installing the Cloud.Ready.Software.* modules on the container
+
+    .PARAMETER assignPremiumPlan
+    Assigns premium plan in the sandbox
+
+    .PARAMETER includeTestToolkit
+    include Test Toolkit
+
+    .PARAMETER includeTestLibrariesOnly
+    include Test Libraries Only
     
     .EXAMPLE
     Simply create a new container:
@@ -73,7 +82,13 @@ function New-NCHNAVContainer {
         [Parameter(Mandatory = $false)]
         [Switch] $doNotExportObjectsToText,        
         [Parameter(Mandatory = $false)]
-        [Switch] $enableSymbolLoading
+        [Switch] $enableSymbolLoading,
+        [Parameter(Mandatory = $false)]
+        [Switch] $includeTestToolkit,
+        [Parameter(Mandatory = $false)]
+        [Switch] $includeTestLibrariesOnly,
+        [Parameter(Mandatory = $false)]
+        [Switch] $assignPremiumPlan
 
     )
 
@@ -90,8 +105,8 @@ function New-NCHNAVContainer {
         -containerName $ContainerName `
         -imageName $imageName `
         -licenseFile $LicenseFile `
-        -additionalParameters $AdditionalParameters `
         -memoryLimit $memoryLimit `
+        -additionalParameters $AdditionalParameters `
         -alwaysPull:$alwaysPull `
         -Credential $Credential `
         -doNotExportObjectsToText:$doNotExportObjectsToText `
@@ -99,6 +114,10 @@ function New-NCHNAVContainer {
         -auth NavUserPassword `
         -includeCSide `
         -enableSymbolLoading:$enableSymbolLoading `
+        -assignPremiumPlan:$assignPremiumPlan `
+        -useBestContainerOS `
+        -includeTestToolkit:$includeTestToolkit `
+        -includeTestLibrariesOnly:$includeTestLibrariesOnly `
         -Verbose
 
     if (!$DoNotInstallDependentModules) {
