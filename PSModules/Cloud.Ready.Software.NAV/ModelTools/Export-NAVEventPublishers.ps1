@@ -11,6 +11,7 @@ function Export-NAVEventPublishers {
     import-module (join-path $ModuleToolAPIPath NavModelToolsAPI.dll) -WarningAction SilentlyContinue -ErrorAction Stop
     
     $Model = Get-NAVObjectModel -NavObjectsTextFile $SourceFile -TimeExecution     
+    #write-verbose -Message "Number of publishers: $($Model.EventPublishers.Count)" 
     $Publishers = $Model.EventPublishers
     
     $Problems = @()

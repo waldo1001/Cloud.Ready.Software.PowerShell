@@ -35,12 +35,11 @@ function Export-NCHNAVApplicationObjectsAsAL {
 
         Remove-Item $workingfolder -Recurse -ErrorAction SilentlyContinue
 
-        $null = Export-NAVALfromNAVApplicationObject `
+        Export-NAVALfromNAVApplicationObject `
             -ServerInstance NAV `
             -WorkingFolder $workingfolder `
             -TargetPath $targetfolder `
             -Filter $filter `
-            -ErrorAction SilentlyContinue `
             -extensionStartId $extensionStartId
         
         return $targetfolder
