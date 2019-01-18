@@ -77,6 +77,10 @@
     Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand 'DISABLE TRIGGER [dbo].[REVISION_INSERT] ON [dbo].[Object]' -ErrorAction silentlyContinue
     Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand 'DISABLE TRIGGER [dbo].[REVISION_DELETE] ON [dbo].[Object]' -ErrorAction silentlyContinue
 
+    #Clear Dynamics NAV Server instance and debugger breakpoint records from old database
+    Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand 'DELETE FROM [dbo].[Server Instance]' -ErrorAction silentlyContinue
+    Invoke-SQL -DatabaseName $SandboxServerInstance -SQLCommand 'DELETE FROM [dbo].[Debugger Breakpoint]' -ErrorAction silentlyContinue
+
     #Convert DB
     Write-Host 'Converting Database' -ForegroundColor Green
     [System.Data.SqlClient.SqlConnection]::ClearAllPools()
