@@ -12,8 +12,7 @@ That means that all these functions will typically have two nested "Invoke-Comma
             $ContainerName
         )
     
-        $Session = Get-NavContainerSession -containerName $ContainerName
-        Invoke-Command -Session $Session -ScriptBlock {
+        Invoke-ScriptInNavContainer -ContainerName $ContainerName -scriptblock {
             param(
                 ...
             )

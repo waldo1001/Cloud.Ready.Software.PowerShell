@@ -71,8 +71,10 @@ function Merge-NCHNAVApplicationObjects {
 
     Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
 
-    $Session = Get-NavContainerSession -containerName $ContainerName
-    Invoke-Command -Session $Session -ScriptBlock {
+    # $Session = Get-NavContainerSession -containerName $ContainerName
+    # Invoke-Command -Session $Session -ScriptBlock {
+    Invoke-ScriptInNavContainer -ContainerName $ContainerName -scriptblock {
+
         param(
             $UpgradeSettings
         )

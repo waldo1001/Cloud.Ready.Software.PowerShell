@@ -24,8 +24,9 @@ function Export-NCHNAVApplicationObjectsAsAL {
         [int]$extensionStartId = 70000000
     )
 
-    $Session = Get-NavContainerSession -containerName $ContainerName
-    $targetfolder = Invoke-Command -Session $Session -ScriptBlock {
+    # $Session = Get-NavContainerSession -containerName $ContainerName
+    # $targetfolder = Invoke-Command -Session $Session -ScriptBlock {
+    Invoke-ScriptInNavContainer -containerName $ContainerName -scriptblock {
         param(
             $ContainerName, $filter, $extensionStartId
         )
@@ -33,14 +34,15 @@ function Export-NCHNAVApplicationObjectsAsAL {
         $workingfolder = "C:\ProgramData\navcontainerhelper\Extensions\$ContainerName\Export-NAVALfromNAVApplicationObject"
         $targetfolder = "$workingfolder\AL"
 
-        Remove-Item $workingfolder -Recurse -ErrorAction SilentlyContinue
+        Remove-Item $workingfolder -Recurse -ErrorAction SilentlyContinue | Out-Null
 
         Export-NAVALfromNAVApplicationObject `
             -ServerInstance NAV `
             -WorkingFolder $workingfolder `
             -TargetPath $targetfolder `
             -Filter $filter `
-            -extensionStartId $extensionStartId
+            -extensionStartId $extensionStartId `
+            -WarningAction SilentlyContinue | Out-Null
         
         return $targetfolder
     } -ArgumentList $ContainerName, $filter, $extensionStartId

@@ -28,22 +28,24 @@ function New-NCHNAVSuperUser {
         -CreateWebServicesKey
     #>
     param(
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [String] $ContainerName,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [String] $Username,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [SecureString] $Password,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [switch] $CreateWebServicesKey        
     )
 
     Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
 
-    $Session = Get-NavContainerSession -containerName $ContainerName
-    Invoke-Command -Session $Session -ScriptBlock {
+    # $Session = Get-NavContainerSession -containerName $ContainerName
+    # Invoke-Command -Session $Session -ScriptBlock {
+    Invoke-ScriptInNavContainer -ContainerName $ContainerName -scriptblock {
+
         param(
-            $CreateWebServicesKey,$Username,[SecureString] $Password
+            $CreateWebServicesKey, $Username, [SecureString] $Password
         )
         
         New-NAVServerUser `
@@ -63,6 +65,6 @@ function New-NCHNAVSuperUser {
         if ($CreateWebServicesKey) {
             write-Host "  WS-Key: $((Get-NAVServerUser -ServerInstance NAV | where username -like $username).WebServicesKey)"
         }
-    } -ArgumentList $CreateWebServicesKey,$Username, $Password
+    } -ArgumentList $CreateWebServicesKey, $Username, $Password
     
 }

@@ -17,8 +17,9 @@ function Sync-NCHNAVTenant {
 
     Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
     
-    $Session = Get-NavContainerSession -containerName $ContainerName
-    Invoke-Command -Session $Session -ScriptBlock {
+    # $Session = Get-NavContainerSession -containerName $ContainerName
+    # Invoke-Command -Session $Session -ScriptBlock {
+    Invoke-ScriptInNavContainer -containerName $ContainerName -scriptblock {
         Sync-NAVTenant -ServerInstance NAV -Force
     }
 

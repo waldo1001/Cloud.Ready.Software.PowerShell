@@ -27,9 +27,9 @@ function Export-NCHNAVApplicationObjects {
 
     Remove-Item -Path $resultFile -Force -ErrorAction SilentlyContinue
 
-    Export-NavContainerObjects -containerName $containerName -objectsFolder $tempFolder -exportTo 'txt file' -filter $filter 
-    Move-Item -Path $tempFile -Destination $resultFile
-    Remove-Item -Path $tempFolder -Recurse -Force  
+    Export-NavContainerObjects -containerName $containerName -objectsFolder $tempFolder -exportTo 'txt file' -filter $filter | Out-Null
+    Move-Item -Path $tempFile -Destination $resultFile | Out-Null
+    Remove-Item -Path $tempFolder -Recurse -Force | Out-Null
 
     return (get-item $resultFile)
 }
