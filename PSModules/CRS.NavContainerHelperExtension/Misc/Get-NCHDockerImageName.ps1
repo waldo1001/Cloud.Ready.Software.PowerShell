@@ -46,8 +46,11 @@ function Get-NCHDockerImageName {
     #>
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet('CurrentNAV', 'CurrentBusinessCentral', 'NextBusinessCentral', 'NextMajorBusinessCentral')]
-        [String] $ImageType,
+        [ValidateSet('NAV', 'CurrentBusinessCentral', 'NextBusinessCentral', 'NextMajorBusinessCentral')]
+        [String] $ImageType,        
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('SaaS','OnPrem')]
+        [String] $InstallType='SaaS',
         [Parameter(Mandatory = $false)]
         [String] $VersionOrBuild,
         [Parameter(Mandatory = $false)]
@@ -55,26 +58,31 @@ function Get-NCHDockerImageName {
         [Parameter(Mandatory = $false)]
         [String] $Country
     )
+    Switch ($Installtype){
+        "SaaS" {$SandboxOrOnprem = "sandbox"}
+        "OnPrem" {$SandboxOrOnprem = "onprem"}
+    }
+
     Switch ($ImageType) {
-        "CurrentNAV" {
-            $ImageName = 'microsoft/dynamics-nav'                
+        "NAV" {
+            $ImageName = "mcr.microsoft.com/dynamics-nav"                
         }
         "CurrentBusinessCentral" {
-            $ImageName = 'microsoft/bcsandbox'  
+            $ImageName = "mcr.microsoft.com/businesscentral/$SandboxOrOnprem"  
             if ($Cu) { 
                 write-error -Message "Not possible to include a Cu in $input"
                 break
             }         
         }
         "NextBusinessCentral" {
-            $ImageName = 'bcinsider.azurecr.io/bcsandbox'            
+            $ImageName = "bcinsider.azurecr.io/bc$SandboxOrOnprem"            
             if ($Cu) { 
                 write-error -Message "Not possible to include a Cu in $input"
                 break
             }         
         }
         "NextMajorBusinessCentral" {
-            $ImageName = 'bcinsider.azurecr.io/bcsandbox-master'
+            $ImageName = "bcinsider.azurecr.io/bc$SandboxOrOnprem-master"
             if ($Cu) { 
                 write-error -Message "Not possible to include a Cu in $input"
                 break
