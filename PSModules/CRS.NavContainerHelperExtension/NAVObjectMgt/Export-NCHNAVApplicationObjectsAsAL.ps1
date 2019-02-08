@@ -21,7 +21,11 @@ function Export-NCHNAVApplicationObjectsAsAL {
         [Parameter(Mandatory = $false)]
         [String] $filter = '',
         [Parameter(Mandatory = $false)]
-        [int]$extensionStartId = 70000000
+        [int]$extensionStartId = 70000000,
+        [Parameter(Mandatory = $false)]
+        [String] $DestinationPath,
+        [Parameter(Mandatory = $false)]
+        [Switch] $DoNotResetDestinationPath
     )
 
     # $Session = Get-NavContainerSession -containerName $ContainerName
@@ -47,5 +51,16 @@ function Export-NCHNAVApplicationObjectsAsAL {
         return $targetfolder
     } -ArgumentList $ContainerName, $filter, $extensionStartId
     
+    if ($DestinationPath) {
+        if (!($DoNotResetDestinationPath)) {
+            Remove-Item $DestinationPath -Force -Recurse -ErrorAction SilentlyContinue
+        }
+        if (!(Test-Path $DestinationPath)) {
+            New-Item $DestinationPath -ItemType Directory
+        }
+        Get-ChildItem "C:\ProgramData\navcontainerhelper\Extensions\$containerName\Export-NAVALfromNAVApplicationObject\AL" | 
+            Move-Item -Destination $DestinationPath -Force 
+    }
+
     return $targetfolder
 }
