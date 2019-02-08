@@ -5,4 +5,5 @@ Install-RDHDependentModules `
     -DockerHost $DockerHost `
     -DockerHostCredentials $DockerHostCredentials `
     -DockerHostUseSSL:$DockerHostUseSSL `
-    -DockerHostSessionOption $DockerHostSessionOption 
+    -DockerHostSessionOption $DockerHostSessionOption `
+    -ContainerName 'Upgrade' -ContainerModulesOnly

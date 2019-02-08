@@ -2,23 +2,28 @@
 
 $ObjectsFolder = "C:\temp"
 #$ContainerDockerImage = 'microsoft/bcsandbox:us'
-#$ContainerDockerImage = 'microsoft/dynamics-nav:2018-be'
-#$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox'
+# $ContainerDockerImage = 'microsoft/dynamics-nav:2018'
+# $ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
+# $ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox'
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem'
 
 #Fixed params
 $ExportToBase = "$env:USERPROFILE\Dropbox (Personal)\GitHub\Blogs\blog.CALAnalysis\Published Events\"
 switch ($true) {
     ($ContainerDockerImage.StartsWith('microsoft/bcsandbox')) {  
-        $ExportTo = join-path $ExportToBase 'Business Central'
+        $ExportTo = join-path $ExportToBase 'Business Central SaaS'
+        break
+    }  
+    ($ContainerDockerImage.StartsWith('mcr.microsoft.com/businesscentral/onprem')) {  
+        $ExportTo = join-path $ExportToBase 'Business Central OnPrem'
         break
     }  
     ($ContainerDockerImage.StartsWith('bcinsider.azurecr.io/bcsandbox-master')) {  
-        $ExportTo = join-path $ExportToBase 'Business Central (Insider Daily Build)'
+        $ExportTo = join-path $ExportToBase 'Business Central (Insider)'
         break
     }  
     ($ContainerDockerImage.StartsWith('bcinsider.azurecr.io/bcsandbox')) {  
-        $ExportTo = join-path $ExportToBase 'Business Central'
+        $ExportTo = join-path $ExportToBase 'Business Central (Insider)'
         break
     }
     ($ContainerDockerImage.Contains('2018')) {  
@@ -50,7 +55,7 @@ New-RDHNAVContainer `
     -ContainerAlwaysPull:$ContainerAlwaysPull `
     -ContainerAdditionalParameters $ContainerAdditionalParameters `
     -doNotExportObjectsToText 
-
+    
 $ObjectFile = 
 Export-RDHNAVApplicationObjects `
     -DockerHost $DockerHost `
@@ -59,17 +64,18 @@ Export-RDHNAVApplicationObjects `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerName $Containername `
     -Path $ObjectsFolder
-
+    
+Export-NAVEventPublishers `
+    -ModuleToolAPIPath $ModuleToolAPIPath `
+    -SourceFile $ObjectFile `
+    -DestinationFolder $ExportTo `
+    -ErrorAction stop
+    
 Remove-RDHNAVContainer `
     -DockerHost $DockerHost `
     -DockerHostCredentials $DockerHostCredentials `
     -DockerHostUseSSL:$DockerHostUseSSL `
     -DockerHostSessionOption $DockerHostSessionOption `
     -ContainerName $Containername 
-
-Export-NAVEventPublishers `
-    -ModuleToolAPIPath $ModuleToolAPIPath `
-    -SourceFile $ObjectFile `
-    -DestinationFolder $ExportTo 
 
 start $ExportTo 

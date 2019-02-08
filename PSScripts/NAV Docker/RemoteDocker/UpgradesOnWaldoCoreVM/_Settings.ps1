@@ -7,9 +7,9 @@ $UpgradeSettings = @{}
 #General
 $UpgradeSettings.UpgradeName = 'DistriBC'
 
-$UpgradeSettings.OriginalVersion = 'NAV2018CU8BE' 
-$UpgradeSettings.ModifiedVersion = 'Distri112'
-$UpgradeSettings.TargetVersion = '13.0.24630.0-be'
+$UpgradeSettings.OriginalVersion = 'NAV2018CU11BE' 
+$UpgradeSettings.ModifiedVersion = 'Distri113'
+$UpgradeSettings.TargetVersion = '13.1.25940.0-be'
 
 $UpgradeSettings.LocalOriginalFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.OriginalVersion).zip"
 $UpgradeSettings.LocalModifiedFile = "$env:USERPROFILE\Dropbox\Dynamics NAV\ObjectLibrary\$($UpgradeSettings.ModifiedVersion).zip"
@@ -30,13 +30,13 @@ $UpgradeSettings.ModifiedObjects = Join-Path -Path $UpgradeSettings.ObjectLibrar
 $UpgradeSettings.TargetObjects = Join-Path -Path $UpgradeSettings.ObjectLibrary -ChildPath "$($UpgradeSettings.TargetVersion).txt"
 
 #Docker Settings
-$DockerHost = 'WaldoCoreVM'
+$DockerHost = 'WaldoCoreVM2'
 $DockerHostShare = "c:\ProgramData\NavContainerHelper"
 $UserName = 'administrator'
 $Password = ConvertTo-SecureString $SecretSettings.password -AsPlainText -Force
 $DockerHostCredentials = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
-$DockerHostSessionOption = New-PSSessionOption
-$DockerHostUseSSL = $false
+$DockerHostSessionOption = New-PSSessionOption -SkipCACheck -SkipCNCheck
+$DockerHostUseSSL = $true
 
 #ContainerSettings
 $ContainerName = 'bconprem'

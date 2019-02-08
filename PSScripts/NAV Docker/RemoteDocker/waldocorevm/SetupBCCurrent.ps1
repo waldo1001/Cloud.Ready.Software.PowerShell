@@ -3,8 +3,8 @@
 $Containername = 'bccurrent'
 $ContainerAdditionalParameters += "--ip 172.21.31.3"
 
-$ContainerDockerImage = 'microsoft/bcsandbox:base'
-$ContainerAlwaysPull = $true
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/sandbox'
+$ContainerAlwaysPull = $false
 $enableSymbolLoading = $true
 #$SecretSettings.containerLicenseFile = 'c:\programdata\navcontainerhelper\NAV2018License.flf'
 

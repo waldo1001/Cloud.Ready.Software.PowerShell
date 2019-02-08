@@ -4,9 +4,9 @@ $Containername = 'nav2018'
 $ContainerAdditionalParameters += "--ip 172.21.31.12"
 
 #$ContainerDockerImage = 'microsoft/dynamics-nav:2018'
-$ContainerDockerImage = 'microsoft/dynamics-nav:2018-cu5-be'
+$ContainerDockerImage = 'microsoft/dynamics-nav:2018-cu8-de'
 $ContainerAlwaysPull = $true
-$enableSymbolLoading = $true
+$enableSymbolLoading = $false
 
 New-RDHNAVContainer `
     -DockerHost $DockerHost `

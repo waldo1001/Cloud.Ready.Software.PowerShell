@@ -3,7 +3,7 @@
 $Containername = 'bcnext'
 $ContainerAdditionalParameters += "--ip 172.21.31.15"
 
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:base'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:us'
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 #$SecretSettings.containerLicenseFile = 'c:\programdata\navcontainerhelper\NAV2018License.flf'

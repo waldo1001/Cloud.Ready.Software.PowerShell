@@ -3,7 +3,9 @@
 $Containername = 'bcdaily'
 $ContainerAdditionalParameters += "--ip 172.21.31.4"
 
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:base'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bconprem-master'
+
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 #$SecretSettings.containerLicenseFile = 'c:\programdata\navcontainerhelper\NAV2018License.flf'

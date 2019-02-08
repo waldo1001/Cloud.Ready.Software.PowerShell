@@ -10,18 +10,18 @@ $DockerHostShare = "c:\ProgramData\NavContainerHelper"
 $UserName = 'administrator'
 $Password = ConvertTo-SecureString $SecretSettings.password -AsPlainText -Force
 $DockerHostCredentials = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
-$DockerHostSessionOption = New-PSSessionOption
-$DockerHostUseSSL = $false
+$DockerHostSessionOption = New-PSSessionOption -SkipCACheck -SkipCNCheck
+$DockerHostUseSSL = $true
 
 #ContainerSettings
-$ContainerName = 'psdevenv'
+$Containername = 'bconprem'
 $ContainerUserName = 'waldo'
 $ContainerPassword = ConvertTo-SecureString 'waldo1234' -AsPlainText -Force
 $ContainerCredential = New-Object System.Management.Automation.PSCredential ($ContainerUserName, $ContainerPassword)
 $ContainerImage = 'microsoft/bcsandbox' 
 $ContainerLicenseFile = $SecretSettings.containerLicenseFile
 $ContainerAdditionalParameters = @("--network=tlan")
-$ContainerAdditionalParameters += "--ip 172.21.31.6"
+$ContainerAdditionalParameters += "--ip 172.21.31.14"
 
 $HostFile = 'C:\Windows\System32\drivers\etc\hosts'
 

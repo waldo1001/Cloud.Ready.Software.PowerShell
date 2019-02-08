@@ -1,19 +1,25 @@
 . '.\_Settings.ps1'
 
-$ReleaseSettings.Product = 'Distri'
-$ReleaseSettings.LocalPath = "C:\temp\DistriRelease\Release 11.2\DistriDEV.txt"
-$ReleaseSettings.ProductVersion = 'I11.2'
+$ReleaseSettings.Product = 'DistriBouw'
+$ReleaseSettings.LocalPath = "C:\temp\DistriBouwRelease\AllModified.txt"
+$ReleaseSettings.ProductVersion = "IDB1.0" #"I11.3" #'IRM11.0' #'IF7.0'
 $ReleaseSettings.ModifiedOnly = $true
 
 switch ($ReleaseSettings.Product) {
     'Food' {    
-        $ReleaseSettings.VersionPrefix = 'NAVW1', 'NAVBE', 'I7', 'I8', 'IB', 'SI', 'IF' 
+        $ReleaseSettings.VersionPrefix = 'NAVW1', 'NAVBE', 'Test', 'I7', 'I8', 'I9', 'IB', 'SI', 'IF' 
     }
     'Distri' {  
         $ReleaseSettings.VersionPrefix = 'NAVW1', 'NAVBE', 'Test', 'I' 
     }
+    'DistriBouw' {  
+        $ReleaseSettings.VersionPrefix = 'NAVW1', 'NAVBE', 'Test', 'I7', 'I8', 'I9', 'I10','I11', 'IDB'
+    }
     'Base' {
         $ReleaseSettings.VersionPrefix = 'NAVW1', 'NAVBE', 'Test', 'I7', 'I8', 'I9', 'IB' 
+    }
+    'Rental' {
+        $ReleaseSettings.VersionPrefix = 'NAVW1', 'NAVBE', 'Test', 'I7', 'I8', 'I9', 'IB', 'EQM', 'IRM' 
     }
     Default {
         write-error "Unknown product '$($ReleaseSettings.Product)'"

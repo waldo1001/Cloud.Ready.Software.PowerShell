@@ -2,7 +2,7 @@
 
 $ObjectsFolder = "C:\temp"
 #$ContainerDockerImage = 'microsoft/bcsandbox:us'
-$ContainerDockerImage = 'microsoft/dynamics-nav:2018-cu8'
+#$ContainerDockerImage = 'microsoft/dynamics-nav:2018-cu8'
 #$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
 #$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox'
 

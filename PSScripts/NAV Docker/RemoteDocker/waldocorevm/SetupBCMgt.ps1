@@ -1,10 +1,10 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'bconprem'
-$ContainerAdditionalParameters += "--ip 172.21.31.14"
+$Containername = 'bcmgt'
+$ContainerAdditionalParameters += "--ip 172.21.31.16"
 
-$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:13.1.25940.0-be-ltsc2019'
-$ContainerAlwaysPull = $true
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem'
+$ContainerAlwaysPull = $false
 $enableSymbolLoading = $false
 #$SecretSettings.containerLicenseFile = 'c:\programdata\navcontainerhelper\NAV2018License.flf'
 
@@ -23,5 +23,5 @@ New-RDHNAVContainer `
     -ContainerAlwaysPull:$ContainerAlwaysPull `
     -ContainerAdditionalParameters $ContainerAdditionalParameters `
     -doNotExportObjectsToText `
-    -enableSymbolLoading:$enableSymbolLoading 
+    -enableSymbolLoading:$enableSymbolLoading
     
