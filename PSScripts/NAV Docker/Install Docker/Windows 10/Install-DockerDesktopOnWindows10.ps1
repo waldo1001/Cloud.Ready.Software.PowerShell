@@ -1,4 +1,7 @@
-﻿#Download latest nightly build (Docker Desktop - Windows (Edge))
+﻿#Run all the below line-by-line in administrator mode!
+set-executionpolicy unrestricted
+
+#Download latest nightly build (Docker Desktop - Windows (Edge))
 $DockerInstallFile = "$env:USERPROFILE\Downloads\DockerInstall.exe" 
 Invoke-WebRequest -UseBasicparsing -Outfile $DockerInstallFile "https://download.docker.com/win/edge/Docker%20for%20Windows%20Installer.exe"
 
@@ -18,5 +21,6 @@ docker run hello-world:nanoserver #you don't need to do this - you can also just
 install-module -Name navcontainerhelper -Force
 
 # Install waldo's "CRS.NavContainerHelperExtension" - Some more functions to make your life a bit easier
-Install-Module -Name "CRS.NavContainerHelperExtension" -Force 
-
+Find-module | 
+    where author -eq 'waldo' | 
+        install-module -force
