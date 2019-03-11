@@ -15,7 +15,9 @@ function Install-NCHNavApp {
         [Parameter(Mandatory = $true)]
         [String] $ContainerName,
         [Parameter(Mandatory = $true)]
-        [String] $Path
+        [String] $Path,
+        [Parameter(Mandatory = $true)]
+        [switch] $DoNotDeleteAppFile
     )
 
     Write-Host -ForegroundColor Green "$($MyInvocation.MyCommand.Name) on $env:COMPUTERNAME"
