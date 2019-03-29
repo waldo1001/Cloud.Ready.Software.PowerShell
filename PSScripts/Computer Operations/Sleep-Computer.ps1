@@ -1,4 +1,7 @@
-﻿function Set-PowerState {
+﻿[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
+[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+
+function Set-PowerState {
     [CmdletBinding()]
     param (
           [System.Windows.Forms.PowerState] $PowerState = [System.Windows.Forms.PowerState]::Suspend

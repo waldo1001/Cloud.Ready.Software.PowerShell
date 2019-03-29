@@ -2,13 +2,15 @@
 
 $Containername = 'bconprem'
 
-$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:cu1-be'
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:rtm-be'
 
-$ContainerAlwaysPull = $false
+$SecretSettings.containerLicenseFile = "https://dl.dropboxusercontent.com/s/ps612or8o79afnp/CRS%20-%206743401%20BC13%20US%20Training.flf"
+
+$ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 $assignPremiumPlan = $true
-$includeTestToolkit = $false
-$includeTestLibrariesOnly = $false
+$includeTestToolkit = $true
+$includeTestLibrariesOnly = $true
 $InstallDependentModules = $true
 
 New-NavContainer `
@@ -26,7 +28,7 @@ New-NavContainer `
     -enableSymbolLoading:$enableSymbolLoading `
     -assignPremiumPlan:$assignPremiumPlan `
     -useBestContainerOS `
-    -includeTestToolkit:$includeTestToolkit `
+    -includeTestToolkit:$includeTestToolkit ` 
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
     -Verbose `
     -memoryLimit 4G

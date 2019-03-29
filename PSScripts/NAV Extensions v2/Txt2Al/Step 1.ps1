@@ -4,21 +4,26 @@ Create an isolated environment in which we will convert the code
 #>
 
 $ContainerName = 'tempdev'
-$imageName = 'microsoft/dynamics-nav:devpreview-finus'
-$licenseFile = 'C:\ProgramData\NavContainerHelper\NAV2018License.flf'
+$imageName = 'mcr.microsoft.com/businesscentral/sandbox:be'
+#$imageName = 'microsoft/bcsandbox:base'
+$licenseFile = 'https://www.dropbox.com/s/5cfyfnqdoyt23hi/_CRS%20-%206743401%20BC13%20W1.flf?dl=1'
+$DeltaPath = 'C:\ProgramData\NavContainerHelper\Migration\DELTA'
 
 $UserName = 'NAVUser'
 $Password = ConvertTo-SecureString "NAVUser123" -AsPlainText -Force
 $Credential = New-Object System.Management.Automation.PSCredential ($UserName, $Password)
 
-$additionalParameters = @("--network=tlan", "--ip 172.21.31.9")
+$ContainerAdditionalParameters = @("--env isBcSandbox=Y","--cpu-count 8","--dns=8.8.8.8")
 
 New-NavContainer `
     -accept_eula `
     -containerName $ContainerName `
-    -imageName $imageName `
-    -licenseFile $licenseFile `
     -auth NavUserPassword `
-    -Credential $Credential `
-    -doNotExportObjectsToText `
-    -additionalParameters $additionalParameters
+    -credential $Credential `
+    -includeCSide `
+    -licensefile $licenseFile `
+    -imageName $imageName `
+    -updateHosts `
+    -additionalParameters $ContainerAdditionalParameters `
+    -accept_outdated 
+

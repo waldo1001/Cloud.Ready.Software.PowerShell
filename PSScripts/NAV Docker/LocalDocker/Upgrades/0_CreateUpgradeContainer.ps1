@@ -1,24 +1,20 @@
-. (Join-Path $PSScriptRoot '.\_Settings.ps1')
-
-$Containername = 'navserver'
-
-$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/sandbox:be'
+. '.\_Settings.ps1'
 
 $ContainerAlwaysPull = $false
 $enableSymbolLoading = $false
-$assignPremiumPlan = $true
+$assignPremiumPlan = $false
 $includeTestToolkit = $false
 $includeTestLibrariesOnly = $false
 $InstallDependentModules = $true
 
 New-NavContainer `
     -containerName $ContainerName `
-    -imageName $ContainerDockerImage `
+    -imageName $ContainerImage `
     -accept_eula `
     -additionalParameters $ContainerAdditionalParameters `
     -licenseFile $SecretSettings.containerLicenseFile `
     -alwaysPull:$ContainerAlwaysPull `
-    -Credential $ContainerCredential `
+    -Credential $ContainerCredentials `
     -doNotExportObjectsToText `
     -updateHosts `
     -auth NavUserPassword `
@@ -29,13 +25,12 @@ New-NavContainer `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
     -Verbose `
-    -memoryLimit 4G 
+    -memoryLimit 4G
 
 
+    
 if ($InstallDependentModules) {
     Install-NCHDependentModules `
         -ContainerName $ContainerName `
         -ContainerModulesOnly
 }
-
-Sync-NCHNAVTenant -containerName $ContainerName

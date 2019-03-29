@@ -2,11 +2,16 @@
 
 $Containername = 'bcdaily'
 
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:base'
+#$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:14.0.28630.0-al'
+
+# $registry = $ContainerDockerImage.Substring(0, $ContainerDockerImage.IndexOf('/'))
+# Write-Host -ForegroundColor Gray "Connecting docker to $registry user: $($SecretSettings.containerRegistryUserName) pwd: $($SecretSettings.containerRegistryPassword)"
+# docker login "$registry" -u "$($SecretSettings.containerRegistryUserName)" -p "$($SecretSettings.containerRegistryPassword)"
 
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
-$assignPremiumPlan = $false
+$assignPremiumPlan = $true
 $includeTestToolkit = $false
 $includeTestLibrariesOnly = $false
 $InstallDependentModules = $true
@@ -30,9 +35,9 @@ New-NavContainer `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
     -Verbose `
     -myScripts @("https://raw.githubusercontent.com/Microsoft/nav-docker/master/generic/Run/SetupConfiguration.ps1") `
-    -clickonce
-    
+    -clickonce 
 
+break
 
 if ($InstallDependentModules) {
     Install-NCHDependentModules `

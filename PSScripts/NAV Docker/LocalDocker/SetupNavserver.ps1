@@ -1,8 +1,10 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'bccurrent'
+$Containername = 'navserver'
 
-$ContainerDockerImage = 'microsoft/bcsandbox'
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:rtm-be'
+#$ContainerDockerImage = 'microsoft/dynamics-nav:2018'
+
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 $assignPremiumPlan = $true
@@ -27,7 +29,8 @@ New-NavContainer `
     -useBestContainerOS `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
-    -Verbose
+    -Verbose `
+    -memoryLimit 4G 
 
 
 if ($InstallDependentModules) {

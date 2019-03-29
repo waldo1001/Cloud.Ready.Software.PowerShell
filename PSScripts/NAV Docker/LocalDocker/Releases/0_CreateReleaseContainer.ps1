@@ -1,23 +1,21 @@
-. (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'bccurrent'
+. '.\_Settings.ps1'
 
-$ContainerDockerImage = 'microsoft/bcsandbox'
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
-$assignPremiumPlan = $true
+$assignPremiumPlan = $false
 $includeTestToolkit = $false
 $includeTestLibrariesOnly = $false
 $InstallDependentModules = $true
 
 New-NavContainer `
     -containerName $ContainerName `
-    -imageName $ContainerDockerImage `
+    -imageName $ContainerImage `
     -accept_eula `
     -additionalParameters $ContainerAdditionalParameters `
     -licenseFile $SecretSettings.containerLicenseFile `
     -alwaysPull:$ContainerAlwaysPull `
-    -Credential $ContainerCredential `
+    -Credential $ContainerCredentials `
     -doNotExportObjectsToText `
     -updateHosts `
     -auth NavUserPassword `
@@ -27,13 +25,13 @@ New-NavContainer `
     -useBestContainerOS `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
-    -Verbose
+    -Verbose `
+    -memoryLimit 4G
 
 
+    
 if ($InstallDependentModules) {
     Install-NCHDependentModules `
         -ContainerName $ContainerName `
         -ContainerModulesOnly
 }
-
-Sync-NCHNAVTenant -containerName $ContainerName
