@@ -1,70 +1,45 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-break #TODO
 
 $ObjectsFolder = "C:\temp"
-#$ContainerDockerImage = 'microsoft/bcsandbox:us'
-$ContainerDockerImage = 'microsoft/dynamics-nav:2018-cu8'
-#$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
-#$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox'
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/sandbox'
 
 #Fixed params
-$ExportToBase = "$env:USERPROFILE\Dropbox (Personal)\Dynamics NAV\ObjectLibrary\"
-switch ($true) {
-    ($ContainerDockerImage.StartsWith('microsoft/bcsandbox')) {  
-        $ExportTo = join-path $ExportToBase 'Business Central (Current)'
-        break
-    }  
-    ($ContainerDockerImage.StartsWith('bcinsider.azurecr.io/bcsandbox-master')) {  
-        $ExportTo = join-path $ExportToBase 'Business Central (Insider Daily Build)'
-        break
-    }  
-    ($ContainerDockerImage.StartsWith('bcinsider.azurecr.io/bcsandbox')) {  
-        $ExportTo = join-path $ExportToBase 'Business Central (Insider Next)'
-        break
-    }
-    ($ContainerDockerImage.Contains('2018')) {  
-        $ExportTo = join-path $ExportToBase 'NAV2018'
-        break
-    }
-    ($ContainerDockerImage.StartsWith('2017')) {  
-        $ExportTo = join-path $ExportToBase 'NAV2017'
-        break
-    }
-
-}
-
-$ModuleToolAPIPath = "$env:USERPROFILE\Dropbox\GitHub\Waldo.Model.Tools\ReVision.Model.Tools Library - laptop"
-
 $Containername = 'temponly'
-$ContainerAdditionalParameters += "--ip 172.21.31.13"
 $ContainerAlwaysPull = $true
 
-New-RDHNAVContainer `
-    -DockerHost $DockerHost `
-    -DockerHostCredentials $DockerHostCredentials `
-    -DockerHostUseSSL:$DockerHostUseSSL `
-    -DockerHostSessionOption $DockerHostSessionOption `
-    -ContainerDockerImage $ContainerDockerImage `
-    -ContainerName $Containername `
-    -ContainerLicenseFile $SecretSettings.containerLicenseFile `
-    -ContainerCredential $ContainerCredential `
-    -ContainerAlwaysPull:$ContainerAlwaysPull `
-    -ContainerAdditionalParameters $ContainerAdditionalParameters `
-    -doNotExportObjectsToText 
+$ExportTo = "$env:USERPROFILE\Dropbox (Personal)\Dynamics NAV\ObjectLibrary\"
 
-$ObjectFile = 
-Export-RDHNAVApplicationObjects `
-    -DockerHost $DockerHost `
-    -DockerHostCredentials $DockerHostCredentials `
-    -DockerHostUseSSL:$DockerHostUseSSL `
-    -DockerHostSessionOption $DockerHostSessionOption `
-    -ContainerName $Containername `
-    -Path $ObjectsFolder
+New-NavContainer `
+    -containerName $ContainerName `
+    -imageName $ContainerDockerImage `
+    -accept_eula `
+    -additionalParameters $ContainerAdditionalParameters `
+    -licenseFile $SecretSettings.containerLicenseFile `
+    -alwaysPull:$ContainerAlwaysPull `
+    -Credential $ContainerCredential `
+    -doNotExportObjectsToText `
+    -updateHosts `
+    -auth NavUserPassword `
+    -includeCSide `
+    -enableSymbolLoading:$enableSymbolLoading `
+    -assignPremiumPlan:$assignPremiumPlan `
+    -useBestContainerOS `
+    -includeTestToolkit:$includeTestToolkit `
+    -includeTestLibrariesOnly:$includeTestLibrariesOnly `
+    -Verbose `
+    -memoryLimit 4G
 
-Remove-RDHNAVContainer `
-    -DockerHost $DockerHost `
-    -DockerHostCredentials $DockerHostCredentials `
-    -DockerHostUseSSL:$DockerHostUseSSL `
-    -DockerHostSessionOption $DockerHostSessionOption `
-    -ContainerName $Containername 
+$ObjectFile =
+    Export-NCHNAVApplicationObjects -ContainerName $Containername
+
+$ZippedFileName = Join-Path $ObjectFile.Directory "$($ObjectFile.BaseName).zip"
+Compress-Archive -Path $ObjectFile -DestinationPath $ZippedFileName -Force
+
+if (Copy-Item -Path $ZippedFileName -Destination $ExportTo -Force){
+    Remove-Item $ObjectFile -ErrorAction SilentlyContinue
+    Start-Process $ExportTo
+}
+
+Remove-NavContainer -containerName $Containername
+
