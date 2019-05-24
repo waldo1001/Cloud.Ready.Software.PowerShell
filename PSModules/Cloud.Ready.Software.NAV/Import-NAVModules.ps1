@@ -66,7 +66,11 @@ function Import-NAVModules {
     } else {
         $navModuleVersions += $Global:NAVJobManager.MVS.Results
     }
-
+    
+    if ($navVersion -ne $null){
+        $navModuleVersions = $navModuleVersions | Where-Object {$_.VersionNo -eq $navVersion}
+    }
+    
     $modulesToImport = (Select-NAVVersion $navModuleVersions)
     
     foreach ($moduleToImport in $modulesToImport) {
