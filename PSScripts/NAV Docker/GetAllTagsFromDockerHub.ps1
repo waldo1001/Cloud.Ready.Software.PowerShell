@@ -14,12 +14,13 @@ while ($JsonObject.next) {
     $percCompleted = [Math]::Round($ResultingObject.Count / $JsonObject.count, 4) * 100
     Write-Progress -Activity "Processing tags" -PercentComplete $percCompleted -ParentId $ParentId 
 }
-
+break
 #$ResultingObject.Count
 #$ResultingObject[0]
 #$ResultingObject.name
 $ResultingObject | where name -like '*ltsc2019*' | select name
 $ResultingObject | where name -like '*ltsc2019*' | measure
 $ResultingObject | where name -like '*be*' | select name
+$ResultingObject | where name -like '*14.1*' | select name
 
 #$ResultingObject | where name -like '*be' | select name

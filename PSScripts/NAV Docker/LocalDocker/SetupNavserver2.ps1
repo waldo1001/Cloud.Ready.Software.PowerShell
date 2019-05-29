@@ -2,7 +2,7 @@
 
 $Containername = 'navserver2'
 
-$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:be'
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/sandbox:us'
 #$ContainerDockerImage = 'microsoft/dynamics-nav:2018'
 
 $ContainerAlwaysPull = $true
@@ -32,6 +32,7 @@ New-NavContainer `
     -Verbose `
     -memoryLimit 4G 
 
+break
 
 if ($InstallDependentModules) {
     Install-NCHDependentModules `

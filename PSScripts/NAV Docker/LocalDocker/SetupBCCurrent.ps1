@@ -2,7 +2,8 @@
 
 $Containername = 'bccurrent'
 
-$ContainerDockerImage = 'microsoft/bcsandbox'
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/sandbox:us'
+
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 $assignPremiumPlan = $true
@@ -27,8 +28,10 @@ New-NavContainer `
     -useBestContainerOS `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
-    -Verbose
+    -Verbose `
+    -memoryLimit 4G
 
+break
 
 if ($InstallDependentModules) {
     Install-NCHDependentModules `

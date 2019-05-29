@@ -10,4 +10,5 @@ $tags                                      #All Tags
 $tags.count                                #Number of Tags
 $tags | where {$_ -like "*be*"}            #All Belgian images
 $tags | where {$_ -like '*ltsc2019*'}      #All ltsc2019 images
+$tags | where {$_ -like '*14.1*'}      #All ltsc2019 images
 

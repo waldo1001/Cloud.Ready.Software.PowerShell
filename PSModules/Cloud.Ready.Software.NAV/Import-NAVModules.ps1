@@ -67,7 +67,7 @@ function Import-NAVModules {
         $navModuleVersions += $Global:NAVJobManager.MVS.Results
     }
     
-    if ($navVersion -ne $null){
+    if (-not ([String]::IsNullOrEmpty($navVersion))){
         $navModuleVersions = $navModuleVersions | Where-Object {$_.VersionNo -eq $navVersion}
     }
     

@@ -1,5 +1,5 @@
-$RegistryName = "mcr.microsoft.com/businesscentral/sandbox"
-$RegistryName = "mcr.microsoft.com/businesscentral/onprem"
+#$RegistryName = "mcr.microsoft.com/businesscentral/sandbox"
+#$RegistryName = "mcr.microsoft.com/businesscentral/onprem"
 $RegistryName = "bcinsider.azurecr.io/bcsandbox-master"
 #$RegistryName = "bcinsider.azurecr.io/bcsandbox"
 #$RegistryName = "bcinsider.azurecr.io/bconprem-master"
@@ -30,3 +30,4 @@ $tags                                      #All Tags
 $tags.count                                #Number of Tags
 $tags | Where-Object {$_ -like "*be*"}            #All Belgian images
 $tags | Where-Object {$_ -like '*ltsc2019*'}      #All ltsc2019 images
+$tags | Where-Object {$_ -like '*14.1*'}      #All ltsc2019 images
