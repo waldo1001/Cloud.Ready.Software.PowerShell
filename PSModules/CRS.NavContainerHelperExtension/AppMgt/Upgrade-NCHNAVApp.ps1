@@ -29,26 +29,25 @@ function Upgrade-NCHNAVApp {
     
         $App = Get-NAVAppInfo -Path $Path
 
-        Get-NAVAppInfo -ServerInstance NAV -Name $App.Name -Publisher $App.Publisher -Version $App.Version |
-            Uninstall-NAVApp
+        $SC = Get-NAVServerInstance
 
-        Get-NAVAppInfo -ServerInstance NAV -Name $App.Name -Publisher $App.Publisher -Version $App.Version |
-            Unpublish-NAVApp
+        # $SC | Get-NAVAppInfo -Name $App.Name -Publisher $App.Publisher -Version $App.Version |
+        # Uninstall-NAVApp
+
+        # $SC | Get-NAVAppInfo -Name $App.Name -Publisher $App.Publisher -Version $App.Version |
+        # Unpublish-NAVApp
         
-        Publish-NAVApp `
-            -ServerInstance NAV `
+        $SC | Publish-NAVApp `
             -Path $Path `
             -SkipVerification
 
-        Sync-NAVApp `
-            -ServerInstance NAV `
+        $SC | Sync-NAVApp `
             -Name $App.Name `
             -Publisher $App.Publisher `
             -Version $App.Version `
             -Erroraction Stop
 
-        Start-NAVAppDataUpgrade `
-            -ServerInstance NAV `
+        $SC | Start-NAVAppDataUpgrade `
             -Name $App.Name `
             -Publisher $App.Publisher `
             -Version $App.Version `

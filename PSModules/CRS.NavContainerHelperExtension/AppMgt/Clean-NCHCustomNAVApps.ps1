@@ -20,11 +20,13 @@ function Clean-NCHCustomNAVApps {
     # Invoke-Command -Session $Session -ScriptBlock {
     Invoke-ScriptInNavContainer -ContainerName $ContainerName -scriptblock {
 
-        $Apps = Get-NAVAppInfo -ServerInstance NAV | Where Publisher -ne 'Microsoft'
+        $SC = Get-NAVServerInstance
+
+        $Apps = Get-NAVAppInfo -ServerInstance $SC.ServerInstance | Where Publisher -ne 'Microsoft'
 
         foreach ($App in $Apps) {
             $App | Uninstall-NAVApp -DoNotSaveData
-            $App | Sync-NAVApp -ServerInstance NAV -Mode Clean -force
+            $App | Sync-NAVApp -ServerInstance $SC.ServerInstance -Mode Clean -force
             $App | UnPublish-NAVApp            
             Sync-NAVTenant -ServerInstance NAV -Tenant Default -Mode ForceSync -force    
             

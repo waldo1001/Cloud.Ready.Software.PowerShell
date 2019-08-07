@@ -31,27 +31,26 @@ function Install-NCHNavApp {
         )
     
         $App = Get-NAVAppInfo -Path $Path
+
+        $SC = Get-NAVServerInstance
         
-        Get-NAVAppInfo -ServerInstance NAV -Name $App.Name -Publisher $App.Publisher -Version $App.Version |
-            Uninstall-NAVApp 
+        # $SC | Get-NAVAppInfo -Name $App.Name -Publisher $App.Publisher -Version $App.Version |
+        # Uninstall-NAVApp 
         
-        Get-NAVAppInfo -ServerInstance NAV -Name $App.Name -Publisher $App.Publisher -Version $App.Version |
-            Unpublish-NAVApp
+        # $SC | Get-NAVAppInfo -Name $App.Name -Publisher $App.Publisher -Version $App.Version |
+        # Unpublish-NAVApp
         
-        Publish-NAVApp `
-            -ServerInstance NAV `
+        $SC | Publish-NAVApp `
             -Path $Path `
             -SkipVerification
         
-        Sync-NAVApp `
-            -ServerInstance NAV `
+        $SC | Sync-NAVApp `
             -Name $App.Name `
             -Publisher $App.Publisher `
             -Version $App.Version `
             -ErrorAction Stop    
         
-        Install-navapp `
-            -ServerInstance NAV `
+        $SC | Install-navapp `
             -Name $App.Name `
             -Publisher $App.Publisher `
             -Version $App.Version `
