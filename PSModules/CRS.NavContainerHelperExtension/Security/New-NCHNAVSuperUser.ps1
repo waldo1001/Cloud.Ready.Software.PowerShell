@@ -48,22 +48,24 @@ function New-NCHNAVSuperUser {
             $CreateWebServicesKey, $Username, [SecureString] $Password
         )
         
-        New-NAVServerUser `
-            -ServerInstance NAV `
-            -UserName $username  `
-            -Password $Password `
-            -CreateWebServicesKey:$CreateWebServicesKey 
+        $SC = Get-NAVServerInstance
+
+        $SC | 
+            New-NAVServerUser `
+                -UserName $username  `
+                -Password $Password `
+                -CreateWebServicesKey:$CreateWebServicesKey 
             
-        New-NAVServerUserPermissionSet `
-            -Scope System `
-            -ServerInstance NAV `
-            -PermissionSetId SUPER `
-            -UserName $username 
+        $SC | 
+            New-NAVServerUserPermissionSet `
+                -Scope System `
+                -PermissionSetId SUPER `
+                -UserName $username 
         
         Write-Host "UID: $username successfully created!"
         
         if ($CreateWebServicesKey) {
-            write-Host "  WS-Key: $((Get-NAVServerUser -ServerInstance NAV | where username -like $username).WebServicesKey)"
+            write-Host "  WS-Key: $(($SC | Get-NAVServerUser | where username -like $username).WebServicesKey)"
         }
     } -ArgumentList $CreateWebServicesKey, $Username, $Password
     
