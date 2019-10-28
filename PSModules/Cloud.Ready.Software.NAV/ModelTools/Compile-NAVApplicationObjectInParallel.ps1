@@ -10,14 +10,19 @@ function Compile-NAVApplicationObjectInParallel{
      [ValidateSet('Force','No','Yes')]
      [String] $SynchronizeSchemaChanges
     )
-        $ServerInstanceObject = Get-NAVServerInstanceDetails -ServerInstance $ServerInstance
+    $ServerInstanceObject = Get-NAVServerInstanceDetails -ServerInstance $ServerInstance
+
+    $DatabaseServer =  $ServerInstanceObject.DatabaseServer
+    if (!([string]::IsNullOrEmpty($ServerInstanceObject.DatabaseInstance))){
+        $DatabaseServer += "\$($ServerInstanceObject.DatabaseInstance)"
+    }
 
      $objectTypes = 'Table','Page','Report','Codeunit','Query','XMLport','MenuSuite'
      $jobs = @()
      foreach($objectType in $objectTypes){
-        $jobs += Compile-NAVApplicationObject $ServerInstanceObject.DatabaseName -Filter "Type=$objectType" -Recompile -SynchronizeSchemaChanges $SynchronizeSchemaChanges -AsJob
+        $jobs += Compile-NAVApplicationObject $ServerInstanceObject.DatabaseName -DatabaseServer $DatabaseServer -Filter "Type=$objectType" -Recompile -SynchronizeSchemaChanges $SynchronizeSchemaChanges -AsJob
      }
  
      Receive-Job -Job $jobs -Wait
-     Compile-NAVApplicationObject $DatabaseName -SynchronizeSchemaChanges $SynchronizeSchemaChanges
+     Compile-NAVApplicationObject $DatabaseName -DatabaseServer $DatabaseServer -SynchronizeSchemaChanges $SynchronizeSchemaChanges
 } 
