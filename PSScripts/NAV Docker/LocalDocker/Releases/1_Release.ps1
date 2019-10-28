@@ -1,10 +1,10 @@
 . '.\_Settings.ps1'
 
 $ReleaseSettings.Product = 'Distri'
-$ReleaseSettings.LocalPath = "C:\ProgramData\NavContainerHelper\ReleaseProduct\Distri\131\ReleaseDistri131.txt"
-$ReleaseSettings.ContainerPath = "C:\ProgramData\NavContainerHelper\ReleaseProduct\Distri\131\ReleaseDistri131.txt"
-$ReleaseSettings.ProductVersion = "I13.1" #"IDB1.0"  #'IRM11.0' #'IF7.0'
-$ReleaseSettings.ModifiedOnly = $true
+$ReleaseSettings.LocalPath = "C:\ProgramData\NavContainerHelper\Releases\Distri\141\Distri141_Modified.txt"
+$ReleaseSettings.ContainerPath = "C:\ProgramData\NavContainerHelper\Releases\Distri\141\Distri141_Modified.txt"
+$ReleaseSettings.ProductVersion = "I14.1" #"IDB1.0"  #'IRM11.0' #'IF7.0'
+$ReleaseSettings.ModifiedOnly = $false
 
 switch ($ReleaseSettings.Product) {
     'Food' {    

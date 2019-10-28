@@ -1,7 +1,7 @@
 
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'bconprem'
+$Containername = 'bcdaily'
 
 
 <# Get-RDHCustomNAVApps `

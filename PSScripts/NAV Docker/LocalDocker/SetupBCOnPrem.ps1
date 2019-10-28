@@ -7,13 +7,13 @@ $ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:be'
 #$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:cu3-ltsc2019'
 
 
-$SecretSettings.containerLicenseFile = "$env:USERPROFILE\Dropbox (Personal)\Dynamics NAV\Licenses\5230132_iFACTO_D365 BUSINESS CENTRAL ON PREMISES_2019 04 08.flf"
+#$SecretSettings.containerLicenseFile = "$env:USERPROFILE\Dropbox (Personal)\Dynamics NAV\Licenses\5230132_iFACTO_D365 BUSINESS CENTRAL ON PREMISES_2019 04 08.flf"
 
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 $assignPremiumPlan = $false
 $includeTestToolkit = $false
-$includeTestLibrariesOnly = $false
+$includeTestLibrariesOnly = $true
 $InstallDependentModules = $true
 
 New-NavContainer `

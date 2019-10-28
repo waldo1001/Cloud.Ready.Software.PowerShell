@@ -11,3 +11,4 @@ $Credential = New-Object System.Management.Automation.PSCredential ($UserName, $
 
 Convert-ModifiedObjectsToAl -containerName $ContainerName -startId 50110 -sqlCredential $Credential -Verbose
 
+start "C:\ProgramData\NavContainerHelper\Extensions\tempdev\al-newsyntax"

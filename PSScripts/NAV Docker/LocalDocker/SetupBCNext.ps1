@@ -2,7 +2,7 @@
 
 $Containername = 'bcnext'
 
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:base'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:be'
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 $assignPremiumPlan = $true
@@ -10,11 +10,11 @@ $includeTestToolkit = $false
 $includeTestLibrariesOnly = $false
 $InstallDependentModules = $true
 
-<#
+
 $registry = $ContainerDockerImage.Substring(0, $ContainerDockerImage.IndexOf('/'))
 Write-Host -ForegroundColor Gray "Connecting docker to $registry user: $($SecretSettings.containerRegistryUserName) pwd: $($SecretSettings.containerRegistryPassword)"
 docker login "$registry" -u "$($SecretSettings.containerRegistryUserName)" -p "$($SecretSettings.containerRegistryPassword)"
-#>
+
 
 New-NavContainer `
     -containerName $ContainerName `

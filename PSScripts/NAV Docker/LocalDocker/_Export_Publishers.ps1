@@ -1,6 +1,7 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $ObjectsFolder = "C:\temp"
+$Environment = 'laptop'  #'home' or 'laptop'
 #$ContainerDockerImage = 'microsoft/bcsandbox'
 #$ContainerDockerImage = 'microsoft/dynamics-nav:2018-be'
 #$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
@@ -11,6 +12,10 @@ $ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem'
 $ExportToBase = "$env:USERPROFILE\Dropbox (Personal)\GitHub\Blogs\blog.CALAnalysis\Published Events\"
 switch ($true) {
     ($ContainerDockerImage.StartsWith('microsoft/bcsandbox')) {  
+        $ExportTo = join-path $ExportToBase 'Business Central SaaS'
+        break
+    }  
+    ($ContainerDockerImage.StartsWith('mcr.microsoft.com/businesscentral/sandbox')) {  
         $ExportTo = join-path $ExportToBase 'Business Central SaaS'
         break
     }  
@@ -37,8 +42,6 @@ switch ($true) {
 
 }
 
-$ModuleToolAPIPath = "$env:USERPROFILE\Dropbox\GitHub\Waldo.Model.Tools\ReVision.Model.Tools Library - laptop"
-
 $Containername = 'temponly'
 $ContainerAlwaysPull = $true
 
@@ -55,7 +58,8 @@ New-NavContainer `
     -auth NavUserPassword `
     -useBestContainerOS `
     -Verbose `
-    -memoryLimit 4G
+    -memoryLimit 4G `
+    -shortcuts 'None'
 
 
 # $ObjectFile = 
@@ -68,6 +72,24 @@ New-NavContainer `
 #     -Path $ObjectsFolder
 
 $result = Export-NCHNAVApplicationObjects -ContainerName $ContainerName 
+
+
+#$ModuleToolAPIPath = "$env:USERPROFILE\Dropbox\GitHub\Waldo.Model.Tools\ReVision.Model.Tools Library - laptop"
+$ModuleToolAPIPath = "$env:USERPROFILE\Dropbox\GitHub\Waldo.Model.Tools\The Magic"
+
+$licensekey = get-item (join-path $ModuleToolAPIPath 'license.key') -ErrorAction SilentlyContinue
+$licensekeyhome = get-item (join-path $ModuleToolAPIPath 'license.key.home') -ErrorAction SilentlyContinue
+$licensekeylaptop = get-item (join-path $ModuleToolAPIPath 'license.key.laptop') -ErrorAction SilentlyContinue
+
+if ($licensekey) {
+    if ($licensekeyhome -and !$licensekeylaptop) {
+        $licensekey | Rename-Item -NewName (join-path $ModuleToolAPIPath 'license.key.laptop')
+    }
+    if ($licensekeylaptop -and !$licensekeyhome) {
+        $licensekey | Rename-Item -NewName (join-path $ModuleToolAPIPath 'license.key.home')
+    }
+    Rename-Item -Path (join-path $ModuleToolAPIPath "license.key.$($Environment)") -NewName $licensekey.FullName
+}
 
 Export-NAVEventPublishers `
     -ModuleToolAPIPath $ModuleToolAPIPath `

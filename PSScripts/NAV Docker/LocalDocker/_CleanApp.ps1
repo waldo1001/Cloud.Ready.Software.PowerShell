@@ -1,7 +1,7 @@
 
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'bccurrent'
+$Containername = 'bcdaily'
 
 Clean-NCHCustomNAVApps -ContainerName $Containername 
 

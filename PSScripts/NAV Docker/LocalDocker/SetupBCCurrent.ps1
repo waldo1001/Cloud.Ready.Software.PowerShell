@@ -2,13 +2,15 @@
 
 $Containername = 'bccurrent'
 
-$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/sandbox:us'
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:be'
+
+#$SecretSettings.containerLicenseFile = 'C:\Users\ericw\Dropbox\Dynamics NAV\Licenses\5230132_iFACTO_D365 BUSINESS CENTRAL ON PREMISES_VERSION14_2019 08 29.flf'
 
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 $assignPremiumPlan = $true
-$includeTestToolkit = $false
-$includeTestLibrariesOnly = $false
+$includeTestToolkit = $true
+$includeTestLibrariesOnly = $true
 $InstallDependentModules = $true
 
 New-NavContainer `
@@ -22,21 +24,20 @@ New-NavContainer `
     -doNotExportObjectsToText `
     -updateHosts `
     -auth NavUserPassword `
-    -includeCSide `
     -enableSymbolLoading:$enableSymbolLoading `
     -assignPremiumPlan:$assignPremiumPlan `
     -useBestContainerOS `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
     -Verbose `
-    -memoryLimit 4G
+    -memoryLimit 8G `
+    -accept_outdated `
+    -includeAL `
+    -shortcuts 'None' #'None' for no shortcuts (or 'Desktop') `
 
-break
 
 if ($InstallDependentModules) {
     Install-NCHDependentModules `
         -ContainerName $ContainerName `
         -ContainerModulesOnly
 }
-
-Sync-NCHNAVTenant -containerName $ContainerName
