@@ -1,0 +1,20 @@
+@PATBase64 = OmoybmpydHR5Z3lwbHNwejI0NWtiYmFnbDNwaGtqcnBtMjJ4YWJtMmc3b21zcW1vN3Z3YWE=
+@organization = msdyn365bc
+@project = WaldoDevOpsDemos
+
+### Projects
+get https://dev.azure.com/{{organization}}/_apis/projects/?api-version=4.1
+Authorization: Basic {{PATBase64}}
+
+### Project
+get https://dev.azure.com/{{organization}}/_apis/projects/{{project}}?api-version=4.1
+Authorization: Basic {{PATBase64}}
+
+### Builds
+GET https://dev.azure.com/{{organization}}/{{project}}/_apis/build/builds?api-version=5.1
+Authorization: Basic {{PATBase64}}
+
+# ### Build filters (doc: https://docs.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=azure-devops-rest-5.1)
+# GET https://dev.azure.com/{{organization}}/{{project}}/_apis/build/builds?definitions={{definitions}}&queues={queues}&buildNumber={buildNumber}&minTime={minTime}&maxTime={maxTime}&requestedFor={requestedFor}&reasonFilter={reasonFilter}&statusFilter={statusFilter}&resultFilter={resultFilter}&tagFilters={tagFilters}&properties={properties}&$top={$top}&continuationToken={continuationToken}&maxBuildsPerDefinition={maxBuildsPerDefinition}&deletedFilter={deletedFilter}&queryOrder={queryOrder}&branchName={branchName}&buildIds={buildIds}&repositoryId={repositoryId}&repositoryType={repositoryType}&api-version=5.1
+# Authorization: Basic {{PATBase64}}
+
