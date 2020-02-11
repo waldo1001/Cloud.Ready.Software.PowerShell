@@ -1,5 +1,6 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
 
+
 foreach ($Target in $Targets) {
     #Get app.json
     $AppJson = Get-ObjectFromJSON (Join-Path $target "app.json")
@@ -8,46 +9,54 @@ foreach ($Target in $Targets) {
     if ($LaunchJson.configurations[0].authentication -ne 'Windows') {
         if (!$Credential) {
             $Credential = Get-Credential
-        }
+            $BasicAuthentication = $true
+        } 
+    }
+    else {
+        $Credential = $null
+        $BasicAuthentication = $false
     }
 
     #system
     if ($AppJson.platform) {
-        Get-AlSymbolFile `
+        Get-BCAppSymbols `
             -Server $LaunchJson.configurations[0].server `
             -Port $LaunchJson.configurations[0].port `
             -ServerInstance $LaunchJson.configurations[0].serverInstance `
-            -Publisher 'Microsoft' `
+            -AppPublisher 'Microsoft' `
             -AppName 'System' `
-            -VersionText $AppJson.platform `
-            -OutPath (join-path $target ".alpackages") `
+            -AppVersion $AppJson.platform `
+            -OutputPath (join-path $target ".alpackages") `
             -Authentication $LaunchJson.configurations[0].authentication `
-            -Credential $Credential
+            -Credential $Credential `
+            -BasicAuthentication:$BasicAuthentication
     }
     if ($AppJson.Application) {
-        Get-AlSymbolFile `
+        Get-BCAppSymbols `
             -Server $LaunchJson.configurations[0].server `
             -Port $LaunchJson.configurations[0].port `
             -ServerInstance $LaunchJson.configurations[0].serverInstance `
-            -Publisher 'Microsoft' `
+            -AppPublisher 'Microsoft' `
             -AppName 'Application' `
-            -VersionText $AppJson.Application `
-            -OutPath (join-path $target ".alpackages") `
+            -AppVersion $AppJson.Application `
+            -OutputPath (join-path $target ".alpackages") `
             -Authentication $LaunchJson.configurations[0].authentication `
-            -Credential $Credential
+            -Credential $Credential `
+            -BasicAuthentication:$BasicAuthentication
     }
     #Dependencies
     foreach ($Dependency in $AppJson.dependencies) {
-        Get-AlSymbolFile `
+        Get-BCAppSymbols `
             -Server $LaunchJson.configurations[0].server `
             -Port $LaunchJson.configurations[0].port `
             -ServerInstance $LaunchJson.configurations[0].serverInstance `
-            -Publisher $Dependency.publisher `
+            -AppPublisher $Dependency.publisher `
             -AppName $Dependency.name `
-            -VersionText $Dependency.version `
-            -OutPath (join-path $target ".alpackages") `
+            -AppVersion $Dependency.version `
+            -OutputPath (join-path $target ".alpackages") `
             -Authentication $LaunchJson.configurations[0].authentication `
-            -Credential $Credential
+            -Credential $Credential `
+            -BasicAuthentication:$BasicAuthentication
     }
 
 }
