@@ -2,8 +2,8 @@
 
 $Containername = 'bconprem'
 
-#$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:base'
-$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:be'
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:14.9.39327.0-w1'
+# $ContainerDockerImage = 'mcr.microsoft.com/businesscentral/sandbox'
 #$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:cu3-ltsc2019'
 
 
@@ -13,8 +13,8 @@ $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 $assignPremiumPlan = $false
 $includeTestToolkit = $false
-$includeTestLibrariesOnly = $true
-$InstallDependentModules = $true
+$includeTestLibrariesOnly = $false
+$InstallDependentModules = $false
 
 New-NavContainer `
     -containerName $ContainerName `
@@ -24,25 +24,22 @@ New-NavContainer `
     -licenseFile $SecretSettings.containerLicenseFile `
     -alwaysPull:$ContainerAlwaysPull `
     -Credential $ContainerCredential `
-    -doNotExportObjectsToText `
     -updateHosts `
     -auth NavUserPassword `
-    -includeCSide `
     -enableSymbolLoading:$enableSymbolLoading `
     -assignPremiumPlan:$assignPremiumPlan `
     -useBestContainerOS `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
     -Verbose `
-    -memoryLimit 4G `
-    -accept_outdated
+    -memoryLimit 8G `
+    -accept_outdated `
+    -includeAL `
+    -shortcuts 'None' #'None' for no shortcuts (or 'Desktop') `
 
-break
 
 if ($InstallDependentModules) {
     Install-NCHDependentModules `
         -ContainerName $ContainerName `
         -ContainerModulesOnly
 }
-
-Sync-NCHNAVTenant -containerName $ContainerName

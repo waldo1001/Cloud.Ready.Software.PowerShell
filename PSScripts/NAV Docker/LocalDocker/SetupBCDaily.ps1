@@ -2,7 +2,7 @@
 
 $Containername = 'bcdaily'
 
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:be'
 # $ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:be-ltsc2019'
 
 #$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:14.0.28630.0-al'
@@ -11,7 +11,7 @@ $SecretSettings.containerLicenseFile = 'C:\Users\ericw\Dropbox\Dynamics NAV\Lice
 $registry = $ContainerDockerImage.Substring(0, $ContainerDockerImage.IndexOf('/'))
 docker login "$registry" -u "$($SecretSettings.containerRegistryUserName)" -p "$($SecretSettings.containerRegistryPassword)"
 
-$ContainerAlwaysPull = $false
+$ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 $assignPremiumPlan = $false
 $includeTestLibrariesOnly = $false
@@ -58,20 +58,20 @@ New-NavContainer `
     -Verbose `
     -memoryLimit 8G `
     -accept_outdated `
-    -includeAL `
-    -myscripts @( @{ "SetupVariables.ps1" = 'if (Get-ItemProperty -Path "HKLM:\system\CurrentControlSet\control" | Select-Object -ExpandProperty "ServicesPipeTimeout" -ErrorAction SilentlyContinue) {
-            Write-host "ServicesPipeTimeout already set"
-    $restartingInstance = $false
-    $newPublicDnsName = $true
-    . "c:\run\SetupVariables.ps1"
-}
-else {
-    Write-host "Set ServicesPipeTimeout and restart"
-    Set-ItemProperty -Path "HKLM:\system\CurrentControlSet\control" -name "ServicesPipeTimeout" -Value 2000000 -Type DWORD -Force
-    Restart-computer
-    Start-Sleep -seconds 10000
-}' 
-    }) `
+    -includeAL 
+#     -myscripts @( @{ "SetupVariables.ps1" = 'if (Get-ItemProperty -Path "HKLM:\system\CurrentControlSet\control" | Select-Object -ExpandProperty "ServicesPipeTimeout" -ErrorAction SilentlyContinue) {
+#             Write-host "ServicesPipeTimeout already set"
+#     $restartingInstance = $false
+#     $newPublicDnsName = $true
+#     . "c:\run\SetupVariables.ps1"
+# }
+# else {
+#     Write-host "Set ServicesPipeTimeout and restart"
+#     Set-ItemProperty -Path "HKLM:\system\CurrentControlSet\control" -name "ServicesPipeTimeout" -Value 2000000 -Type DWORD -Force
+#     Restart-computer
+#     Start-Sleep -seconds 10000
+# }' 
+#     }) `
     
     
     
