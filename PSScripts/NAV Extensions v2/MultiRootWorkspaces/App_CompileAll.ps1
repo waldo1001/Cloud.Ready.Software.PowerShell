@@ -30,7 +30,7 @@ $SymbolFolder = Join-Path $Workspace ".symbols"
 New-Item -Path $SymbolFolder -ItemType Directory -Force
 
 $AllAppFiles = Get-ChildItem $WorkSpace -recurse -filter '*.app'
-$AllAppFiles | Copy-Item -Destination $SymbolFolder -Force -
+$AllAppFiles | Copy-Item -Destination $SymbolFolder -Force
 
 # compile
 $Paths | Sort ProcessOrder | % {
