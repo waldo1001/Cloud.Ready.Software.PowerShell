@@ -1,4 +1,4 @@
-$Workspace = "C:\_Source\DistriApps"
+$Workspace = "C:\_Source\iFacto\DistriApps\"
 $BaseFolder = join-path $workspace 'BASE\App'
 $SymbolFolder = '.alpackages'
 
