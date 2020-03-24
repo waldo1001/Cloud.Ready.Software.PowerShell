@@ -2,7 +2,7 @@
 
 $Containername = 'bcdaily'
 
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:be'
 # $ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:be-ltsc2019'
 
 #$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:14.0.28630.0-al'
