@@ -6,7 +6,7 @@ $ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:be'
 # $ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:be-ltsc2019'
 
 #$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:14.0.28630.0-al'
-$SecretSettings.containerLicenseFile = 'C:\Users\ericw\Dropbox\Dynamics NAV\Licenses\5230132_iFACTO_D365 BUSINESS CENTRAL ON PREMISES_VERSION14_2019 08 29.flf'
+# $SecretSettings.containerLicenseFile = 'C:\Users\ericw\Dropbox\Dynamics NAV\Licenses\5230132_iFACTO_D365 BUSINESS CENTRAL ON PREMISES_VERSION14_2019 08 29.flf'
 
 $registry = $ContainerDockerImage.Substring(0, $ContainerDockerImage.IndexOf('/'))
 docker login "$registry" -u "$($SecretSettings.containerRegistryUserName)" -p "$($SecretSettings.containerRegistryPassword)"

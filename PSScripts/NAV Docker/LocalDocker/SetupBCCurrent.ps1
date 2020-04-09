@@ -2,13 +2,13 @@
 
 $Containername = 'bccurrent'
 
-$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:15.1.37881.38071-w1'
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:be-ltsc2019'
 # $ContainerDockerImage = 'microsoft/dynamics-nav:2018-cu9-fr'
 
 #$SecretSettings.containerLicenseFile = 'C:\Users\ericw\Dropbox\Dynamics NAV\Licenses\5230132_iFACTO_D365 BUSINESS CENTRAL ON PREMISES_VERSION14_2019 08 29.flf'
-$ContainerAlwaysPull = $false
+$ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
-$assignPremiumPlan = $true
+$assignPremiumPlan = $false
 $includeTestToolkit = $true
 $includeTestLibrariesOnly = $true
 $InstallDependentModules = $false
@@ -32,7 +32,7 @@ New-NavContainer `
     -memoryLimit 8G `
     -accept_outdated `
     -includeAL `
-    -useBestContainerOS
+    # -useBestContainerOS
 #     -myscripts @( @{ "SetupVariables.ps1" = 'if (Get-ItemProperty -Path "HKLM:\system\CurrentControlSet\control" | Select-Object -ExpandProperty "ServicesPipeTimeout" -ErrorAction SilentlyContinue) {
 #         Write-host "ServicesPipeTimeout already set"
 #         $restartingInstance = $false

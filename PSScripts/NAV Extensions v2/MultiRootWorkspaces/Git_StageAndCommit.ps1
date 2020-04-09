@@ -1,13 +1,11 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
 
-$FromBranch = 'master'
-$ToBranch = 'PREP/NEXTMAJOR'
+$Message = 'Fixed CodeCop - Obsolete Fields'
 
 foreach ($Target in $Targets) {
     write-host $Target -ForegroundColor Green
     Set-Location $Target
-    & git checkout -q "$ToBranch"
-    & git fetch
-    & git pull origin "$FromBranch"
+    & git stage .
+    & git commit -m "$Message"
     & git push
 }
