@@ -19,23 +19,26 @@ function Get-AppDependencies {
         foreach ($Dependency in $App.Dependencies) {
             if (!$Dependency.AppId) { $AppId = "id" }
 
-            $DependencyArray = AddToDependencyTree `
-                -App ($AppCollection | where AppId -eq $Dependency.$AppId) `
-                -DependencyArray $DependencyArray `
-                -AppCollection $AppCollection `
-                -Order ($Order - 1)
+            $AppInAppCollection = $AppCollection | where id -eq $Dependency.$AppId
+            if ($AppInAppCollection) {
+                $DependencyArray = AddToDependencyTree `
+                    -App ($AppCollection | where id -eq $Dependency.$AppId) `
+                    -DependencyArray $DependencyArray `
+                    -AppCollection $AppCollection `
+                    -Order ($Order - 1)
+            }
         }
 
-        if (-not($DependencyArray | where {$_.$AppId -eq $App.$AppId})) {
+        if (-not($DependencyArray | where { $_.$AppId -eq $App.$AppId })) {
             $DependencyArray += $App
             try {
-                ($DependencyArray | where {$_.$AppId -eq $App.$AppId}).ProcessOrder = $Order
+                ($DependencyArray | where { $_.$AppId -eq $App.$AppId }).ProcessOrder = $Order
             }
             catch { }
         }
         else {
-            if (($DependencyArray | where {$_.$AppId -eq $App.$AppId}).ProcessOrder -gt $Order) {
-                ($DependencyArray | where {$_.$AppId -eq $App.$AppId}).ProcessOrder = $Order
+            if (($DependencyArray | where { $_.$AppId -eq $App.$AppId }).ProcessOrder -gt $Order) {
+                ($DependencyArray | where { $_.$AppId -eq $App.$AppId }).ProcessOrder = $Order
             } 
         }
 
@@ -57,7 +60,7 @@ function Get-AppDependencies {
             foreach ($AppFile in $AllAppFiles) {
                 $App = Get-NAVAppInfo -Path $AppFile.FullName
                 $AllApps += [PSCustomObject]@{
-                    AppId        = $App.id
+                    id           = $App.id
                     Version      = $App.version
                     Name         = $App.name
                     Publisher    = $App.publisher
@@ -74,7 +77,7 @@ function Get-AppDependencies {
             foreach ($AppFile in $AllAppFiles) {
                 $App = Get-ObjectFromJSON $AppFile.FullName # Get-NAVAppInfo -Path $AppFile.FullName
                 $AllApps += [PSCustomObject]@{
-                    AppId        = $App.id
+                    id           = $App.id
                     Version      = $App.version
                     Name         = $App.name
                     Publisher    = $App.publisher
