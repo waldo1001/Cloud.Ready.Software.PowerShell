@@ -21,7 +21,7 @@ function Get-NAVCumulativeUpdateFile
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName)]
         [ValidateSet('2013','2013 R2','2015','2016','2017','2018')]
         [String]$version = '2017',
-        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName)]
         [String]$CUNo,
         [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
         [String]$DownloadFolder = $env:TEMP,        
@@ -42,14 +42,17 @@ function Get-NAVCumulativeUpdateFile
                 
         Write-Verbose "Processing parameters $CountryCode $version $CUNo"
         
-        $feedurl = 'https://blogs.msdn.microsoft.com/nav/category/announcements/cu/feed/'
+        # $feedurl = 'https://blogs.msdn.microsoft.com/nav/category/announcements/cu/feed/'
+        $feedurl = 'https://support.microsoft.com/app/content/api/content/feeds/sap/en-us/dea12e4a-4dd3-35e1-2577-45df252a2b9c/rss'
         [regex]$titlepattern = 'Cumulative Update (\d+) .*'
                 
         Write-Verbose 'Searching for RSS item' 
 
-        $feed = [xml](Invoke-WebRequest -Uri $feedurl)
-
-        $blogurl = ($feed.SelectNodes("/rss/channel/item[./category='Cumulative Updates']") | where title -like "*Cumulative Update*$CUNo*NAV $version*" | Select-Object -First 1).link
+        $feed = (Invoke-WebRequest -Uri $feedurl)
+        $FeedXML = New-Object -TypeName System.Xml.XmlDocument
+        $feedContent = $feed.Content.Substring(1) # for me at least some broken first character in the XML Content
+        $FeedXML.LoadXml($feedContent)
+        $blogurl = ($feed.SelectNodes("/rss/channel/item") | where title -like "*Cumulative Update*$CUNo*NAV $version*" | Select-Object -First 1).link
         #{
         #if (!($blogurl)){
         #    $blogurl = $feed.SelectNodes("/rss/channel/item[./category='NAV $version' and ./category='Cumulative Updates']").link | Select-Object -First 1
@@ -86,7 +89,7 @@ function Get-NAVCumulativeUpdateFile
         #$kblink = $blogarticle.Links | Where-Object -FilterScript {
         $kblink = $ie.Document.links | Where-Object -FilterScript {
             Write-Verbose "Link: $($_.href) id: $($_.id)"
-            $_.innerText -match 'Download'
+            $_.href -match 'details.aspx'
         } | Select-Object -First 1
 
         if (!($kblink)){
