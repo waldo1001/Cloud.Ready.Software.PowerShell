@@ -21,7 +21,7 @@ function Get-NAVCumulativeUpdateFile
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName)]
         [ValidateSet('2013','2013 R2','2015','2016','2017','2018')]
         [String]$version = '2017',
-        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
         [String]$CUNo,
         [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName)]
         [String]$DownloadFolder = $env:TEMP,        
@@ -52,7 +52,7 @@ function Get-NAVCumulativeUpdateFile
         $FeedXML = New-Object -TypeName System.Xml.XmlDocument
         $feedContent = $feed.Content.Substring(1) # for me at least some broken first character in the XML Content
         $FeedXML.LoadXml($feedContent)
-        $blogurl = ($feed.SelectNodes("/rss/channel/item") | where title -like "*Cumulative Update*$CUNo*NAV $version*" | Select-Object -First 1).link
+        $blogurl = ($feed.SelectNodes("/rss/channel/item") | where title -like "*Cumulative Update*$CUNo*NAV $version*(Build*" | Select-Object -First 1).link
         #{
         #if (!($blogurl)){
         #    $blogurl = $feed.SelectNodes("/rss/channel/item[./category='NAV $version' and ./category='Cumulative Updates']").link | Select-Object -First 1
@@ -85,11 +85,15 @@ function Get-NAVCumulativeUpdateFile
         } | Select-Object -First 1
         $KbHref = $kblink.href
 
+        if (!($KbHref)) {
+            $KbHref = $blogurl
+        }
+        
         Write-Verbose 'Microsoft Download Center link' 
         #$kblink = $blogarticle.Links | Where-Object -FilterScript {
         $kblink = $ie.Document.links | Where-Object -FilterScript {
             Write-Verbose "Link: $($_.href) id: $($_.id)"
-            $_.href -match 'details.aspx'
+            $_.href -match 'download/details.aspx'
         } | Select-Object -First 1
 
         if (!($kblink)){
@@ -97,7 +101,22 @@ function Get-NAVCumulativeUpdateFile
             break
         }
 
-        $ProductID = $kblink.search.Substring(4)
+        if ($kblink.search.Contains('familyid=')) {
+            $ieX = New-Object -ComObject 'internetExplorer.Application'
+            $ieX.Visible = $false
+            $null = $iex.Navigate($kblink.href)
+            while ($iex.Busy -eq $true) {
+                $null = Start-Sleep -Seconds 1
+            }
+
+            $ProductID = $iex.LocationURL;
+            $ProductID = $ProductID.Substring($ProductID.IndexOf('=') + 1);
+            $null = $iex.Quit()
+        }
+        else {
+            $ProductID = $kblink.search.Substring(4)
+        }
+        
         Write-Verbose "Found Product ID $ProductID"
 
 
