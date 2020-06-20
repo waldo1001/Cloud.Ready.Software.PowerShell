@@ -1,0 +1,1 @@
+install-module az -force
