@@ -3,7 +3,8 @@ set-executionpolicy unrestricted
 
 #Download latest nightly build (Docker Desktop - Windows (Edge))
 $DockerInstallFile = "$env:USERPROFILE\Downloads\DockerInstall.exe" 
-Invoke-WebRequest -UseBasicparsing -Outfile $DockerInstallFile "https://download.docker.com/win/edge/Docker%20for%20Windows%20Installer.exe"
+#Invoke-WebRequest -UseBasicparsing -Outfile $DockerInstallFile "https://download.docker.com/win/edge/Docker%20for%20Windows%20Installer.exe"    # the "Edge" version is the unstable one ... 
+Invoke-WebRequest -UseBasicparsing -Outfile $DockerInstallFile "https://desktop.docker.com/win/stable/45519/Docker%20Desktop%20Installer.exe"
 
 #Run Install
 start $DockerInstallFile
@@ -22,5 +23,5 @@ install-module -Name navcontainerhelper -Force
 
 # Install waldo's "CRS.NavContainerHelperExtension" - Some more functions to make your life a bit easier
 Find-module | 
-    where author -eq 'waldo' | 
-        install-module -force
+where author -eq 'waldo' | 
+install-module -force
