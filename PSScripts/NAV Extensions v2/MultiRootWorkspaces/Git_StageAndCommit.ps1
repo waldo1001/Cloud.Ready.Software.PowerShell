@@ -1,10 +1,11 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
 
-$Message = 'Small change to trigger pipeline'
+$Message = 'References to release-branch'
+#$Message = 'Versions in App.json to 6.3'
 
-foreach ($Target in $Targets) {
+foreach ($Target in $targetRepos) {
     write-host $Target -ForegroundColor Green
-    Set-Location "$Target/.."
+    Set-Location "$Target"
     
     & git stage .
     & git commit -m "$Message"

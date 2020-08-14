@@ -8,7 +8,6 @@ $Paths = Get-AppDependencies -Path $Workspace -Type ALFolders
 #     $_.Path
 # }
 
-
 Set-location $Workspace
 
 # Delete all app files
@@ -42,6 +41,14 @@ $Paths | Sort ProcessOrder | % {
         -appProjectFolder $appProjectFolder `
         -appSymbolsFolder $SymbolFolder `
         -appOutputFile (join-path $SymbolFolder "$($_.Publisher)_$($_.Name)_$($_.Version).app") 
+}
+
+#Check Compilations
+$Targets | % {
+    $Translation = Get-ChildItem $_ -Filter "*.g.xlf" -Recurse
+    if (!$Translation) {        
+        Write-Error "No Translation found for $($_)"
+    }
 }
 
 # Remove symbolfolder

@@ -1,9 +1,9 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
 
 $FromBranch = 'master'
-$ToBranch = 'Translation'
+$ToBranch = 'Release/6.3'
 
-foreach ($Target in $Targets) {
+foreach ($Target in $targetRepos) {
     write-host $Target -ForegroundColor Green
     Set-Location $Target
     & git checkout -q "$ToBranch"
