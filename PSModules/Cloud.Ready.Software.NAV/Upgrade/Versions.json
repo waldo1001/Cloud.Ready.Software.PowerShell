@@ -3,8 +3,8 @@
 	"BuildRegex" : "Build (([\\d\\.]+))",
 	"ArticleIDRegex" : "\/",
 	"CountryCodeRegex" : "\\.([A-Z]{2}|W1).DVD|(?:\\.)?([A-Z]{2}|W1)\\.ZIP",
-	"CULinkRegex" : "<a.+?(?:data-content-id=\\\\\"(\\d+)\\\\\"|https?:\\\/\\\/support\\.microsoft\\.com\\\/(?:help|[a-z]{2}-[a-z]{2}\\\/)?help\\\/(\\d+)|\\\\\"\\\/[a-z]{2}-[a-z]{2}\\\/help\\\/(\\d+))+.+?(?:Cumulative )?Update (\\d\\d?\\.?\\d?) .+? ",
-	"downloadLinkRegex" : "(https?\\:\\\/\\\/www\\.microsoft\\.com\\\/(?:[a-z]{2}-[a-z]{2}\\\/)?download\\\/details.aspx\\?(?:familyid=[\\da-zA-Z]{8}-(?:[\\da-zA-Z]{4}-){3}[\\da-zA-Z]{12}|id(?:%3d|=)?(\\d+)))(?:.+?)?(?:>)?.+?(?:Cumulative )?update(?:&nbsp;| )?(?:CU)?(?: )?(\\d\\d?\\.?\\d?)",
+	"CULinkRegex" : "<a.+?(?:data-content-id=\\\\\"(\\d+)\\\\\"|https?:\\\/\\\/support\\.microsoft\\.com\\\/(?:help|[a-z]{2}-[a-z]{2}\\\/)?help\\\/(\\d+)|\\\\\"\\\/[a-z]{2}-[a-z]{2}\\\/help\\\/(\\d+))+.+?(?:Cumulative )?Update (\\d\\d?\\.?\\d{1,2}) .+? ",
+	"downloadLinkRegex" : "(https?\\:\\\/\\\/www\\.microsoft\\.com\\\/(?:[a-z]{2}-[a-z]{2}\\\/)?download\\\/details.aspx\\?(?:familyid=[\\da-zA-Z]{8}-(?:[\\da-zA-Z]{4}-){3}[\\da-zA-Z]{12}|id(?:%3d|=)?(\\d+)))(?:.+?)?(?:>)?.+?(?:Cumulative )?update(?:&nbsp;| )?(?:CU)?(?: )?(\\d\\d?\\.?\\d{1,2})",
 	"versions": [
 		{
 			"version": "2013",

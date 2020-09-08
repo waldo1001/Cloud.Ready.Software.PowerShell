@@ -280,7 +280,7 @@ function Get-NAVCumulativeUpdateFile {
 
         $DownLoadLinkMatches = [regex]::Matches($script.innerText, $regex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
         try {
-            $UpdateNo = $DownLoadLinkMatches.Groups[3].Value
+            $UpdateNo = $DownLoadLinkMatches.Groups[3].Value.Split(".") | Select-Object -Last 1
             $ProductID = $DownLoadLinkMatches.Groups[2].Value
             $kbLink = $DownLoadLinkMatches.Groups[1].Value   
         }
