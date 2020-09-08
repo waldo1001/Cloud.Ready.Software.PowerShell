@@ -1,7 +1,7 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
 
 $MasterBranch = 'master'
-$NewBranch = 'Release/6.3'
+$NewBranch = 'Translation'
 
 foreach ($Target in $targetRepos) {
     write-host $Target -ForegroundColor Green
