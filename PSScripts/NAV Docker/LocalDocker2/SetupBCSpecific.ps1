@@ -2,8 +2,7 @@
 
 $artifactUrl = Get-BCArtifactUrl `
     -Type OnPrem `
-    -country nl `
-    -select Latest
+    -version 14.16
     
 
 $ContainerName = 'bcspecific'

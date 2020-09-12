@@ -1,7 +1,7 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
 
 
-$Command = "Get-childitem $Workspace\*.* -Recurse -filter ""azure-pipelines.yml"" | % {code $('$_')}"
+$Command = "Get-childitem $Workspace\*.* -Recurse -filter ""app.json"" | % {code $('$_')}"
 $Command | clip.exe
 
 Write-host "Copied the following command to clipboard:" -ForegroundColor green
