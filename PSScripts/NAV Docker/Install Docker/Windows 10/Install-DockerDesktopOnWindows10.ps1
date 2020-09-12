@@ -19,7 +19,7 @@ Add-AccountToDockerAccess "$env:UserDomain\$env:UserName"
 docker run hello-world:nanoserver #you don't need to do this - you can also just trust me :-).
 
 # Install NAVContainerHelper
-install-module -Name navcontainerhelper -Force
+install-module -Name BcContainerHelper -Force
 
 # Install waldo's "CRS.NavContainerHelperExtension" - Some more functions to make your life a bit easier
 Find-module | 
