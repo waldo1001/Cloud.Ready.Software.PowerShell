@@ -1,11 +1,12 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $artifactUrl = Get-BCArtifactUrl `
-    -Type OnPrem `
-    -Select Latest `
-    -country be
+    -type Sandbox `
+    -country be `
+    -sasToken $SecretSettings.InsiderSASToken `
+    -storageAccount bcinsider
 
-$ContainerName = 'bccurrent'
+$ContainerName = 'bcdaily'
 $ImageName = $ContainerName
 
 $includeTestToolkit = $true

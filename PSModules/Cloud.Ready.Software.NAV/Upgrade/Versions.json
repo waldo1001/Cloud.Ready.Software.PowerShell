@@ -1,0 +1,115 @@
+{
+	"DefaultDownloadURL" : "https://support.microsoft.com/help/",
+	"BuildRegex" : "Build (([\\d\\.]+))",
+	"ArticleIDRegex" : "\/",
+	"CountryCodeRegex" : "\\.([A-Z]{2}|W1).DVD|(?:\\.)?([A-Z]{2}|W1)\\.ZIP",
+	"CULinkRegex" : "<a.+?(?:data-content-id=\\\\\"(\\d+)\\\\\"|https?:\\\/\\\/support\\.microsoft\\.com\\\/(?:help|[a-z]{2}-[a-z]{2}\\\/)?help\\\/(\\d+)|\\\\\"\\\/[a-z]{2}-[a-z]{2}\\\/help\\\/(\\d+))+.+?(?:Cumulative )?Update (\\d\\d?\\.?\\d{1,2}) .+? ",
+	"downloadLinkRegex" : "(https?\\:\\\/\\\/www\\.microsoft\\.com\\\/(?:[a-z]{2}-[a-z]{2}\\\/)?download\\\/details.aspx\\?(?:familyid=[\\da-zA-Z]{8}-(?:[\\da-zA-Z]{4}-){3}[\\da-zA-Z]{12}|id(?:%3d|=)?(\\d+)))(?:.+?)?(?:>)?.+?(?:Cumulative )?update(?:&nbsp;| )?(?:CU)?(?: )?(\\d\\d?\\.?\\d{1,2})",
+	"versions": [
+		{
+			"version": "2013",
+			"url" : "https://support.microsoft.com/en-us/help/2842257",
+			"fileNamePrefix" : "NAV",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
+					},
+		{
+			"version": "2013 R2",
+			"url" : "https://support.microsoft.com/en-us/help/2914930",
+			"fileNamePrefix" : "NAV",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
+		},
+		{
+			"version": "2015",
+			"url" : "https://support.microsoft.com/en-us/help/3014609",
+			"fileNamePrefix" : "NAV",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
+		},
+		{
+			"version": "2016",
+			"url" : "https://support.microsoft.com/en-us/help/3108728",
+			"fileNamePrefix" : "NAV",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
+		},
+		{
+			"version": "2017",
+			"url" : "https://support.microsoft.com/en-us/help/3210255",
+			"fileNamePrefix" : "NAV",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
+			},
+		{
+			"version": "2018",
+			"url" : "https://support.microsoft.com/en-us/help/4072483",
+			"fileNamePrefix" : "NAV",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
+		},
+		{
+			"version": "BC13",
+			"url": "https://support.microsoft.com/en-us/help/4470116",
+			"fileNamePrefix" : "BC",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
+			},
+		{
+			"version": "BC14",
+			"url": "https://support.microsoft.com/en-gb/help/4501292",
+			"fileNamePrefix" : "BC",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
+			},
+		{
+			"version": "BC15",
+			"url": "https://support.microsoft.com/en-gb/help/4528706",
+			"fileNamePrefix" : "BC",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
+		},
+		{
+			"version": "BC16",
+			"url": "https://support.microsoft.com/en-us/help/4549687",
+			"fileNamePrefix" : "BC",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
+		}
+	],
+	"Exceptions" : [
+		{
+			"version" : "2013 R2",
+			"CU" : 2,
+			"description" : "Not available from Download Center.  It is a hotfix file request instead.", 
+			"reference" : "",
+			"productID" : ""
+		},
+		{
+			"version" : "2013 R2",
+			"CU" : 19,
+			"description" : "Not available from Download Center.  It is a hotfix file request instead.", 
+			"reference" : "",
+			"productID" : ""
+		},
+		{
+			"version" :"2017",
+			"CU" : 1,
+			"description" : "Not available from Download Center.  It is a hotfix file request instead.", 
+			"reference" : "",
+			"productID" : ""
+		}
+	],
+	"helpers" : [
+		{
+			"name" : "Free Formatter Free Online Tools For Developers",
+			"Description" : "Use this to escape/unescape strings for storage in JSON file",
+			"url" : "https://www.freeformatter.com/json-escape.html"
+		},
+		{			
+			"name" : "RegEx Editor",
+			"Description" : "RegExr is an online tool to learn, build, & test Regular Expressions (RegEx / RegExp).",
+			"url" : "https://regexr.com/"
+		}
+	]
+}

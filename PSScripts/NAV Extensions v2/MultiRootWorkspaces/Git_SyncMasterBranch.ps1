@@ -2,7 +2,7 @@
 
 $MasterBranch = 'master'
 
-foreach ($Target in $Targets) {
+foreach ($Target in $targetRepos) {
     write-host $Target -ForegroundColor Green
     Set-Location $Target
     & git checkout -q "$MasterBranch"

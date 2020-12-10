@@ -1,20 +1,16 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
-$Containername = 'bconprem'
+$Containername = 'bcsandbox'
 
-$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:be-ltsc2019'
-# $ContainerDockerImage = 'mcr.microsoft.com/businesscentral/sandbox'
-#$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/onprem:cu3-ltsc2019'
-
+$ContainerDockerImage = 'mcr.microsoft.com/businesscentral/sandbox:dk'
 
 #$SecretSettings.containerLicenseFile = "$env:USERPROFILE\Dropbox (Personal)\Dynamics NAV\Licenses\5230132_iFACTO_D365 BUSINESS CENTRAL ON PREMISES_2019 04 08.flf"
 
 $ContainerAlwaysPull = $true
 $enableSymbolLoading = $false
 $assignPremiumPlan = $false
-$includeTestToolkit = $false
-$includeTestLibrariesOnly = $false
-# $InstallDependentModules = $false
+$includeTestToolkit = $true
+$includeTestLibrariesOnly = $true
 
 New-NavContainer `
     -containerName $ContainerName `
@@ -24,22 +20,14 @@ New-NavContainer `
     -licenseFile $SecretSettings.containerLicenseFile `
     -alwaysPull:$ContainerAlwaysPull `
     -Credential $ContainerCredential `
+    -doNotExportObjectsToText `
     -updateHosts `
     -auth NavUserPassword `
     -enableSymbolLoading:$enableSymbolLoading `
     -assignPremiumPlan:$assignPremiumPlan `
-    -useBestContainerOS `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
     -Verbose `
     -memoryLimit 8G `
     -accept_outdated `
-    -includeAL `
-    -shortcuts 'None' #'None' for no shortcuts (or 'Desktop') `
-
-
-# if ($InstallDependentModules) {
-#     Install-NCHDependentModules `
-#         -ContainerName $ContainerName `
-#         -ContainerModulesOnly
-# }
+    -includeAL

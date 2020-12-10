@@ -7,3 +7,4 @@ $Command | clip.exe
 Write-host "Copied the following command to clipboard:" -ForegroundColor green
 Write-host "  $Command" -ForegroundColor Yellow
 Write-host "Now past it in the terminal of your Multi-root workspace" -ForegroundColor green
+

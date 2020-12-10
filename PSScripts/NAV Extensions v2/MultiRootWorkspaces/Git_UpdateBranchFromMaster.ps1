@@ -3,7 +3,7 @@
 $FromBranch = 'master'
 $ToBranch = 'Translation'
 
-foreach ($Target in $Targets) {
+foreach ($Target in $targetRepos) {
     write-host $Target -ForegroundColor Green
     Set-Location $Target
     & git checkout -q "$ToBranch"

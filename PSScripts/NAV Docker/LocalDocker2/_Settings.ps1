@@ -15,6 +15,6 @@ $ContainerAdditionalParameters = @("--cpu-count 8", "--dns=8.8.8.8")
 #import-module "$env:USERPROFILE\Dropbox\GitHub\Cloud.Ready.Software.PowerShell\PSModules\CRS.RemoteNAVDockerHostHelper\CRS.RemoteNAVDockerHostHelper.psm1" -Force -WarningAction SilentlyContinue
 
 #Load all functions
-Get-ChildItem (Join-Path $PSScriptRoot "Functions") -Filter "*.ps1" | % {
-    . $_.FullName
-}
+# Get-ChildItem (Join-Path $PSScriptRoot "Functions") -Filter "*.ps1" | % {
+#     . $_.FullName
+# }

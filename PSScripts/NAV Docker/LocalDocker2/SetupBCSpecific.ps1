@@ -2,10 +2,10 @@
 
 $artifactUrl = Get-BCArtifactUrl `
     -Type OnPrem `
-    -Select Latest `
-    -country be
+    -version 14.16
+    
 
-$ContainerName = 'bccurrent'
+$ContainerName = 'bcspecific'
 $ImageName = $ContainerName
 
 $includeTestToolkit = $true

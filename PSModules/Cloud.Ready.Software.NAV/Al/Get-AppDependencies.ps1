@@ -14,31 +14,28 @@ function Get-AppDependencies {
             [Int] $Order = 1
         )   
 
-        $AppId = "AppId";
         
         foreach ($Dependency in $App.Dependencies) {
-            if (!$Dependency.AppId) { $AppId = "id" }
-
-            $AppInAppCollection = $AppCollection | where id -eq $Dependency.$AppId
+            $AppInAppCollection = $AppCollection | where id -eq $Dependency.id
             if ($AppInAppCollection) {
                 $DependencyArray = AddToDependencyTree `
-                    -App ($AppCollection | where id -eq $Dependency.$AppId) `
+                    -App ($AppCollection | where id -eq $Dependency.id) `
                     -DependencyArray $DependencyArray `
                     -AppCollection $AppCollection `
                     -Order ($Order - 1)
             }
         }
 
-        if (-not($DependencyArray | where { $_.$AppId -eq $App.$AppId })) {
+        if (-not($DependencyArray | where { $_.id -eq $App.id })) {
             $DependencyArray += $App
             try {
-                ($DependencyArray | where { $_.$AppId -eq $App.$AppId }).ProcessOrder = $Order
+                ($DependencyArray | where { $_.id -eq $App.id }).ProcessOrder = $Order
             }
             catch { }
         }
         else {
-            if (($DependencyArray | where { $_.$AppId -eq $App.$AppId }).ProcessOrder -gt $Order) {
-                ($DependencyArray | where { $_.$AppId -eq $App.$AppId }).ProcessOrder = $Order
+            if (($DependencyArray | where { $_.id -eq $App.id }).ProcessOrder -gt $Order) {
+                ($DependencyArray | where { $_.id -eq $App.id }).ProcessOrder = $Order
             } 
         }
 

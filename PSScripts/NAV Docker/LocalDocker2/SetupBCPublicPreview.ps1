@@ -1,11 +1,11 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $artifactUrl = Get-BCArtifactUrl `
-    -Type OnPrem `
-    -Select Latest `
-    -country be
+    -country be `
+    -storageAccount bcpublicpreview `
+    -select Latest
 
-$ContainerName = 'bccurrent'
+$ContainerName = 'bcpublicreview'
 $ImageName = $ContainerName
 
 $includeTestToolkit = $true

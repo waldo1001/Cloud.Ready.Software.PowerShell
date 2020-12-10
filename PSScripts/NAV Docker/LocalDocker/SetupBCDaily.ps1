@@ -2,7 +2,7 @@
 
 $Containername = 'bcdaily'
 
-$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:be'
+$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:be-ltsc2019'
 # $ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox:be-ltsc2019'
 
 #$ContainerDockerImage = 'bcinsider.azurecr.io/bcsandbox-master:14.0.28630.0-al'
@@ -52,12 +52,10 @@ New-NavContainer `
     -auth NavUserPassword `
     -enableSymbolLoading:$enableSymbolLoading `
     -assignPremiumPlan:$assignPremiumPlan `
-    -useBestContainerOS `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
     -Verbose `
     -memoryLimit 8G `
-    -accept_outdated `
     -includeAL 
 #     -myscripts @( @{ "SetupVariables.ps1" = 'if (Get-ItemProperty -Path "HKLM:\system\CurrentControlSet\control" | Select-Object -ExpandProperty "ServicesPipeTimeout" -ErrorAction SilentlyContinue) {
 #             Write-host "ServicesPipeTimeout already set"
