@@ -75,6 +75,13 @@
 			"fileNamePrefix" : "BC",
 			"CULinkRegex" : "",
 			"downloadLinkRegex" : ""
+		},
+		{
+			"version": "BC17",
+			"url": "https://support.microsoft.com/en-gb/help/4583507",
+			"fileNamePrefix" : "BC",
+			"CULinkRegex" : "",
+			"downloadLinkRegex" : ""
 		}
 	],
 	"Exceptions" : [
