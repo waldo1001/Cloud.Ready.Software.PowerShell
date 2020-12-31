@@ -31,6 +31,19 @@ foreach ($Target in $Targets) {
             -Credential $Credential `
             -BasicAuthentication:$BasicAuthentication
     }
+    if ($AppJson.platform) {
+        Get-BCAppSymbols `
+            -Server $LaunchJson.configurations[0].server `
+            -Port $LaunchJson.configurations[0].port `
+            -ServerInstance $LaunchJson.configurations[0].serverInstance `
+            -AppPublisher 'Microsoft' `
+            -AppName 'System Application' `
+            -AppVersion $AppJson.platform `
+            -OutputPath (join-path $target ".alpackages") `
+            -Authentication $LaunchJson.configurations[0].authentication `
+            -Credential $Credential `
+            -BasicAuthentication:$BasicAuthentication
+    }
     if ($AppJson.Application) {
         Get-BCAppSymbols `
             -Server $LaunchJson.configurations[0].server `
@@ -38,6 +51,19 @@ foreach ($Target in $Targets) {
             -ServerInstance $LaunchJson.configurations[0].serverInstance `
             -AppPublisher 'Microsoft' `
             -AppName 'Application' `
+            -AppVersion $AppJson.Application `
+            -OutputPath (join-path $target ".alpackages") `
+            -Authentication $LaunchJson.configurations[0].authentication `
+            -Credential $Credential `
+            -BasicAuthentication:$BasicAuthentication
+    }
+    if ($AppJson.Application) {
+        Get-BCAppSymbols `
+            -Server $LaunchJson.configurations[0].server `
+            -Port $LaunchJson.configurations[0].port `
+            -ServerInstance $LaunchJson.configurations[0].serverInstance `
+            -AppPublisher 'Microsoft' `
+            -AppName 'Base Application' `
             -AppVersion $AppJson.Application `
             -OutputPath (join-path $target ".alpackages") `
             -Authentication $LaunchJson.configurations[0].authentication `

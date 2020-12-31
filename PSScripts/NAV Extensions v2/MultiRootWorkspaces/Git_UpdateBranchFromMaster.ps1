@@ -1,7 +1,8 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
+# . (Join-path $PSScriptRoot '_SettingsCustomers.ps1')
 
 $FromBranch = 'master'
-$ToBranch = 'Translation'
+$ToBranch = 'waldo'
 
 foreach ($Target in $targetRepos) {
     write-host $Target -ForegroundColor Green
@@ -10,4 +11,5 @@ foreach ($Target in $targetRepos) {
     & git fetch
     & git pull origin "$FromBranch"
     & git push
+
 }

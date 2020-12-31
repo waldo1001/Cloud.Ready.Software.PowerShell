@@ -1,48 +1,46 @@
 ﻿. (Join-path $PSScriptRoot '_Settings.ps1')
 
 Write-Host "Get-AppDependencies" -ForegroundColor Yellow
-
 $Paths = Get-AppDependencies -Path $Workspace -Type ALFolders
 
-# Get-AppDependencies -Path $Target | ForEach-Object {
-#     $_.Path
-# }
-
+Write-Host "Set location to workspace" -ForegroundColor Yellow
 Set-location $Workspace
 
-# Delete all app files
+Write-Host "Delete all app files (excl. symbols)" -ForegroundColor Yellow
 $Targets | % {
-    Write-Host -ForegroundColor Green "Removing app files from $($_)" 
-    
-    Get-ChildItem $_ -Filter "*.dep.app" | Remove-Item -Force
+    Get-ChildItem $_ -Filter "*.app" | Remove-Item -Force
 }
 
-# Delete all .g.xlf files
-# $Targets | % {
-#     Write-Host -ForegroundColor Green "Removing translation files from $($_)" 
-    
-#     Get-ChildItem $_ -Filter "*.g.xlf" -Recurse | Remove-Item -Force
-# }
 
-# Build folder with all symbols
-$SymbolFolder = Join-Path $Workspace ".symbols"
-New-Item -Path $SymbolFolder -ItemType Directory -Force
+Write-Host "Build one folder with all symbols" -ForegroundColor Yellow
+$SymbolFolderForCompile = Join-Path $Workspace ".symbols"
+
+Remove-Item $SymbolFolderForCompile -Force -Recurse
+New-Item -Path $SymbolFolderForCompile -ItemType Directory -Force
 
 $AllAppFiles = Get-ChildItem $WorkSpace -recurse -filter '*.app'
-$AllAppFiles | Copy-Item -Destination $SymbolFolder -Force
+$AllAppFiles | Copy-Item -Destination $SymbolFolderForCompile -Force
+
 
 # compile
+Write-Host "Compile all apps in the right order" -ForegroundColor Yellow
+$compileFails = @()
 $Paths | Sort ProcessOrder | % {
-    Write-Host -ForegroundColor Green "Compiling $($_.Path )" 
+    Write-Host "  Compiling $($_.Path )" -ForegroundColor Gray 
     
     $appProjectFolder = [io.path]::GetDirectoryName($_.Path)
-
-    Compile-ALApp `
+    
+    $success = Compile-ALApp `
         -appProjectFolder $appProjectFolder `
-        -appSymbolsFolder $SymbolFolder `
-        -appOutputFile (join-path $SymbolFolder "$($_.Publisher)_$($_.Name)_$($_.Version).app") 
+        -appSymbolsFolder $SymbolFolderForCompile `
+        -appOutputFile (join-path $SymbolFolderForCompile "$($_.Publisher)_$($_.Name)_$($_.Version).app") `
+        -Verbose
+    
+    if (-not $success) {
+        $compileFails += $appProjectFolder
+    }
 }
-
+$compileFails | % { Write-Host "Failed compilation for: $_ " -ForegroundColor Red }
 #Check Compilations
 $Targets | % {
     $Translation = Get-ChildItem $_ -Filter "*.g.xlf" -Recurse
@@ -51,5 +49,15 @@ $Targets | % {
     }
 }
 
-# Remove symbolfolder
-Remove-Item $SymbolFolder -Force -Recurse
+
+
+
+Write-Host "Copy Compiled Apps to symbol folders of apps that need it as dependencies" -ForegroundColor Yellow
+foreach ($path in $paths) {
+    foreach ($Dependency in $path.Dependencies) {
+        $symbolfile = Get-ChildItem -Path $SymbolFolderForCompile -Filter "*_$($Dependency.name)_*"
+        $Destination = join-path (get-item $path.path).Directory $SymbolFolder
+        
+        copy-item $symbolfile.FullName -Destination $Destination
+    }
+}

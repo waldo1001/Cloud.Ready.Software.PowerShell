@@ -1,4 +1,6 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
+# . (Join-path $PSScriptRoot '_SettingsCustomers.ps1')
+
 
 $MasterBranch = 'master'
 
