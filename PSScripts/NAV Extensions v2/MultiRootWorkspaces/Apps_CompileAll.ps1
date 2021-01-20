@@ -1,5 +1,7 @@
 ﻿. (Join-path $PSScriptRoot '_Settings.ps1')
 
+$PublishToContainer = 'bccurrent'
+
 Write-Host "Get-AppDependencies" -ForegroundColor Yellow
 $Paths = Get-AppDependencies -Path $Workspace -Type ALFolders
 
@@ -30,12 +32,23 @@ $Paths | Sort ProcessOrder | % {
     
     $appProjectFolder = [io.path]::GetDirectoryName($_.Path)
     
+    $appfilename = (join-path $SymbolFolderForCompile "$($_.Publisher)_$($_.Name)_$($_.Version).app")
     $success = Compile-ALApp `
         -appProjectFolder $appProjectFolder `
         -appSymbolsFolder $SymbolFolderForCompile `
-        -appOutputFile (join-path $SymbolFolderForCompile "$($_.Publisher)_$($_.Name)_$($_.Version).app") `
+        -appOutputFile $appfilename `
         -Verbose
-    
+
+    if ($success -and $PublishToContainer) {
+        Publish-BcContainerApp `
+            -containerName $PublishToContainer `
+            -appFile $appfilename `
+            -skipVerification `
+            -syncMode ForceSync `
+            -sync `
+            -install
+    }
+        
     if (-not $success) {
         $compileFails += $appProjectFolder
     }
