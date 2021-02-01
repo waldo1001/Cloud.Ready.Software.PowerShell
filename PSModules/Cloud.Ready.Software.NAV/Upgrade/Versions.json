@@ -1,100 +1,128 @@
 {
-	"DefaultDownloadURL" : "https://support.microsoft.com/help/",
-	"BuildRegex" : "Build (([\\d\\.]+))",
-	"ArticleIDRegex" : "\/",
+	"DefaultDownloadURL" : "https://support.microsoft.com",
+	"BuildRegex" : "\\(Build ([\\d\\.]+)\\)|Platform Build (\\d+\\.\\d+\\.\\d+)\\.?\\d+\\)",
 	"CountryCodeRegex" : "\\.([A-Z]{2}|W1).DVD|(?:\\.)?([A-Z]{2}|W1)\\.ZIP",
-	"CULinkRegex" : "<a.+?(?:data-content-id=\\\\\"(\\d+)\\\\\"|https?:\\\/\\\/support\\.microsoft\\.com\\\/(?:help|[a-z]{2}-[a-z]{2}\\\/)?help\\\/(\\d+)|\\\\\"\\\/[a-z]{2}-[a-z]{2}\\\/help\\\/(\\d+))+.+?(?:Cumulative )?Update (\\d\\d?\\.?\\d{1,2}) .+? ",
-	"downloadLinkRegex" : "(https?\\:\\\/\\\/www\\.microsoft\\.com\\\/(?:[a-z]{2}-[a-z]{2}\\\/)?download\\\/details.aspx\\?(?:familyid=[\\da-zA-Z]{8}-(?:[\\da-zA-Z]{4}-){3}[\\da-zA-Z]{12}|id(?:%3d|=)?(\\d+)))(?:.+?)?(?:>)?.+?(?:Cumulative )?update(?:&nbsp;| )?(?:CU)?(?: )?(\\d\\d?\\.?\\d{1,2})",
+	"CUNoRegex" : "(?:Cumulative )?Update (\\d\\d?\\.?\\d{0,2})",
+	"downloadLinkRegex" : "(https?\\:\\\/\\\/www\\.microsoft\\.com\\\/(?:[a-z]{2}-[a-z]{2}\\\/)?download\\\/details.aspx\\?(?:familyid=([\\da-zA-Z]{8}-(?:[\\da-zA-Z]{4}-){3}[\\da-zA-Z]{12})|id(?:%3d|=)?(\\d+)))",
 	"versions": [
 		{
 			"version": "2013",
 			"url" : "https://support.microsoft.com/en-us/help/2842257",
 			"fileNamePrefix" : "NAV",
-			"CULinkRegex" : "",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
 					},
 		{
 			"version": "2013 R2",
 			"url" : "https://support.microsoft.com/en-us/help/2914930",
 			"fileNamePrefix" : "NAV",
-			"CULinkRegex" : "",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
 		},
 		{
 			"version": "2015",
 			"url" : "https://support.microsoft.com/en-us/help/3014609",
 			"fileNamePrefix" : "NAV",
-			"CULinkRegex" : "",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
 		},
 		{
 			"version": "2016",
 			"url" : "https://support.microsoft.com/en-us/help/3108728",
 			"fileNamePrefix" : "NAV",
-			"CULinkRegex" : "",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
 		},
 		{
 			"version": "2017",
 			"url" : "https://support.microsoft.com/en-us/help/3210255",
 			"fileNamePrefix" : "NAV",
-			"CULinkRegex" : "",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
 			},
 		{
 			"version": "2018",
 			"url" : "https://support.microsoft.com/en-us/help/4072483",
 			"fileNamePrefix" : "NAV",
-			"CULinkRegex" : "",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
 		},
 		{
 			"version": "BC13",
 			"url": "https://support.microsoft.com/en-us/help/4470116",
 			"fileNamePrefix" : "BC",
-			"CULinkRegex" : "",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
 			},
 		{
 			"version": "BC14",
 			"url": "https://support.microsoft.com/en-gb/help/4501292",
 			"fileNamePrefix" : "BC",
-			"CULinkRegex" : "",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
 			},
 		{
 			"version": "BC15",
 			"url": "https://support.microsoft.com/en-gb/help/4528706",
 			"fileNamePrefix" : "BC",
-			"CULinkRegex" : "",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
 		},
 		{
 			"version": "BC16",
 			"url": "https://support.microsoft.com/en-us/help/4549687",
 			"fileNamePrefix" : "BC",
-			"CULinkRegex" : "",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
+		},
+		{
+			"version": "BC17",
+			"url": "https://support.microsoft.com/en-gb/help/4583507",
+			"fileNamePrefix" : "BC",
+			"CUNoRegex" : "",
+			"downloadLinkRegex" : ""
+		}
+	],
+	"Limited" : [
+		{
+			"version" : "2013",
+			"CU" : "01",
+			"description" : "Only DE and W1 available", 
+			"reference" : ""
 		}
 	],
 	"Exceptions" : [
 		{
 			"version" : "2013 R2",
-			"CU" : 2,
+			"CU" : "02",
 			"description" : "Not available from Download Center.  It is a hotfix file request instead.", 
 			"reference" : "",
 			"productID" : ""
 		},
 		{
 			"version" : "2013 R2",
-			"CU" : 19,
+			"CU" : "19",
 			"description" : "Not available from Download Center.  It is a hotfix file request instead.", 
 			"reference" : "",
 			"productID" : ""
 		},
 		{
+			"version" :"2015",
+			"CU" : "14",
+			"description" : "As of 2021/01/31 the download link is returning a 404 error.", 
+			"reference" : "",
+			"productID" : ""
+		},
+		{
+			"version" :"2016",
+			"CU" : "58",
+			"description" : "As of 2021/01/31 the download link is returning a 404 error.", 
+			"reference" : "",
+			"productID" : ""
+		},
+		{
 			"version" :"2017",
-			"CU" : 1,
+			"CU" : "01",
 			"description" : "Not available from Download Center.  It is a hotfix file request instead.", 
 			"reference" : "",
 			"productID" : ""
