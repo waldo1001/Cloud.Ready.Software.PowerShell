@@ -23,14 +23,12 @@
                 "https://support.microsoft.com/help/"
             BuildRegex : the regular expression used to parse the build number from the update page title 
                 "Build (([\\d\\.]+))"
-            ArticleIDRegex : the regular expression used to identify the script wherein the download link is located.  The article number is appended to this, 
-                "\/"
             CountryCodeRegex : the regular expression used to parse the country code from the download file name from downloads link, 
                 "\\.([A-Z]{2}|W1).DVD|(?:\\.)?([A-Z]{2}|W1)\\.ZIP"
-            CULinkRegex : the regular expression used to parse the links for the specific update pages from the main released updates page 
-                "<a.+?(?:data-content-id=\\\\\"(\\d+)\\\\\"|https?:\\\/\\\/support\\.microsoft\\.com\\\/(?:help|[a-z]{2}-[a-z]{2}\\\/)?help\\\/(\\d+)|\\\\\"\\\/[a-z]{2}-[a-z]{2}\\\/help\\\/(\\d+))+.+?(?:Cumulative )?Update (\\d\\d?\\.?\\d?) .+? "
             downloadLinkRegex : the regular expression used to parse the download link information from the specific update page 
-                "(https?\\:\\\/\\\/www\\.microsoft\\.com\\\/(?:[a-z]{2}-[a-z]{2}\\\/)?download\\\/details.aspx\\?(?:familyid=[\\da-zA-Z]{8}-(?:[\\da-zA-Z]{4}-){3}[\\da-zA-Z]{12}|id(?:%3d|=)?(\\d+)))(?:.+?)?(?:>)?.+?(?:Cumulative )?update(?:&nbsp;| )?(?:CU)?(?: )?(\\d\\d?\\.?\\d?)"
+                "(https?\\:\\\/\\\/www\\.microsoft\\.com\\\/(?:[a-z]{2}-[a-z]{2}\\\/)?download\\\/details.aspx\\?(?:familyid=([\\da-zA-Z]{8}-(?:[\\da-zA-Z]{4}-){3}[\\da-zA-Z]{12})|id(?:%3d|=)?(\\d+)))"
+            CUNoRegex : the regular expression used to parse the cu number from the support article description.
+                "(?:Cumulative )?Update (\\d\\d?\\.?\\d{0,2})""
             versions : Array of version objects, one object is required for each version to be downloaded
             version object 
 			    version: required, the version number, must match the Version parameter used
@@ -39,22 +37,20 @@
                         the release cumulative updates page for NAV2013 is "https://support.microsoft.com/en-us/help/2842257"
                         the Released Updates for page for BC16 is "https://support.microsoft.com/en-us/help/4549687"
 			    fileNamePrefix : required the prefix for the downloaded filename e.g. NAV for NAV.7.0.34587.DE.DVD.CU01.zip or BC for BC.16.0.12805.AT.DVD.CU16.1.ZIP
-			    CULinkRegex : optional, if not specified the root CULinkRegex will be used.  If there is some unique string that does not allow the default regular expression to be used.
     			downloadLinkRegex" : optional, if not specified the root downloadLinkRegex will be used.  If there is some unique string that does not allow the default regular expression to be used.
+                CUNoRegex : optional, if not specified the root CUNoRegex will be used.  If there is some unique string that does not allow the default regular expression to be used.
                 e.g.
                 versions : [
                     {
                         "version": "2013 R2",
                         "url" : "https://support.microsoft.com/en-us/help/2914930",
                         "fileNamePrefix" : "NAV",
-                        "CULinkRegex" : "",
                         "downloadLinkRegex" : ""
                     },
                     {
                         "version": "BC16",
                         "url": "https://support.microsoft.com/en-us/help/4549687",
                         "fileNamePrefix" : "BC",
-                        "CULinkRegex" : "",
                         "downloadLinkRegex" : ""
                     }
                 ],
@@ -159,7 +155,10 @@ function Get-NAVCumulativeUpdateFile {
         [Switch]$padEdition,
 
         [Parameter(Mandatory = $false)]        
-        [Switch]$CreateLog = $false
+        [Switch]$CreateLog = $false, 
+
+        [Parameter(Mandatory = $false)]        
+        [Switch]$skipExceptions = $false
     )
 
     begin {
@@ -167,7 +166,7 @@ function Get-NAVCumulativeUpdateFile {
     process {
 
         if (-not (Test-Path $SettingsFile)) {
-            Write-Warning "Settings file cannot be found at $SettingsFile."
+            Write-Error "Settings file cannot be found at $SettingsFile."
             return
         }
 
@@ -184,143 +183,121 @@ function Get-NAVCumulativeUpdateFile {
         $SettingsJSON = Get-Content -Raw -Path $SettingsFile | ConvertFrom-Json
         $VersionSettings = $SettingsJSON.Versions | Where-Object { $_.Version -eq $Version }
         if ($null -eq $VersionSettings) {
-            Write-Warning "No version information found for Version $Version in $SettingsFile."
+            Write-Error "No version information found for Version $Version in $SettingsFile."
             return
         }
 
-        $CUReleasesResponse = (Invoke-WebRequest -Uri $VersionSettings.url)
-            
-        $parts = ([system.uri]($VersionSettings.url)).AbsolutePath.Split('/')
-        $articleId = $parts[$parts.Count - 1]
-        $script = $CUReleasesResponse.Scripts | Where-object { $_.innerHtml -match '\/' + $articleId }
+        if (-not $skipExceptions) {
+            Write-Verbose "Checking exceptions"
+            $CUException = $SettingsJSON.Exceptions | Where-Object {($_.version -eq $Version) -and ($_.CU -eq $CUNo)}
+            if ($null -ne $CUException) {
+                Write-Error "$version $CUNo is an exception. Description: $($CUException.description)"
+                return
+            }
+        }
 
-        switch($true) {
-            ($VersionSettings.cuLinkRegex.Length -gt 0) {$regex = $VersionSettings.cuLinkRegex}
-            ($SettingsJson.cuLinkRegex.Length -gt 0) {$regex = $SettingsJson.cuLinkRegex}
+
+        switch ($true) {
+            ($VersionSettings.CUNoRegex.Length -gt 0) { $regex = $VersionSettings.CUNoRegex }
+            ($SettingsJson.CUNoRegex.Length -gt 0) { $regex = $SettingsJson.CUNoRegex }
             default {
-                Write-Error "CULinkRegex must be specified a default for $Version in $SettingsFile"    
+                Write-Error "CUNoRegex must be specified a default for $Version in $SettingsFile" 
+                return
             }
         }
         Write-Verbose "CU Regex: $regex"
+        $CULinkMatches = [ordered]@{}
 
-        if($CreateLog) {
-            ("$Version $CU - Update Links") | Set-Content -Path $Logfile
-            $regex | Add-Content -Path $Logfile
-            "" | Add-Content -Path $Logfile
-            $script.innerText | Add-Content -Path $Logfile
+        $Page = Invoke-WebRequest -Uri $VersionSettings.url
+        $parsedPage = $page.ParsedHtml
+        $rows = $parsedPage.getElementById('supArticleContent').getElementsByTagName('tbody').item(0).rows
+        foreach ($row in $rows) {
+            $html = $row.getElementsByTagName('td')[0].innerHTML
+            $Link = $html.Substring($html.IndexOf('"') + 1, $html.LastIndexOf('"') - ($html.IndexOf('"') + 1))
+
+            $Description = $row.getElementsByTagName('td')[1].innerText
+            $CU = ((([regex]::Matches($Description, $regex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)).Groups[1].Value).Split('.') | Select-Object -Last 1).PadLeft(2, '0')
+
+            Write-Verbose("$CU`t$Link")
+        
+            $CULinkMatches.Add($CU, $Link)
         }
+        $Page.Dispose()
+        $Page = $null
 
-        $CULinkMatches = [regex]::Matches($script.innerText, $regex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
                 
-        $updateLinks = [ordered]@{}
-        foreach ($CULinkMatch in $CULinkMatches) {
-            switch ($true) {
-                ($CULinkMatch.Groups.count -eq 5) {
-                    switch ($true) {
-                        ($CULinkMatch.Groups[1].success) { $value = $CULinkMatch.groups[1].Value }
-                        ($CULinkMatch.Groups[2].success) { $value = $CULinkMatch.groups[2].Value }
-                        ($CULinkMatch.Groups[3].success) { $value = $CULinkMatch.groups[3].Value }
-                    }
-                    $value = $SettingsJSON.DefaultDownloadURL + $value
-                    $key = $CULinkMatch.groups[4].Value.split('.') | Select-Object -Last 1
-                }
-                default {
-                    Write-Error "Unexpected group count $($CULinkMatch.Groups.count)"
-                    return
-                }
-            }
-            Write-Verbose "Key: '$key' Value: '$value'"
-            $updateLinks.Add($key.PadLeft(2, "0"), $value)
-        }
-
         if ($CUNo -eq '00') {
-            $updateLink = $updateLinks[0]
-            $CUNo = $updateLinks.Keys | Select-Object -First 1
+            $updateLink = $CULinkMatches[0]
+            $CUNo = $CULinkMatches.Keys | Select-Object -First 1
         }
         else {
-            $updateLink = $updateLinks[$CUNo]
+            $updateLink = $CULinkMatches[$CUNo]
         }
         if (!$updateLink) {
-            Write-Warning "Update Release not found for $Version update $CUNo. Check $($VersionSettings.url) for correct update no."
+            Write-Error "Update Release not found for $Version update $CUNo. Check $($VersionSettings.url) for correct update no."
             return
         }
-            
-        Write-Verbose "Reading blog page $updateLink"
-        $UpdateResponse = Invoke-WebRequest -Uri $updateLink
-
-        Write-Verbose 'Searching KB Url'
-        $articleId = ([system.uri]($updateLink)).AbsolutePath.Split('/') | Select-Object -Last 1
-        $script = $UpdateResponse.Scripts | Where-object { $_.innerHtml -match $SettingsJSON.ArticleIDRegex + $articleId }
-
-        $buildMatch = [regex]::Match($script.innerText, $SettingsJSON.BuildRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
-        if ($buildMatch.Groups[1].Success) {
-            $build = $buildMatch.groups[1].Value.split(".") | Select-Object -Last 1
+        elseif ($updateLink.Substring(0, 4) -ine 'http') {
+            $updateLink = $updateLink.Insert(0, $SettingsJson.DefaultDownloadURL)
         }
-        else {
-            Write-Warning "Build not found in $updateLink"
-        }
-        Write-Verbose "Build No.: $build"
 
-        switch($true) {
-            ($VersionSettings.downloadlinkRegex.Length -gt 0) {$regex = $VersionSettings.downloadlinkRegex}
-            ($SettingsJson.downloadlinkRegex.Length -gt 0) {$regex = $SettingsJson.downloadlinkRegex}
+        Write-Verbose "Reading download page $updateLink"
+        switch ($true) {
+            ($VersionSettings.downloadlinkRegex.Length -gt 0) { $regex = $VersionSettings.downloadlinkRegex }
+            ($SettingsJson.downloadlinkRegex.Length -gt 0) { $regex = $SettingsJson.downloadlinkRegex }
             default {
                 Write-Error "DownloadLinkRegex must be specified a default for $Version in $SettingsFile"    
+                return
             }
         }
         Write-Verbose "Download Link Regex: $regex"
 
-        if($CreateLog) {
-            "" | Add-Content -Path $Logfile
-            ("$Version $CU - Download Link") | Add-Content -Path $Logfile
-            $regex | Add-Content -Path $Logfile
-            "" | Add-Content -Path $Logfile
-            $script.innerText | Add-Content -Path $Logfile
-        }
+        $Page = Invoke-WebRequest -Uri $updateLink
 
-        $DownLoadLinkMatches = [regex]::Matches($script.innerText, $regex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
-        try {
-            $UpdateNo = $DownLoadLinkMatches.Groups[3].Value.Split(".") | Select-Object -Last 1
-            $ProductID = $DownLoadLinkMatches.Groups[2].Value
-            $kbLink = $DownLoadLinkMatches.Groups[1].Value   
+        $div = ($Page.ParsedHTML).getElementById('ocArticle')
+
+        $buildMatch = [regex]::Match($div.innerText, $SettingsJSON.BuildRegex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+        if ($buildMatch.Groups[1].Success) {
+            $build = $buildMatch.groups[1].Value
         }
-        catch {
-            $versionException = $SettingsJSON.Exceptions | Where-Object { ($_.Version -eq $Version) -and ($_.CU -eq $CUNo) }
-            if ($null -ne $versionException) {
-                Write-Warning "Version $($versionException.version) Update $($versionException.CU) $($versionException.description)"
-                if ($versionException.reference.Length -eq 0) {
-                    return
-                }
-                else {
-                    $UpdateNo = $versionException.CU.ToString().PadLeft(2,"0")
-                    $ProductID = $versionException.Product.ToString()
-                    $kbLink = $versionException.reference
-                }
-            }
-            else {
-                Write-Warning "DownloadRegex for $Version $CUNo returned no results. Refer to $updateLink to verify download available."
-                return
-            }
+        elseif ($buildMatch.Groups[2].Success) {
+            $build = $buildMatch.Groups[2].Value.Split('.') | Select-Object -Last 1
         }
-        if (!($kbLink)) {
-            Write-Warning "No link to Download Center found for $Version $CUNo. Refer to $updateLink to verify download available."
+        else {
+            Write-Error "Build not found in $updateLink"
             return
         }
+        Write-Verbose "Build No.: $build"
 
+        $kbLink = ($Page.Links).href | Where-Object {$_ -match $regex} | Select-Object -First 1
+        if (!$kbLink) {
+            Write-Error "No link to Download Center found for $Version $CUNo. Refer to $updateLink to verify download available."
+            return
+        }
+        $Page.Dispose()
+        $Page = $null
+        Write-Verbose "Download link $kbLink"
+
+        $kbLinkMatches = [regex]::Matches($kbLink, $regex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
         if ($kbLink.Contains('familyid=')) {
             $dlPage = Invoke-WebRequest -Uri $kbLink
             $ProductID = $dlPage.BaseResponse.ResponseUri.Query.Substring(1).Split('=') | Select-Object -Last 1
+            $dlPage.Dispose()
+            $dlPage = $null
+
+        }
+        else {
+            $ProductID = $kbLinkMatches.Groups[3].Value
+        }
+        if (!$ProductID) {
+            Write-Error "No product id (familyid) found in $kbLink. Refer to $updateLink to verify download available."
+            return
         }
         Write-Verbose "Found Product ID $ProductID"
 
         Write-Verbose "Loading NAVCumulativeUpdateHelper"
         Load-NAVCumulativeUpdateHelper
-        if ($Locale) {
-            $DownloadLinks = [MicrosoftDownload.MicrosoftDownloadParser]::GetDownloadDetail($ProductID, $Locale) | Select-Object *
-        }
-        else {
-            $DownloadLinks = [MicrosoftDownload.MicrosoftDownloadParser]::GetDownloadLocales($ProductID) | Select-Object *
-        }
+        $DownloadLinks = [MicrosoftDownload.MicrosoftDownloadParser]::GetDownloadLocales($ProductID) | Select-Object *
         if ($CountryCode) {
             $DownloadLink = $DownloadLinks | Where-Object Code -eq $CountryCode
             if ($null -eq $Downloadlink) {
@@ -330,10 +307,8 @@ function Get-NAVCumulativeUpdateFile {
                     $DownloadLink.Code = $CountryCode
                 }
                 else {
-                    Write-Warning "Download link not found for Version: $Version Update: $CUNo Country Code: $CountryCode. Available Links:"
-                    foreach ($Link in $DownloadLinks) {
-                        Write-Warning "  $Link.DownloadUrl"
-                    }
+                    $crlf = "`r`n"
+                    Write-Error "Download link not found for Version: $Version Update: $CUNo Country Code: $CountryCode. Available Links: $crlf $($DownloadLinks | ForEach-Object {$($_.DownloadUrl+$crlf)})"
                     return
                 }
             }
@@ -357,24 +332,25 @@ function Get-NAVCumulativeUpdateFile {
             }
 
             switch ($Version) {
-                '2013' { $Edition = '7.0' }
-                '2013 R2' { $Edition = '7.1' }
-                '2015' { $Edition = '8.0' }
-                '2016' { $Edition = '9.0' }
-                '2017' { $Edition = '10.0' }
-                '2018' { $Edition = '11.0' }
-                'BC13' { $Edition = '13.0' }
-                'BC14' { $Edition = '14.0' }
-                'BC15' { $Edition = '15.0' }
-                'BC16' { $Edition = '16.0' }
-                'BC17' { $Edition = '17.0' }
-                Default { $Edition = ([regex]::Match($Version,'[0-9]{1,2}')).Value + ".0" }
+                '2013' { $Edition = '7.0'; break; }
+                '2013 R2' { $Edition = '7.1'; break; }
+                '2015' { $Edition = '8.0'; break; }
+                '2016' { $Edition = '9.0'; break; }
+                '2017' { $Edition = '10.0'; break; }
+                '2018' { $Edition = '11.0'; break; }
+                'BC13' { $Edition = '13.0'; break; }
+                'BC14' { $Edition = '14.0'; break; }
+                'BC15' { $Edition = '15.0'; break; }
+                'BC16' { $Edition = '16.0'; break; }
+                'BC17' { $Edition = '17.0'; break; }
+                'BC18' { $Edition = '18.0'; break; }
+                Default { $Edition = ([regex]::Match($Version, '[0-9]{1,2}')).Value + ".0" }
             }
             if ($padEdition) {
                 $Edition = $Edition.PadLeft(4, "0")
             }                
 
-            $filename = (Join-Path -Path $DownloadFolder -ChildPath ("$($VersionSettings.fileNamePrefix).$($Edition).$($Build).$($DownloadLink.Code).DVD.CU$($UpdateNo.PadLeft(2,"0"))$([io.path]::GetExtension($DownloadLink.DownloadUrl))"))
+            $filename = (Join-Path -Path $DownloadFolder -ChildPath ("$($VersionSettings.fileNamePrefix).$($Edition).$($Build).$($DownloadLink.Code).DVD.CU$CUNo$([io.path]::GetExtension($DownloadLink.DownloadUrl))"))
             $filenameJSON = ([io.path]::ChangeExtension($filename, 'json'))
                     
             if (!($GetInfoOnly)) {
@@ -385,7 +361,8 @@ function Get-NAVCumulativeUpdateFile {
                     Write-Verbose 'Update downloaded' 
                 }
                 else {
-                    write-warning "File $([io.path]::GetFileName($filenameJSON)) already exists.  Nothing downloaded!"
+                    Write-Error "File $([io.path]::GetFileName($filenameJSON)) already exists.  Nothing downloaded!"
+
                 }                                           
             }
 
@@ -396,7 +373,7 @@ function Get-NAVCumulativeUpdateFile {
             $result = New-Object -TypeName System.Object
             $null = $result | Add-Member -MemberType NoteProperty -Name NAVVersion -Value $Version
             $null = $result | Add-Member -MemberType NoteProperty -Name CountryCode -Value $DownloadLink.Code
-            $null = $result | Add-Member -MemberType NoteProperty -Name CUNo -Value "$UpdateNo"
+            $null = $result | Add-Member -MemberType NoteProperty -Name CUNo -Value "$CUNo"
             $null = $result | Add-Member -MemberType NoteProperty -Name Build -Value $Build
             $null = $result | Add-Member -MemberType NoteProperty -Name KBUrl -Value "$kbLink"
             $null = $result | Add-Member -MemberType NoteProperty -Name ProductID -Value "$ProductID"
