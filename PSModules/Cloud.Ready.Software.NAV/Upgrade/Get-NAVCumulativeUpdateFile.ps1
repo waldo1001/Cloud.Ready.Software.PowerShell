@@ -267,6 +267,7 @@ function Get-NAVCumulativeUpdateFile {
             Write-Error "Build not found in $updateLink"
             return
         }
+        Write-Verbose "Build No. Regex: $($SettingsJSON.BuildRegex)"
         Write-Verbose "Build No.: $build"
 
         $kbLink = ($Page.Links).href | Where-Object {$_ -match $regex} | Select-Object -First 1
