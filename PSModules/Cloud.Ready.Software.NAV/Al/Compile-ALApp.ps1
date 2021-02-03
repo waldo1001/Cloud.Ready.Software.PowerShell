@@ -1,4 +1,6 @@
+
 function Compile-ALApp {
+    [CmdletBinding()]
     param(
         [string] $appProjectFolder,        
         [string] $appSymbolsFolder,        
@@ -16,7 +18,7 @@ function Compile-ALApp {
     $alc = get-childitem -Path "$env:USERPROFILE\.vscode\extensions" -Recurse alc.exe | select -First 1
 
     # Remove translation file
-    Get-ChildItem -path $appProjectFolder -Recurse -filter "*.g.xlf" | Remove-Item -Force
+    Get-ChildItem -path $appProjectFolder -Recurse -filter "*.g.xlf" | Remove-Item -Force | Write-Verbose
     
     $alcParameters = @("/project:$appProjectFolder", "/packagecachepath:$appSymbolsFolder", "/out:$appOutputFile")
     if ($GenerateReportLayoutParam) {
@@ -47,16 +49,19 @@ function Compile-ALApp {
         $alcParameters += @("/assemblyprobingpaths:$assemblyProbingPaths")
     }
 
-    Write-Host "alc.exe $([string]::Join(' ', $alcParameters))"
+    Write-Verbose "alc.exe $([string]::Join(' ', $alcParameters))"
 
-    & $alc.fullname $alcParameters
+    & $alc.fullname $alcParameters | Write-Verbose
 
     # Check Translationfile
     $TranslationFile = Get-ChildItem -path $appProjectFolder -Recurse -filter "*.g.xlf"
     if ($TranslationFile) {
         Write-Host "Successfully compiled $appProjectFolder" -ForegroundColor Green
-    } else {
+        return $true
+    }
+    else {
         write-error "Compilation ended with errors"
+        return $false
     }
     
 }
