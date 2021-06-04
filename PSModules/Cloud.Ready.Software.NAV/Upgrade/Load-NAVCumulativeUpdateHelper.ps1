@@ -51,6 +51,7 @@ namespace MicrosoftDownload
     public static class MicrosoftDownloadParser
     {
         private const String urlTemplate = "https://www.microsoft.com/{0}/download/confirmation.aspx?id={1}";
+        private const String downloadTemplate = "https://www.microsoft.com/{0}/download/details.aspx?id={1}";
         private const String cdataStartTag = "<![CDATA[*/var " + "baseProductId";
         private const String cdataEndTag = "/*]]>*/";
         private const String downloadStartTag = "downloadData={";
@@ -61,13 +62,28 @@ namespace MicrosoftDownload
         {
             //Console.WriteLine(productID);
 
-            var XMLDoc = XDocument.Load("https://www.microsoft.com/en-us/download/details.aspx?id=" + productID);
+            XDocument XMLDoc = new XDocument();
+            string[] locales = { "en-us", "en-gb" };
+            string locale = "";
+            foreach (string localeTest in locales)
+            {
+                try
+                {
+                    locale = localeTest;
+                    XMLDoc = XDocument.Load(string.Format(downloadTemplate, locale, productID));
+                }
+                catch
+                {
+                    locale = "";
+                    continue;
+                }
+            }
             IEnumerable<XElement> users = (from el in XMLDoc.Descendants()
                                            where (string)el.Attribute("name") == "newlocale"
                                            select el);
             if ((users == null) || (users.Count() == 0))
-            {                
-                foreach (var detail in GetDownloadDetail(productID, "en-US"))
+            {
+                foreach (var detail in GetDownloadDetail(productID, locale))
                     yield return detail;
             }
             else
@@ -76,8 +92,8 @@ namespace MicrosoftDownload
                     foreach (var detail in GetDownloadDetail(productID, item.Attribute("value").Value))
                         yield return detail;
             }
-            
-            
+
+
         }
 
         public static IEnumerable<NAVDownload> GetDownloadDetail(Int32 productID, String language)
@@ -85,7 +101,7 @@ namespace MicrosoftDownload
             //Console.WriteLine(productID + " - " + language);
 
             using (WebClient client = new WebClient())
-            {                
+            {
                 var pageData = client.DownloadString(String.Format(urlTemplate, language, productID));
                 var CData = FetchSubString(pageData, cdataStartTag, cdataEndTag);
                 var downloadData = FetchSubString(CData, downloadStartTag, downloadEndTag);
@@ -109,10 +125,10 @@ namespace MicrosoftDownload
                         langCode = url.Substring(url.Length - 6, 2);
                     }
                     else
-                    {                        
+                    {
                         langCode = url.Substring(url.Length - 10, 2);
                     }
-                    
+
                     yield return new NAVDownload(productID, language, langCode, url);
                 }
             }
@@ -123,7 +139,7 @@ namespace MicrosoftDownload
         {
             var startPos = source.IndexOf(startTag) + startTag.Length;
             return source.Substring(startPos, source.IndexOf(endTag, startPos) - startPos);
-        }        
+        }
     }
 
     public class NAVDownload
@@ -145,7 +161,6 @@ namespace MicrosoftDownload
         }
     }
 }
-		
 
 "@
 }

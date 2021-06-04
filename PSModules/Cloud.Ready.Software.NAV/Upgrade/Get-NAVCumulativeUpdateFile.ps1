@@ -210,17 +210,22 @@ function Get-NAVCumulativeUpdateFile {
 
         $Page = Invoke-WebRequest -Uri $VersionSettings.url
         $parsedPage = $page.ParsedHtml
+        $headerExists = (($parsedPage.getElementById('supArticleContent').getElementsByTagName('thead')).length -gt 0)
         $rows = $parsedPage.getElementById('supArticleContent').getElementsByTagName('tbody').item(0).rows
+        $HeaderRead = $headerExists
         foreach ($row in $rows) {
-            $html = $row.getElementsByTagName('td')[0].innerHTML
-            $Link = $html.Substring($html.IndexOf('"') + 1, $html.LastIndexOf('"') - ($html.IndexOf('"') + 1))
+            if ($HeaderRead) {
+                $html = $row.getElementsByTagName('td')[0].innerHTML
+                $Link = $html.Substring($html.IndexOf('"') + 1, $html.LastIndexOf('"') - ($html.IndexOf('"') + 1))
 
-            $Description = $row.getElementsByTagName('td')[1].innerText
-            $CU = ((([regex]::Matches($Description, $regex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)).Groups[1].Value).Split('.') | Select-Object -Last 1).PadLeft(2, '0')
+                $Description = $row.getElementsByTagName('td')[1].innerText
+                $CU = ((([regex]::Matches($Description, $regex, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)).Groups[1].Value).Split('.') | Select-Object -Last 1).PadLeft(2, '0')
 
-            Write-Verbose("$CU`t$Link")
+                Write-Verbose("$CU`t$Link")
         
-            $CULinkMatches.Add($CU, $Link)
+                $CULinkMatches.Add($CU, $Link)
+            }
+            $HeaderRead = $true
         }
         $Page.Dispose()
         $Page = $null
@@ -345,6 +350,7 @@ function Get-NAVCumulativeUpdateFile {
                 'BC16' { $Edition = '16.0'; break; }
                 'BC17' { $Edition = '17.0'; break; }
                 'BC18' { $Edition = '18.0'; break; }
+				'BC19' { $Edition = '19.0'; break; }
                 Default { $Edition = ([regex]::Match($Version, '[0-9]{1,2}')).Value + ".0" }
             }
             if ($padEdition) {
@@ -362,7 +368,7 @@ function Get-NAVCumulativeUpdateFile {
                     Write-Verbose 'Update downloaded' 
                 }
                 else {
-                    Write-Error "File $([io.path]::GetFileName($filenameJSON)) already exists.  Nothing downloaded!"
+                    Write-Warning "File $([io.path]::GetFileName($filenameJSON)) already exists.  Nothing downloaded!"
 
                 }                                           
             }
@@ -376,7 +382,7 @@ function Get-NAVCumulativeUpdateFile {
             $null = $result | Add-Member -MemberType NoteProperty -Name CountryCode -Value $DownloadLink.Code
             $null = $result | Add-Member -MemberType NoteProperty -Name CUNo -Value "$CUNo"
             $null = $result | Add-Member -MemberType NoteProperty -Name Build -Value $Build
-            $null = $result | Add-Member -MemberType NoteProperty -Name KBUrl -Value "$kbLink"
+            $null = $result | Add-Member -MemberType NoteProperty -Name KBUrl -Value "$updateLink"
             $null = $result | Add-Member -MemberType NoteProperty -Name ProductID -Value "$ProductID"
             $null = $result | Add-Member -MemberType NoteProperty -Name DownloadURL -Value $DownloadLink.DownloadUrl
             $null = $result | Add-Member -MemberType NoteProperty -Name filename -Value "$filename"
