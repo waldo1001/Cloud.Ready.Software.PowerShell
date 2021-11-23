@@ -83,17 +83,17 @@
 			"downloadLinkRegex" : ""
 		},
 		{
-<<<<<<< Updated upstream
-			"version": "BC17",
-			"url": "https://support.microsoft.com/en-gb/help/4583507",
-			"fileNamePrefix" : "BC",
-			"CULinkRegex" : "",
-=======
 			"version": "BC18",
 			"url": "https://support.microsoft.com/en-us/help/5003500",
 			"fileNamePrefix" : "BC",
 			"CUNoRegex" : "",
->>>>>>> Stashed changes
+			"downloadLinkRegex" : ""
+		},
+		{
+			"version": "BC19",
+			"url": "https://support.microsoft.com/en-us/help/5007780",
+			"fileNamePrefix" : "BC",
+			"CUNoRegex" : "",
 			"downloadLinkRegex" : ""
 		}
 	],
