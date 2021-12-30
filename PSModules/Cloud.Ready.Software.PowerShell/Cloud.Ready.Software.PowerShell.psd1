@@ -12,7 +12,7 @@
 RootModule = 'Cloud.Ready.Software.PowerShell.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.3.24'
+ModuleVersion = '1.0.3.25'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
