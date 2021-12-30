@@ -4,5 +4,6 @@
         "activityBar.background": "#061b9e",
         "titleBar.activeForeground": "#ffffff",
         "activityBar.foreground": "#ffffff"
-    }
+    },
+    "powershell.codeFormatting.addWhitespaceAroundPipe": true
 }

@@ -16,6 +16,10 @@ function Get-AppDependencies {
 
         
         foreach ($Dependency in $App.Dependencies) {
+            if (!$Dependency.id){
+                $Dependency | Add-Member -MemberType NoteProperty -Name "id" -Value $Dependency.AppId
+            }
+
             $AppInAppCollection = $AppCollection | where id -eq $Dependency.id
             if ($AppInAppCollection) {
                 $DependencyArray = AddToDependencyTree `
@@ -24,6 +28,10 @@ function Get-AppDependencies {
                     -AppCollection $AppCollection `
                     -Order ($Order - 1)
             }
+        }
+
+        if (!$App.id){
+            $App | Add-Member -MemberType NoteProperty -Name "id" -Value $App.AppId
         }
 
         if (-not($DependencyArray | where { $_.id -eq $App.id })) {
@@ -57,7 +65,7 @@ function Get-AppDependencies {
             foreach ($AppFile in $AllAppFiles) {
                 $App = Get-NAVAppInfo -Path $AppFile.FullName
                 $AllApps += [PSCustomObject]@{
-                    id           = $App.id
+                    id           = $App.AppId
                     Version      = $App.version
                     Name         = $App.name
                     Publisher    = $App.publisher
