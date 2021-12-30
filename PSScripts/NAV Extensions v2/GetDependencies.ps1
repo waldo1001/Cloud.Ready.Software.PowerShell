@@ -1,9 +1,9 @@
-Write-Host "Get-AppDependencies" -ForegroundColor Yellow
-
 function Get-AppDependencies {
     [CmdletBinding()]
     param(            
-        [string] $Path   
+        [String] $Path,
+        [ValidateSet('AppFiles', 'ALFolders')]
+        [String] $Type
     )
     
     function AddToDependencyTree() {
@@ -14,24 +14,28 @@ function Get-AppDependencies {
             [Int] $Order = 1
         )   
 
+        
         foreach ($Dependency in $App.Dependencies) {
-            $DependencyArray = AddToDependencyTree `
-                -App ($AppCollection | where AppId -eq $Dependency.AppId) `
-                -DependencyArray $DependencyArray `
-                -AppCollection $AppCollection `
-                -Order ($Order - 1)
+            $AppInAppCollection = $AppCollection | where id -eq $Dependency.id
+            if ($AppInAppCollection) {
+                $DependencyArray = AddToDependencyTree `
+                    -App ($AppCollection | where id -eq $Dependency.id) `
+                    -DependencyArray $DependencyArray `
+                    -AppCollection $AppCollection `
+                    -Order ($Order - 1)
+            }
         }
 
-        if (-not($DependencyArray | where AppId -eq $App.AppId)) {
+        if (-not($DependencyArray | where { $_.id -eq $App.id })) {
             $DependencyArray += $App
             try {
-                ($DependencyArray | where AppId -eq $App.AppId).ProcessOrder = $Order
+                ($DependencyArray | where { $_.id -eq $App.id }).ProcessOrder = $Order
             }
             catch { }
         }
         else {
-            if (($DependencyArray | where AppId -eq $App.AppId).ProcessOrder -gt $Order) {
-                ($DependencyArray | where AppId -eq $App.AppId).ProcessOrder = $Order
+            if (($DependencyArray | where { $_.id -eq $App.id }).ProcessOrder -gt $Order) {
+                ($DependencyArray | where { $_.id -eq $App.id }).ProcessOrder = $Order
             } 
         }
 
@@ -44,21 +48,47 @@ function Get-AppDependencies {
     if ($Path -eq "") {
         $Path = "C:\ProgramData\NavContainerHelper\DependencyApps"
     }
-    $AllAppFiles = Get-ChildItem -Path $Path -Filter "*.app"
-
-    $AllApps = @()
-    foreach ($AppFile in $AllAppFiles) {
-        $App = Get-NAVAppInfo -Path $AppFile.FullName
-        $AllApps += [PSCustomObject]@{
-            AppId        = $App.AppId
-            Version      = $App.Version
-            Name         = $App.Name
-            Publisher    = $App.Publisher
-            ProcessOrder = 0                            
-            Dependencies = $App.Dependencies
-            Path         = $AppFile.FullName
+    
+    switch ($Type) {
+        "AppFiles" {
+            $AllAppFiles = Get-ChildItem -Path $Path -Filter "*.app" -recurse 
+        
+            $AllApps = @()
+            foreach ($AppFile in $AllAppFiles) {
+                $App = Get-NAVAppInfo -Path $AppFile.FullName
+                $AllApps += [PSCustomObject]@{
+                    id           = $App.id
+                    Version      = $App.version
+                    Name         = $App.name
+                    Publisher    = $App.publisher
+                    ProcessOrder = 0                            
+                    Dependencies = $App.dependencies
+                    Path         = $AppFile.FullName
+                }
+            }
+        }
+        "ALFolders" {
+            $AllAppFiles = Get-ChildItem -Path $Path -Filter "app.json" -recurse 
+        
+            $AllApps = @()
+            foreach ($AppFile in $AllAppFiles) {
+                $App = Get-ObjectFromJSON $AppFile.FullName # Get-NAVAppInfo -Path $AppFile.FullName
+                $AllApps += [PSCustomObject]@{
+                    id           = $App.id
+                    Version      = $App.version
+                    Name         = $App.name
+                    Publisher    = $App.publisher
+                    ProcessOrder = 0                            
+                    Dependencies = $App.dependencies
+                    Path         = $AppFile.FullName
+                }
+            }
+        }
+        Default {
+            Write-Error "Wrong Type parameter"
         }
     }
+
     
     $FinalResult = @()
 
@@ -66,5 +96,5 @@ function Get-AppDependencies {
         $FinalResult = AddToDependencyTree -App $_ -DependencyArray $FinalResult -AppCollection $AllApps -Order $AllApps.Count
     }
 
-    Write-Output $FinalResult | sort ProcessOrder | ft
+    return $FinalResult | Sort ProcessOrder
 }

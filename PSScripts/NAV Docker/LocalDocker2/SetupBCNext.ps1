@@ -1,16 +1,16 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $artifactUrl = Get-BCArtifactUrl `
-    -country be `
+    -type Sandbox `
     -sasToken $SecretSettings.InsiderSASToken `
-    -select Latest `
-    -storageAccount bcinsider
+    -select NextMinor `
+    -country base
 
-$ContainerName = 'bcdaily'
-# $ImageName = $ContainerName
+$ContainerName = 'bcnext'
+$ImageName = $ContainerName
 
-$includeTestToolkit = $false
-$includeTestLibrariesOnly = $false
+$includeTestToolkit = $true
+$includeTestLibrariesOnly = $true
 
 $StartMs = Get-date
 
@@ -18,6 +18,7 @@ New-BcContainer `
     -accept_eula `
     -containerName $ContainerName  `
     -artifactUrl $artifactUrl `
+    -imageName $imageName `
     -Credential $ContainerCredential `
     -auth "UserPassword" `
     -updateHosts `
@@ -25,12 +26,7 @@ New-BcContainer `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
     -licenseFile $SecretSettings.containerLicenseFile `
-    -multitenant:$false `
-    -isolation hyperv
-    # -imageName $imageName `
-
-# Add-FontsToBcContainer -containerName $ContainerName
-# Restart-BcContainer -containerName $ContainerName
+    -includeTestFrameworkOnly 
 
 $EndMs = Get-date
 Write-host "This script took $(($EndMs - $StartMs).Seconds) seconds to run"

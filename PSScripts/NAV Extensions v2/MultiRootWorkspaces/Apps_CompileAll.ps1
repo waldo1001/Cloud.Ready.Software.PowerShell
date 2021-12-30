@@ -1,6 +1,18 @@
 ﻿. (Join-path $PSScriptRoot '_Settings.ps1')
 
-$PublishToContainer = 'bccurrent'
+$cleansymbols = $false
+$PublishToContainer = $null #'bccurrent'
+
+# Start Script
+$startTime = Get-Date
+
+if ($cleansymbols){
+    Write-Host "Cleanup Symbols" -ForegroundColor Yellow
+    . (Join-path $PSScriptRoot 'Apps_Symbol_Cleanup.ps1')
+
+    Write-Host "Download Symbols" -ForegroundColor Yellow
+    . (Join-path $PSScriptRoot 'Apps_Symbol_Download.ps1')
+}
 
 Write-Host "Get-AppDependencies" -ForegroundColor Yellow
 $Paths = Get-AppDependencies -Path $Workspace -Type ALFolders
@@ -29,6 +41,38 @@ Write-Host "Compile all apps in the right order" -ForegroundColor Yellow
 $compileFails = @()
 $Paths | Sort ProcessOrder | % {
     Write-Host "  Compiling $($_.Path )" -ForegroundColor Gray 
+    $appProjectFolder = [io.path]::GetDirectoryName($_.Path)
+    
+    $appfilename = (join-path $SymbolFolderForCompile "$($_.Publisher)_$($_.Name)_$($_.Version).app")
+    $success = Compile-ALApp `
+        -appProjectFolder $appProjectFolder `
+        -appSymbolsFolder $SymbolFolderForCompile `
+        -appOutputFile $appfilename `
+        # -Verbose
+
+    if ($success -and $PublishToContainer) {
+        Publish-BcContainerApp `
+            -containerName $PublishToContainer `
+            -appFile $appfilename `
+            -skipVerification `
+            -syncMode ForceSync `
+            -sync `
+            -install `
+            -scope Tenant
+    }
+        
+    if (-not $success) {
+        Write-Host "Failed to compile $($_.Path )" -ForegroundColor Red 
+        $compileFails += $_
+    }
+}
+
+$compileFails | % { 
+        Write-Host "Failed compilation for: $($_.path) " -ForegroundColor Red 
+}
+
+$compileFails | Sort ProcessOrder | % {
+    Write-Host " Retrying to compile $($_.Path )" -ForegroundColor Gray 
     
     $appProjectFolder = [io.path]::GetDirectoryName($_.Path)
     
@@ -39,31 +83,17 @@ $Paths | Sort ProcessOrder | % {
         -appOutputFile $appfilename `
         -Verbose
 
-    if ($success -and $PublishToContainer) {
-        Publish-BcContainerApp `
-            -containerName $PublishToContainer `
-            -appFile $appfilename `
-            -skipVerification `
-            -syncMode ForceSync `
-            -sync `
-            -install
-    }
-        
-    if (-not $success) {
-        $compileFails += $appProjectFolder
+    if ($success) {
+        $compileFails.Remove($_)
     }
 }
-$compileFails | % { Write-Host "Failed compilation for: $_ " -ForegroundColor Red }
-#Check Compilations
+
 $Targets | % {
     $Translation = Get-ChildItem $_ -Filter "*.g.xlf" -Recurse
     if (!$Translation) {        
-        Write-Error "No Translation found for $($_)"
+        Write-Host "No Translation found for $($_)" -ForegroundColor Red
     }
 }
-
-
-
 
 Write-Host "Copy Compiled Apps to symbol folders of apps that need it as dependencies" -ForegroundColor Yellow
 foreach ($path in $paths) {
@@ -71,6 +101,15 @@ foreach ($path in $paths) {
         $symbolfile = Get-ChildItem -Path $SymbolFolderForCompile -Filter "*_$($Dependency.name)_*"
         $Destination = join-path (get-item $path.path).Directory $SymbolFolder
         
-        copy-item $symbolfile.FullName -Destination $Destination
+        if ($symbolfile.FullName) {            
+            # Write-host "copy-item $($symbolfile.FullName) -Destination $Destination" 
+            copy-item -path $symbolfile.FullName -Destination $Destination
+        } else {
+            Write-host "Unable to copy $($Dependency.name)" -ForegroundColor red
+        }
     }
 }
+
+$endTime = Get-Date
+
+Write-Host "Elapsed time (Min): $(($endTime - $startTime).TotalMinutes)" -ForegroundColor Yellow

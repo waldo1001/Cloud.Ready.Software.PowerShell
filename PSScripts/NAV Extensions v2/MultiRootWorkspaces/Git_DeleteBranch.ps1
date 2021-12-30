@@ -1,21 +1,19 @@
 param (
     [validateset('Distri', 'Customer')]
-    [String] $Type = 'Customer'
+    [String] $Type = 'Distri'
 )
 
-Write-Host "Syncing Master Branch for $Type"
+Write-Host "Deleting Branch"
 
 switch ($Type) {
     'Distri' { . (Join-path $PSScriptRoot '_Settings.ps1') }
     'Customer' { . (Join-path $PSScriptRoot '_SettingsCustomers.ps1') }
 }
 
-$MasterBranch = 'master'
+$DeleteBranch = Read-host 'Delete Branch'
 
 foreach ($Target in $targetRepos) {
     write-host $Target -ForegroundColor Green
     Set-Location $Target
-    & git checkout -q "$MasterBranch"
-    & git pull
-    & git push
+    & git branch -D "$DeleteBranch"
 }

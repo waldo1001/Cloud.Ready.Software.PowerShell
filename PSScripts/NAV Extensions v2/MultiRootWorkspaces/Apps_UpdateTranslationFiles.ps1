@@ -1,6 +1,6 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
 
-$Translationsfiles = Get-ChildItem "C:\Temp\Vertalingen Done V17"
+$Translationsfiles = Get-ChildItem "C:\Temp\translations\Translations Distri translated"
 
 
 foreach ($Translationsfile in $Translationsfiles) {

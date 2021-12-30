@@ -1,12 +1,11 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $artifactUrl = Get-BCArtifactUrl `
-    -Type Sandbox `
-    -Select Latest `
-    -country be
+    -Type OnPrem `
+    -Select Latest
 
-$ContainerName = 'bccurrent'
-# $ImageName = $ContainerName
+$ContainerName = 'bconprem'
+$ImageName = $ContainerName
 
 $includeTestToolkit = $true
 $includeTestLibrariesOnly = $true
@@ -31,8 +30,7 @@ New-BcContainer `
     -licenseFile $SecretSettings.containerLicenseFile `
     -enableTaskScheduler `
     -forceRebuild:$forceRebuild `
-    -assignPremiumPlan `
-    -isolation hyperv 
+    -assignPremiumPlan
     # -imageName $imageName `
 
 if (!$includeTestLibrariesOnly) {

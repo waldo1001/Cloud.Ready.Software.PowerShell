@@ -1,16 +1,16 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $artifactUrl = Get-BCArtifactUrl `
-    -country be `
-    -sasToken $SecretSettings.InsiderSASToken `
-    -select Latest `
-    -storageAccount bcinsider
+    -Type OnPrem `
+    -Select Latest `
+    -country be #-version 17.5
 
-$ContainerName = 'bcdaily'
-# $ImageName = $ContainerName
+$ContainerName = 'bccurrent'
+$ImageName = $ContainerName
 
 $includeTestToolkit = $false
 $includeTestLibrariesOnly = $false
+$includePerformanceToolkit = $true
 
 $StartMs = Get-date
 
@@ -18,19 +18,27 @@ New-BcContainer `
     -accept_eula `
     -containerName $ContainerName  `
     -artifactUrl $artifactUrl `
-    -Credential $ContainerCredential `
-    -auth "UserPassword" `
+    -imageName $imageName `
+    -auth Windows `
     -updateHosts `
     -alwaysPull `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
     -licenseFile $SecretSettings.containerLicenseFile `
-    -multitenant:$false `
-    -isolation hyperv
-    # -imageName $imageName `
+    -includePerformanceToolkit:$includePerformanceToolkit `
+    -enableTaskScheduler 
 
-# Add-FontsToBcContainer -containerName $ContainerName
-# Restart-BcContainer -containerName $ContainerName
 
+
+Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
+    Set-NAVServerConfiguration `
+        -ServerInstance "BC" `
+        -KeyName SqlLongRunningThreshold `
+        -KeyValue 2000 `
+        -ApplyTo Memory
+}
+ 
 $EndMs = Get-date
 Write-host "This script took $(($EndMs - $StartMs).Seconds) seconds to run"
+
+

@@ -1,18 +1,18 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $artifactUrl = Get-BCArtifactUrl `
-    -Type Sandbox `
-    -Select Latest `
+    -Type OnPrem `
+    # -select 'latest' `
+    -version '18.4.28601.29139' `
     -country be
 
-$ContainerName = 'bccurrent'
-# $ImageName = $ContainerName
+$ContainerName = 'bcserver'
+$ImageName = $ContainerName
 
 $includeTestToolkit = $true
 $includeTestLibrariesOnly = $true
 $includeTestFrameworkOnly = $false
-$includePerformanceToolkit = $false
-$forceRebuild = $true
+$includePerformanceToolkit = $true
 
 $StartMs = Get-date
 
@@ -20,6 +20,7 @@ New-BcContainer `
     -accept_eula `
     -containerName $ContainerName  `
     -artifactUrl $artifactUrl `
+    -imageName $imageName `
     -Credential $ContainerCredential `
     -auth "UserPassword" `
     -updateHosts `
@@ -30,25 +31,10 @@ New-BcContainer `
     -includePerformanceToolkit:$includePerformanceToolkit `
     -licenseFile $SecretSettings.containerLicenseFile `
     -enableTaskScheduler `
-    -forceRebuild:$forceRebuild `
-    -assignPremiumPlan `
-    -isolation hyperv 
-    # -imageName $imageName `
+    # -forceRebuild
 
-if (!$includeTestLibrariesOnly) {
-    UnInstall-BcContainerApp -containerName bccurrent -name "Tests-TestLibraries"
-    # UnInstall-BcContainerApp -containerName bccurrent -name "Tests-Misc"
-}
-
-if ($includePerformanceToolkit) {
-    $BCPTFolder = "C:\bcartifacts.cache\onprem\18.2.26217.26490\platform\Applications\testframework\performancetoolkit"
-    Publish-BcContainerApp `
-        -containerName $ContainerName `
-        -appFile (join-path $BCPTFolder "Microsoft_Performance Toolkit Samples.app") `
-        -install `
-        -sync `
-        -syncMode ForceSync
-}
+UnInstall-BcContainerApp -containerName $ContainerName -name "Tests-TestLibraries"
+UnInstall-BcContainerApp -containerName $ContainerName -name "Tests-Misc"
 
 Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
     Set-NAVServerConfiguration `
@@ -65,3 +51,6 @@ Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
  
 $EndMs = Get-date
 Write-host "This script took $(($EndMs - $StartMs).Seconds) seconds to run"
+
+
+ 

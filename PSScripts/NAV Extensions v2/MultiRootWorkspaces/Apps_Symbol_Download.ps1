@@ -1,5 +1,7 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
+# . (Join-path $PSScriptRoot '_SettingsCustomers.ps1')
 
+# $Targets = "C:\_Source\iFacto\DistriApps\SYSTEMDATA\Test"
 
 foreach ($Target in $Targets) {
     #Get app.json
@@ -17,6 +19,11 @@ foreach ($Target in $Targets) {
         $BasicAuthentication = $false
     }
 
+    $CurrentSymbolFolder = (join-path $target ".alpackages")
+    if (-not (Test-Path $CurrentSymbolFolder)) {
+        new-item -Path $CurrentSymbolFolder -ItemType Directory
+    }
+
     #system
     if ($AppJson.platform) {
         Get-BCAppSymbols `
@@ -26,7 +33,7 @@ foreach ($Target in $Targets) {
             -AppPublisher 'Microsoft' `
             -AppName 'System' `
             -AppVersion $AppJson.platform `
-            -OutputPath (join-path $target ".alpackages") `
+            -OutputPath $CurrentSymbolFolder `
             -Authentication $LaunchJson.configurations[0].authentication `
             -Credential $Credential `
             -BasicAuthentication:$BasicAuthentication
@@ -39,7 +46,7 @@ foreach ($Target in $Targets) {
             -AppPublisher 'Microsoft' `
             -AppName 'System Application' `
             -AppVersion $AppJson.platform `
-            -OutputPath (join-path $target ".alpackages") `
+            -OutputPath $CurrentSymbolFolder `
             -Authentication $LaunchJson.configurations[0].authentication `
             -Credential $Credential `
             -BasicAuthentication:$BasicAuthentication
@@ -52,7 +59,7 @@ foreach ($Target in $Targets) {
             -AppPublisher 'Microsoft' `
             -AppName 'Application' `
             -AppVersion $AppJson.Application `
-            -OutputPath (join-path $target ".alpackages") `
+            -OutputPath $CurrentSymbolFolder `
             -Authentication $LaunchJson.configurations[0].authentication `
             -Credential $Credential `
             -BasicAuthentication:$BasicAuthentication
@@ -65,7 +72,7 @@ foreach ($Target in $Targets) {
             -AppPublisher 'Microsoft' `
             -AppName 'Base Application' `
             -AppVersion $AppJson.Application `
-            -OutputPath (join-path $target ".alpackages") `
+            -OutputPath $CurrentSymbolFolder `
             -Authentication $LaunchJson.configurations[0].authentication `
             -Credential $Credential `
             -BasicAuthentication:$BasicAuthentication
@@ -79,7 +86,7 @@ foreach ($Target in $Targets) {
             -AppPublisher $Dependency.publisher `
             -AppName $Dependency.name `
             -AppVersion $Dependency.version `
-            -OutputPath (join-path $target ".alpackages") `
+            -OutputPath $CurrentSymbolFolder `
             -Authentication $LaunchJson.configurations[0].authentication `
             -Credential $Credential `
             -BasicAuthentication:$BasicAuthentication
