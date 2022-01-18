@@ -1,6 +1,6 @@
 Get-ChildItem (join-path $PSScriptRoot 'Functions') | % {. ($_.FullName)}
 
-$containerURL = "https://2a1b790adb.infra.ifacto.be"
+$containerURL = "https://2a1b790adb.infra.ifacto.be/BC"
 $Path = "C:\Temp\appsNL"
 
 Load-BCModulesFromArtifacts
