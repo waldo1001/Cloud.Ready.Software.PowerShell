@@ -6,3 +6,5 @@ $AppJsons = Get-ChildItem $Workspace -Recurse 'app.json'
 
 $targetRepos = (Get-ChildItem $Workspace -Recurse -Hidden -Include '.git').Parent.FullName
 $Targets = $AppJsons.directory.fullname
+
+$AppSourceCopPackagesFolder = '.appSourceCopPackages'
