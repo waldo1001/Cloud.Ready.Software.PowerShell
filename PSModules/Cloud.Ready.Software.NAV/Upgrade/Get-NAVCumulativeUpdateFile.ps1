@@ -208,7 +208,11 @@ function Get-NAVCumulativeUpdateFile {
         Write-Verbose "CU Regex: $regex"
         $CULinkMatches = [ordered]@{}
 
-        $Page = Invoke-WebRequest -Uri $VersionSettings.url
+        if ($VersionSettings.Count -gt 1){
+            $Page = Invoke-WebRequest -Uri $VersionSettings[0].url
+        } else {
+            $Page = Invoke-WebRequest -Uri $VersionSettings.url
+        }
         $parsedPage = $page.ParsedHtml
         $rows = $parsedPage.getElementById('supArticleContent').getElementsByTagName('tbody').item(0).rows
         foreach ($row in $rows) {
@@ -220,7 +224,9 @@ function Get-NAVCumulativeUpdateFile {
 
             Write-Verbose("$CU`t$Link")
         
-            $CULinkMatches.Add($CU, $Link)
+            if (!($CULinkMatches[$CU])){
+                $CULinkMatches.Add($CU, $Link)
+            }
         }
         $Page.Dispose()
         $Page = $null
