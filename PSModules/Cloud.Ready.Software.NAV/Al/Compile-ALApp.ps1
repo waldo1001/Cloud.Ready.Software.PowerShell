@@ -15,7 +15,8 @@ function Compile-ALApp {
         [string] $assemblyProbingPaths  
     )
 
-    $alc = get-childitem -Path "$env:USERPROFILE\.vscode\extensions" -Recurse alc.exe | select -First 1
+    $alc = get-childitem -Path "$env:USERPROFILE\.vscode\extensions\*\bin\win32" -Recurse alc.exe | select -First 1
+    Write-Verbose "found $($alc.fullname)"
 
     # Remove translation file
     Get-ChildItem -path $appProjectFolder -Recurse -filter "*.g.xlf" | Remove-Item -Force | Write-Verbose
