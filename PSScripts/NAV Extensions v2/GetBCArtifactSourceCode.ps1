@@ -2,10 +2,8 @@
 # Install-Module BcContainerHelper -force
 
 $ArtifactUrl = 'be' | % { 
-        Get-BCArtifactUrl `
-            -country $_ `
-            -sasToken $SecretSettings.InsiderSASToken `
-            -select NextMinor} #Specify exact version you'd like to unpack
+        Get-BCArtifactUrl -type Sandbox
+            } #Specify exact version you'd like to unpack
 # $ArtifactUrl = 'be' | % { Get-BCArtifactUrl -country $_ -select Latest } #Specify exact version you'd like to unpack
 $Destination = 'C:\_Source\Microsoft\Artifacts'
 $bcartifactsCacheFolder = 'c:\bcartifacts.cache\'
