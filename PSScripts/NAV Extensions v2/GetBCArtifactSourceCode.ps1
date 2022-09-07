@@ -1,8 +1,10 @@
 # Install BcContainerHelper (could be you need to run this as Administrator):
 # Install-Module BcContainerHelper -force
 
+$SecretSettings = Get-ObjectFromJSON "C:\_Source\Community\Cloud.Ready.Software.PowerShell\PSScripts\NAV Docker\LocalDocker2\_SecretSettings.json"
+
 $ArtifactUrl = 'be' | % { 
-        Get-BCArtifactUrl -type Sandbox
+        Get-BCArtifactUrl -type Sandbox -select NextMajor -sasToken $SecretSettings.InsiderSASToken
             } #Specify exact version you'd like to unpack
 # $ArtifactUrl = 'be' | % { Get-BCArtifactUrl -country $_ -select Latest } #Specify exact version you'd like to unpack
 $Destination = 'C:\_Source\Microsoft\Artifacts'

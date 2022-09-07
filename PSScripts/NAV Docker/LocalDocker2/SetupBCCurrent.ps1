@@ -44,19 +44,16 @@ New-BcContainer `
 
 
 if ($includePerformanceToolkit) {
-    # $BCPTFolder = "C:\bcartifacts.cache\onprem\20.0.37253.38230\platform\Applications\testframework\performancetoolkit"
-    $PerformanceToolkit = (Get-ChildItem -Recurse -Path "C:\bcartifacts.cache\" -Filter "*performancetoolkit*").FullName
-    $PerformanceToolkit = $PerformanceToolkit[$PerformanceToolkit.Length - 1]
-    if ($PerformanceToolkit) {        
-        # Publish-BcContainerApp `
-        # -containerName $ContainerName `
-        # -appFile (join-path $PerformanceToolkit "Microsoft_Performance Toolkit.app") `
-        # -install `
-        # -sync `
-        # -syncMode ForceSync
+    $BcContainerCountry = Get-BcContainerCountry -containerOrImageName $ContainerName
+    $BcContainerArtifactUrl = Get-BcContainerArtifactUrl -containerName $ContainerName
+    $BcContainerArtifactUrl = $BcContainerArtifactUrl -replace 'https://bcartifacts.azureedge.net/', 'C:/bcartifacts.cache/'
+    $BcContainerArtifactUrl = $BcContainerArtifactUrl -replace $BcContainerCountry, 'platform'
+    $PerformanceToolkitSamples = (Get-ChildItem -Recurse -Path $BcContainerArtifactUrl -Filter "*Microsoft_Performance Toolkit Samples.app*").FullName
+    
+    if ($PerformanceToolkitSamples) {             
         Publish-BcContainerApp `
         -containerName $ContainerName `
-        -appFile (join-path $PerformanceToolkit "Microsoft_Performance Toolkit Samples.app") `
+        -appFile $PerformanceToolkitSamples `
         -install `
         -sync `
         -syncMode ForceSync
