@@ -13,6 +13,6 @@ foreach ($Translationsfile in $Translationsfiles) {
         Move-Item -Path $Translationsfile.FullName -Destination $target.Directory -Force 
     }
     else {
-        Write-Error 'fout'
+        Write-Error "fout $target"
     }
 }
