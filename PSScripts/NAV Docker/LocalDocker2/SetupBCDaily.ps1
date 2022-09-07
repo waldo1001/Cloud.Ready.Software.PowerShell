@@ -43,19 +43,23 @@ New-BcContainer `
 # }
 
 if ($includePerformanceToolkit) {
-    $BCPTFolder = "C:\bcartifacts.cache\onprem\20.0.37253.38230\platform\Applications\testframework\performancetoolkit"
-    Publish-BcContainerApp `
+    # $BCPTFolder = "C:\bcartifacts.cache\onprem\20.0.37253.38230\platform\Applications\testframework\performancetoolkit"
+    $PerformanceToolkit = (Get-ChildItem -Recurse -Path "C:\bcartifacts.cache\" -Filter "performancetoolkit").FullName
+    $PerformanceToolkit = $PerformanceToolkit[$PerformanceToolkit.Length - 1]
+    if ($PerformanceToolkit) {
+        Publish-BcContainerApp `
         -containerName $ContainerName `
-        -appFile (join-path $BCPTFolder "Microsoft_Performance Toolkit.app") `
+        -appFile $PerformanceToolkit `
         -install `
         -sync `
         -syncMode ForceSync
-    Publish-BcContainerApp `
+        Publish-BcContainerApp `
         -containerName $ContainerName `
-        -appFile (join-path $BCPTFolder "Microsoft_Performance Toolkit Samples.app") `
+        -appFile $PerformanceToolkit `
         -install `
         -sync `
         -syncMode ForceSync
+    }
 }
 
 # Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {

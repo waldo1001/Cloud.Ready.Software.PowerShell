@@ -2,7 +2,7 @@
 
 $artifactUrl = Get-BCArtifactUrl `
     -Type Sandbox `
-    -Select Latest
+    -Select Weekly
 
 $ContainerName = 'bccurrent'
 # $ImageName = $ContainerName
@@ -32,8 +32,9 @@ New-BcContainer `
     -assignPremiumPlan `
     -isolation hyperv `
     -multitenant:$false `
-    -myScripts @("https://raw.githubusercontent.com/tfenster/nav-docker-samples/swaggerui/AdditionalSetup.ps1")
-    # -includePerformanceToolkit:$includePerformanceToolkit `
+    -includePerformanceToolkit:$includePerformanceToolkit
+    
+    # -myScripts @("https://raw.githubusercontent.com/tfenster/nav-docker-samples/swaggerui/AdditionalSetup.ps1")
     # -imageName $imageName `
 
 # if (!$includeTestLibrariesOnly) {
@@ -41,20 +42,25 @@ New-BcContainer `
     # UnInstall-BcContainerApp -containerName bccurrent -name "Tests-Misc"
 # }
 
+
 if ($includePerformanceToolkit) {
-    $BCPTFolder = "C:\bcartifacts.cache\onprem\20.0.37253.38230\platform\Applications\testframework\performancetoolkit"
-    Publish-BcContainerApp `
+    # $BCPTFolder = "C:\bcartifacts.cache\onprem\20.0.37253.38230\platform\Applications\testframework\performancetoolkit"
+    $PerformanceToolkit = (Get-ChildItem -Recurse -Path "C:\bcartifacts.cache\" -Filter "*performancetoolkit*").FullName
+    $PerformanceToolkit = $PerformanceToolkit[$PerformanceToolkit.Length - 1]
+    if ($PerformanceToolkit) {        
+        # Publish-BcContainerApp `
+        # -containerName $ContainerName `
+        # -appFile (join-path $PerformanceToolkit "Microsoft_Performance Toolkit.app") `
+        # -install `
+        # -sync `
+        # -syncMode ForceSync
+        Publish-BcContainerApp `
         -containerName $ContainerName `
-        -appFile (join-path $BCPTFolder "Microsoft_Performance Toolkit.app") `
+        -appFile (join-path $PerformanceToolkit "Microsoft_Performance Toolkit Samples.app") `
         -install `
         -sync `
         -syncMode ForceSync
-    Publish-BcContainerApp `
-        -containerName $ContainerName `
-        -appFile (join-path $BCPTFolder "Microsoft_Performance Toolkit Samples.app") `
-        -install `
-        -sync `
-        -syncMode ForceSync
+    }
 }
 
 # Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
