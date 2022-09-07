@@ -3,10 +3,19 @@
 
 # $Targets = "C:\_Source\iFacto\DistriApps\SYSTEMDATA\Test"
 
+try{
+    $LaunchJson = Get-ObjectFromJSON (Join-Path $Workspace 'DistriApps.code-workspace' )
+    $LaunchJson = $LaunchJson.launch
+} catch {
+    $LaunchJson = $null
+}
+
 foreach ($Target in $Targets) {
     #Get app.json
     $AppJson = Get-ObjectFromJSON (Join-Path $target "app.json")
-    $LaunchJson = Get-ObjectFromJSON (Join-Path $target ".vscode/launch.json")
+    if (!$LaunchJson){
+        $LaunchJson = Get-ObjectFromJSON (Join-Path $target ".vscode/launch.json")
+    }
 
     if ($LaunchJson.configurations[0].authentication -ne 'Windows') {
         if (!$Credential) {

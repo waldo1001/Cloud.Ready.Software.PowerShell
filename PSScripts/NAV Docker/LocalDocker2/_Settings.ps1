@@ -18,3 +18,6 @@ $ContainerAdditionalParameters = @("--cpu-count 8", "--dns=8.8.8.8")
 # Get-ChildItem (Join-Path $PSScriptRoot "Functions") -Filter "*.ps1" | % {
 #     . $_.FullName
 # }
+
+Import-Module bccontainerhelper
+$bcContainerHelperConfig.sandboxContainersAreMultitenantByDefault = $false
