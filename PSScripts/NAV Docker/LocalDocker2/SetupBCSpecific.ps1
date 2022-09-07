@@ -1,13 +1,11 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $artifactUrl = Get-BCArtifactUrl `
-    -country de `
     -type Sandbox `
-    -version 16.5
+    -version 19.3
     
     
 $ContainerName = 'bcspecific'
-$ImageName = $ContainerName
 
 # $featureKeys = @{
 #     ActionBarDialogEarlyOverflow               = "None"
@@ -19,7 +17,9 @@ $ImageName = $ContainerName
 
 $includeTestToolkit = $true
 $includeTestLibrariesOnly = $true
-$enableSymbolLoading = $false
+$includeTestFrameworkOnly = $false
+$includePerformanceToolkit = $false
+$forceRebuild = $true
 
 $StartMs = Get-date
 
@@ -27,16 +27,22 @@ New-BcContainer `
     -accept_eula `
     -containerName $ContainerName  `
     -artifactUrl $artifactUrl `
-    -imageName $imageName `
     -Credential $ContainerCredential `
     -auth "UserPassword" `
     -updateHosts `
     -alwaysPull `
     -includeTestToolkit:$includeTestToolkit `
+    -includeTestFrameworkOnly:$includeTestFrameworkOnly `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
+    -includePerformanceToolkit:$includePerformanceToolkit `
     -licenseFile $SecretSettings.containerLicenseFile `
-    -featureKeys $featureKeys `
-    -enableSymbolLoading:$enableSymbolLoading
+    -enableTaskScheduler `
+    -forceRebuild:$forceRebuild `
+    -assignPremiumPlan `
+    -isolation hyperv `
+    -multitenant:$false `
+    # -myScripts @("https://raw.githubusercontent.com/tfenster/nav-docker-samples/swaggerui/AdditionalSetup.ps1")
+    # -imageName $imageName `
 
 
 $EndMs = Get-date

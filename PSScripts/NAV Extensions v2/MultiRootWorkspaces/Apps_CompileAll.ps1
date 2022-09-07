@@ -33,7 +33,11 @@ Remove-Item $SymbolFolderForCompile -Force -Recurse
 New-Item -Path $SymbolFolderForCompile -ItemType Directory -Force
 
 $AllAppFiles = Get-ChildItem $WorkSpace -recurse -filter '*.app'
-$AllAppFiles | Copy-Item -Destination $SymbolFolderForCompile -Force
+$AllAppFiles | % {
+    if (-not($_.FullName -like "*.appSourceCopPackages*")){
+        $_ | Copy-Item -Destination $SymbolFolderForCompile -Force
+    }
+}
 
 
 # compile
