@@ -40,6 +40,6 @@ if (!$includeTestLibrariesOnly -and !$includeTestFrameworkOnly) {
 
 
 $EndMs = Get-date
-Write-host "This script took $(($EndMs - $StartMs).Seconds) seconds to run"
+Write-host "This script took $(($EndMs - $StartMs).TotalSeconds) seconds to run"
 
 

@@ -2,7 +2,7 @@
 
 $artifactUrl = Get-BCArtifactUrl `
     -type Sandbox `
-    -version 19.3
+    -version 20.5.45456.46271
     
     
 $ContainerName = 'bcspecific'
@@ -46,4 +46,4 @@ New-BcContainer `
 
 
 $EndMs = Get-date
-Write-host "This script took $(($EndMs - $StartMs).Seconds) seconds to run"
+Write-host "This script took $(($EndMs - $StartMs).TotalSeconds) seconds to run"
