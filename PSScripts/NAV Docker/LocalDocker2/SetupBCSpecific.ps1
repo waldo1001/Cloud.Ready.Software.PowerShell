@@ -1,10 +1,9 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $artifactUrl = Get-BCArtifactUrl `
-    -Type Sandbox `
     -version 20.5 `
-    -country base
-
+    -type Sandbox `
+    
 $ContainerName = 'bcspecific'
 # $ImageName = $ContainerName
 
@@ -80,4 +79,4 @@ Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
 #     SET QUERY_STORE = ON (WAIT_STATS_CAPTURE_MODE = ON);"
  
 $EndMs = Get-date
-Write-host "This script took $(($EndMs - $StartMs).Seconds) seconds to run"
+Write-host "This script took $(($EndMs - $StartMs).TotalSeconds) seconds to run"

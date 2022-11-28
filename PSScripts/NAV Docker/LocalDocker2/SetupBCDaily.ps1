@@ -4,7 +4,7 @@ $artifactUrl = Get-BCArtifactUrl `
     -Type Sandbox `
     -Select NextMinor `
     -sasToken $SecretSettings.InsiderSASToken `
-    -country base
+    -country be
 
 $ContainerName = 'bcdaily'
 # $ImageName = $ContainerName
@@ -82,4 +82,4 @@ Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
 #     SET QUERY_STORE = ON (WAIT_STATS_CAPTURE_MODE = ON);"
  
 $EndMs = Get-date
-Write-host "This script took $(($EndMs - $StartMs).Seconds) seconds to run"
+Write-host "This script took $(($EndMs - $StartMs).TotalSeconds) seconds to run"

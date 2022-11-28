@@ -1,8 +1,9 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $artifactUrl = Get-BCArtifactUrl `
-    -Type Sandbox `
-    -country be
+    -Type Sandbox `    
+    -country w1 `
+    -Select Weekly 
 
 $ContainerName = 'bccurrent'
 # $ImageName = $ContainerName
@@ -65,7 +66,7 @@ Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
 
     Set-NAVServerConfiguration `
         -ServerInstance "BC" `
-        -KeyName SamplingInterval `
+        -KeyName  SamplingInterval `
         -KeyValue 1 `
         -ApplyTo All `
         -verbose
@@ -79,4 +80,4 @@ Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
 #     SET QUERY_STORE = ON (WAIT_STATS_CAPTURE_MODE = ON);"
  
 $EndMs = Get-date
-Write-host "This script took $(($EndMs - $StartMs).Seconds) seconds to run"
+Write-host "This script took $(($EndMs - $StartMs).TotalSeconds) seconds to run"
