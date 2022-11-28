@@ -1,19 +1,12 @@
 . (Join-Path $PSScriptRoot '.\_Settings.ps1')
 
 $artifactUrl = Get-BCArtifactUrl `
-    -type Sandbox `
-    -version 19.3
-    
-    
-$ContainerName = 'bcspecific'
+    -Type Sandbox `
+    -version 20.5 `
+    -country base
 
-# $featureKeys = @{
-#     ActionBarDialogEarlyOverflow               = "None"
-#     DisableIntegrationManagement               = "None"
-#     EmailHandlingImprovements                  = "None"
-#     JournalErrorBackgroundCheck                = "None"
-#     PaymentReconciliationJournalUXImprovements = "None" 
-# }
+$ContainerName = 'bcspecific'
+# $ImageName = $ContainerName
 
 $includeTestToolkit = $true
 $includeTestLibrariesOnly = $true
@@ -34,16 +27,57 @@ New-BcContainer `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestFrameworkOnly:$includeTestFrameworkOnly `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
-    -includePerformanceToolkit:$includePerformanceToolkit `
     -licenseFile $SecretSettings.containerLicenseFile `
     -enableTaskScheduler `
     -forceRebuild:$forceRebuild `
     -assignPremiumPlan `
     -isolation hyperv `
     -multitenant:$false `
-    # -myScripts @("https://raw.githubusercontent.com/tfenster/nav-docker-samples/swaggerui/AdditionalSetup.ps1")
+    -includePerformanceToolkit:$includePerformanceToolkit
+    # -myScripts @("https://raw.githubusercontent.com/tfenster/nav-docker-samples/swaggerui/AdditionalSetup.ps1") `
     # -imageName $imageName `
 
+# if (!$includeTestLibrariesOnly) {
+    # UnInstall-BcContainerApp -containerName bccurrent -name "Tests-TestLibraries" -ErrorAction SilentlyContinue
+    # UnInstall-BcContainerApp -containerName bccurrent -name "Tests-Misc"
+# }
 
+
+if ($includePerformanceToolkit) {
+    $BcContainerCountry = Get-BcContainerCountry -containerOrImageName $ContainerName
+    $BcContainerArtifactUrl = Get-BcContainerArtifactUrl -containerName $ContainerName
+    $BcContainerArtifactUrl = $BcContainerArtifactUrl -replace 'https://bcartifacts.azureedge.net/', 'C:/bcartifacts.cache/'
+    $BcContainerArtifactUrl = $BcContainerArtifactUrl -replace 'https://bcinsider.azureedge.net/', 'C:/bcartifacts.cache/'
+    $BcContainerArtifactUrl = $BcContainerArtifactUrl.Replace($SecretSettings.InsiderSASToken, '')
+    $BcContainerArtifactUrl = $BcContainerArtifactUrl -replace $BcContainerCountry, 'platform'
+    $PerformanceToolkitSamples = (Get-ChildItem -Recurse -Path $BcContainerArtifactUrl -Filter "*Microsoft_Performance Toolkit Samples.app*").FullName
+    
+    if ($PerformanceToolkitSamples) {             
+        Publish-BcContainerApp `
+        -containerName $ContainerName `
+        -appFile $PerformanceToolkitSamples `
+        -install `
+        -sync `
+        -syncMode ForceSync
+    }
+}
+
+Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
+
+    Set-NAVServerConfiguration `
+        -ServerInstance "BC" `
+        -KeyName SamplingInterval `
+        -KeyValue 1 `
+        -ApplyTo All `
+        -verbose
+
+    Set-NAVServerInstance -ServerInstance bc -Restart
+}
+
+#     Invoke-S qlcmd -Query "alter DATABASE CRONUS
+#     SET QUERY_STORE = ON (OPERATION_MODE = READ_WRITE);"
+#     Invoke-Sqlcmd -Query "alter DATABASE CRONUS
+#     SET QUERY_STORE = ON (WAIT_STATS_CAPTURE_MODE = ON);"
+ 
 $EndMs = Get-date
 Write-host "This script took $(($EndMs - $StartMs).Seconds) seconds to run"
