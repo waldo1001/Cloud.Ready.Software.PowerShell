@@ -11,8 +11,8 @@ $ContainerName = 'bcdaily'
 
 $includeTestToolkit = $true
 $includeTestLibrariesOnly = $true
-$includeTestFrameworkOnly = $true
-$includePerformanceToolkit = $true
+$includeTestFrameworkOnly = $false
+$includePerformanceToolkit = $false
 $forceRebuild = $true
 
 $StartMs = Get-date
@@ -40,7 +40,7 @@ New-BcContainer `
     # -imageName $imageName `
 
 # if (!$includeTestLibrariesOnly) {
-    UnInstall-BcContainerApp -containerName bccurrent -name "Tests-TestLibraries" -ErrorAction SilentlyContinue
+    # UnInstall-BcContainerApp -containerName bccurrent -name "Tests-TestLibraries" -ErrorAction SilentlyContinue
     # UnInstall-BcContainerApp -containerName bccurrent -name "Tests-Misc"
 # }
 

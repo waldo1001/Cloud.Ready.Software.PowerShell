@@ -34,12 +34,11 @@ New-BcContainer `
     -isolation hyperv `
     -multitenant:$false `
     -includePerformanceToolkit:$includePerformanceToolkit
-    
-    # -myScripts @("https://raw.githubusercontent.com/tfenster/nav-docker-samples/swaggerui/AdditionalSetup.ps1")
+    # -myScripts @("https://raw.githubusercontent.com/tfenster/nav-docker-samples/swaggerui/AdditionalSetup.ps1") `
     # -imageName $imageName `
 
 # if (!$includeTestLibrariesOnly) {
-    UnInstall-BcContainerApp -containerName bccurrent -name "Tests-TestLibraries" -ErrorAction SilentlyContinue
+    # UnInstall-BcContainerApp -containerName bccurrent -name "Tests-TestLibraries" -ErrorAction SilentlyContinue
     # UnInstall-BcContainerApp -containerName bccurrent -name "Tests-Misc"
 # }
 
