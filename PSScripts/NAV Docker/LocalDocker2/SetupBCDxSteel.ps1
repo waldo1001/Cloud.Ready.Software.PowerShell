@@ -2,19 +2,19 @@
 
 $artifactUrl = Get-BCArtifactUrl `
     -Type OnPrem `
-    -version 19.1 `
+    -version 21.1 `
     -country w1
 
 $ContainerName = 'dxsteel'
 # $ImageName = $ContainerName
 
-$SecretSettings.containerLicenseFile = "https://www.dropbox.com/s/yf8t1uo2nb8owsl/LatestNL.flf?dl=1"
+$SecretSettings.containerLicenseFile = "https://www.dropbox.com/s/fc18q7g6f57ajbx/LicenseiFactoNL.flf?dl=1"
 
 $databasename = 'mydatabase'
-$bakFile = "C:\Temp\DxSteel\BC_DXSTEEL_QA_backup_2021_11_06_133820_9242168.BAK"
-$includeTestToolkit = $true
-$includeTestLibrariesOnly = $true
-$includeTestFrameworkOnly = $true
+$bakFile = "C:\Temp\DxSteel\BC21NL_dxsteel_20230111_1102\BC21NL_dxsteel_20230111_1102.bak"
+$includeTestToolkit = $false
+$includeTestLibrariesOnly = $false
+$includeTestFrameworkOnly = $false
 $includePerformanceToolkit = $false
 $forceRebuild = $true
 
@@ -39,6 +39,8 @@ New-BcContainer `
     -isolation hyperv `
     -bakFile $bakFile
     # -imageName $imageName `
+
+break
 
 Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
     write-host "Removing all users from the database" -ForegroundColor Green

@@ -16,6 +16,7 @@ $NewBranch = Read-Host 'New Branch'
 foreach ($Target in $targetRepos) {
     write-host $Target -ForegroundColor Green
     Set-Location $Target
+    & git remote prune origin
     & git checkout -q "$MasterBranch"
     & git pull
     & git push

@@ -2,7 +2,7 @@
 
 $artifactUrl = Get-BCArtifactUrl `
     -Type Sandbox `
-    -country w1 `
+    -country be `
     -Select Weekly 
 
 $ContainerName = 'bccurrent'
@@ -10,7 +10,7 @@ $ContainerName = 'bccurrent'
 
 $includeTestToolkit = $true
 $includeTestLibrariesOnly = $true
-$includeTestFrameworkOnly = $true
+$includeTestFrameworkOnly = $false
 $includePerformanceToolkit = $true
 $forceRebuild = $true
 
@@ -59,7 +59,8 @@ if ($includePerformanceToolkit) {
         -appFile $PerformanceToolkitSamples `
         -install `
         -sync `
-        -syncMode ForceSync
+        -syncMode ForceSync `
+        -ignoreIfAppExists
     }
 }
 
