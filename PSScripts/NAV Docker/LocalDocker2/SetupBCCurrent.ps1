@@ -2,7 +2,6 @@
 
 $artifactUrl = Get-BCArtifactUrl `
     -Type Sandbox `
-    -country be `
     -Select Weekly 
 
 $ContainerName = 'bccurrent'
@@ -23,7 +22,7 @@ New-BcContainer `
     -Credential $ContainerCredential `
     -auth "UserPassword" `
     -updateHosts `
-    -alwaysPull `
+    -alwaysPull:$true `
     -includeTestToolkit:$includeTestToolkit `
     -includeTestFrameworkOnly:$includeTestFrameworkOnly `
     -includeTestLibrariesOnly:$includeTestLibrariesOnly `
@@ -37,10 +36,13 @@ New-BcContainer `
     # -myScripts @("https://raw.githubusercontent.com/tfenster/nav-docker-samples/swaggerui/AdditionalSetup.ps1") `
     # -imageName $imageName `
 
-# if (!$includeTestLibrariesOnly) {
-    # UnInstall-BcContainerApp -containerName bccurrent -name "Tests-TestLibraries" -ErrorAction SilentlyContinue
-    # UnInstall-BcContainerApp -containerName bccurrent -name "Tests-Misc"
-# }
+if ($includePerformanceToolkit) {
+    #When Performance toolkig, you don't want this:
+
+    write-host "Removing Performance killers" -foregroundcolor green
+    UnInstall-BcContainerApp -containerName bccurrent -name "Tests-TestLibraries" -ErrorAction SilentlyContinue
+    UnInstall-BcContainerApp -containerName bccurrent -name "Tests-Misc" -ErrorAction SilentlyContinue
+}
 
 
 if ($includePerformanceToolkit) {
@@ -64,6 +66,8 @@ if ($includePerformanceToolkit) {
 }
 
 Invoke-ScriptInBcContainer -containerName $ContainerName -scriptblock {
+
+    Write-Host "Setting SamplingInterval to 1" -foregroundcolor green
 
     Set-NAVServerConfiguration `
         -ServerInstance "BC" `
