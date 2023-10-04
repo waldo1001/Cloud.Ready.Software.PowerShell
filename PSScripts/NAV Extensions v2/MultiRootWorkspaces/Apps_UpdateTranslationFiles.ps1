@@ -1,18 +1,37 @@
 . (Join-path $PSScriptRoot '_Settings.ps1')
 
-$Translationsfiles = Get-ChildItem "C:\Temp\translations\Translations Distri translated"
+$Translationsfiles = Get-ChildItem "C:\Temp\Translations"
+$TranslationsSubDir = "Translations"
 
+$AppJsonFiles = (Get-ChildItem -Recurse -Path $Workspace -Filter "app.json")
+
+$Apps =
+    foreach($AppJsonFile in $AppJsonFiles)
+    {
+        $AppJson = Get-Content $AppJsonFile.FullName -Raw | ConvertFrom-Json
+
+        [pscustomobject] @{
+                            "Name" = $AppJson.name
+                            "Path" = $AppJsonFile.Directory.FullName
+                        }
+    }
 
 foreach ($Translationsfile in $Translationsfiles) {
     $filename = $Translationsfile.Name
-    $appname = $filename.Substring(7, $filename.IndexOf('.') - 7)
+    $appname = $filename.Substring(0, $filename.IndexOf('.'))
 
-    $target = (Get-ChildItem -Recurse -Path $Workspace -Filter "*$($appname)*.xlf")[0]
-    # $target = join-path $Workspace "$appname\App\Translations"
-    if ($target) {
-        Move-Item -Path $Translationsfile.FullName -Destination $target.Directory -Force 
+    $App = $Apps | where Name -ieq $appname
+
+    if (-not $App) {
+        $App = $Apps | where Name -like "*$($appname)*"
     }
-    else {
-        Write-Error "fout $target"
+
+    if (-not $App) {
+        Write-Error "App $appname not found"
+        continue
     }
+    
+    $DestinationFolder = Join-Path $App.Path $TranslationsSubDir
+    write-host "Move-Item -Path $($Translationsfile.FullName) -Destination $($DestinationFolder) -Force"  -ForegroundColor Green
+    Move-Item -Path $Translationsfile.FullName -Destination $DestinationFolder -Force
 }
