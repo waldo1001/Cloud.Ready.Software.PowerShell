@@ -13,7 +13,8 @@ $includeTestLibrariesOnly = $true
 $includeTestFrameworkOnly = $false
 $includePerformanceToolkit = $true
 $forceRebuild = $true
-$bcpt_appinsights = "InstrumentationKey=f8c1258a-940b-4deb-b680-d79c99e15493;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/"
+# $bcpt_appinsights = "InstrumentationKey=f8c1258a-940b-4deb-b680-d79c99e15493;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/"
+$bcpt_appinsights = "InstrumentationKey=444af6dc-a16c-4b09-8c39-3beeec98a6b7;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/"
 
 
 $StartMs = Get-date
@@ -103,6 +104,8 @@ Invoke-ScriptInBcContainer -containerName $containerName -scriptblock {
     #     Write-Host "$($TestAppsExists | Format-List | Out-String)"
     #     Write-Error "*** Test CUs still exist"
     # }
+    
+    install-module MSAL.PS -force
 
     Set-NAVServerConfiguration -ServerInstance "BC" `
                                 -KeyName  EnableLockTimeoutMonitoring  `
