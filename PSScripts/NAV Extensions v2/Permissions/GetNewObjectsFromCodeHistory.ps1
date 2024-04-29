@@ -1,11 +1,13 @@
-$Sourcebranch = 'be-19'
-$Targetbranch = 'be-20'
+$Sourcebranch = 'be-24'
+$Targetbranch = 'be-25-vNext'
 $ForcePull = $false
-$ObjectType = 'Table'
+$ObjectType = ''
 
-set-location "C:\_source\MSDyn365BC.Code.History"
+#set-location "C:\_source\MSDyn365BC.Code.History"
+set-location "C:\_Source\Microsoft\MSDyn365BC.Sandbox.Code.History"
 
-$ObjectPattern = '(ObjectType) +([0-9]+) +("[^"]*"|[\w]*)([^"\n]*"[^"\n]*)?'
+#$ObjectPattern = '(ObjectType) +([0-9]+) +("[^"]*"|[\w]*)([^"\n]*"[^"\n]*)?'
+$ObjectPattern = '(ObjectType) +([0-9]*) ?("[^"]*"|[\w]*)([^"\n]*"[^"\n]*)?'
 if ($ObjectType){
     $ObjectPattern = $ObjectPattern -replace "ObjectType", $ObjectType
 } else {
@@ -38,6 +40,7 @@ $AllObjects | Select-String $SelectString | ForEach-Object {
     $MatchingLines = Get-Content $CurrObj | Select-String $ObjectPattern
     
     if($MatchingLines){
+        if ($MatchingLines.Count -gt 1) { $MatchingLines = $MatchingLines[0]}
         $MatchingLines = $MatchingLines.ToString();
 
         $IsTemp = Get-Content $CurrObj | Select-String "TableType = Temporary"
