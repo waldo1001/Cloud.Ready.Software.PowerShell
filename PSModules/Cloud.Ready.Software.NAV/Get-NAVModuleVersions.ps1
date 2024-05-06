@@ -41,6 +41,8 @@ function Get-NAVModuleVersions {
                 )
     }
 
+    $searchIn = $searchIn | Where-Object { Test-Path $_ }
+
     foreach ($searchPath in $searchIn) {
         
         Write-Verbose "Searching in $searchPath, please wait a second..."
