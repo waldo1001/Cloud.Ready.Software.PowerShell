@@ -1,0 +1,47 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+entryPoints:
+  web:
+    address: ':80'
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ':443'
+  bc-soap:
+    address: ':7047'
+  bc-odata:
+    address: ':7048'
+  bc-dev:
+    address: ':7049'
+http:
+  routers:
+    waldobe:
+      rule: Host(`waldo.be`)
+      tls:
+        passthrough: true
+serversTransport:
+  insecureSkipVerify: true
+tls:
+  certificates:
+    - certFile: /etc/traefik/star_waldo_be.cer
+      keyFile: /etc/traefik/star_waldo_be.key
+log:
+  filePath: /etc/traefik/traefik.log
+accessLog:
+  filePath: /etc/traefik/traefik-access.log
+api:
+  insecure: true
+  dashboard: true
+ping: {}
+providers:
+  file:
+    directory: /etc/traefik/dynamic-conf
+    watch: true
+  docker:
+    endpoint: 'npipe:////./pipe/docker_engine'
+    defaultRule: Host(`server1.waldo.be`)
+    exposedByDefault: false
