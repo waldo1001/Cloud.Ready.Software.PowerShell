@@ -1,0 +1,1 @@
+﻿Setup-TraefikContainerForBcContainers `    -PublicDnsName 'waldo.be' `    -CrtFile "C:\ProgramData\BcContainerHelper\traefikforbc.old\config\star_waldo_be.crt" `    -CrtKeyFile "C:\ProgramData\BcContainerHelper\traefikforbc.old\config\star_waldo_be.key" `    -IP '157.90.94.98' `    -Recreate `    -overrideDefaultBinding `    -additionalParameters
