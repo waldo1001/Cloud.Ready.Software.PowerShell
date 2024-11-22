@@ -57,3 +57,23 @@ Pwd_*
 password.*
 *Secret*
 *.zip
+PSScripts/Hetzner/Demos/Certs/star_waldo_be.cer
+PSScripts/Hetzner/Demos/Certs/star_waldo_be.crt
+PSScripts/Hetzner/Demos/Certs/star_waldo_be.csr
+PSScripts/Hetzner/Demos/Certs/star_waldo_be.key
+PSScripts/Hetzner/Demos/Certs/star_waldo_be.p7b
+PSScripts/Hetzner/Demos/Certs/star_waldo_be.pem
+PSScripts/Hetzner/Demos/Certs/star_waldo_be.pfx
+PSScripts/Hetzner/TrainingEnv/Certs/DigiCertCA.crt
+PSScripts/Hetzner/TrainingEnv/Certs/star_waldo_be.cer
+PSScripts/Hetzner/TrainingEnv/Certs/star_waldo_be.crt
+PSScripts/Hetzner/TrainingEnv/Certs/star_waldo_be.p7b
+PSScripts/Hetzner/TrainingEnv/Certs/star_waldo_be.pem
+PSScripts/Hetzner/TrainingEnv/Certs/star_waldo_be.pem.old
+PSScripts/Hetzner/TrainingEnv/Certs - Old/star_waldo_be.cer
+PSScripts/Hetzner/TrainingEnv/Certs - Old/star_waldo_be.crt
+PSScripts/Hetzner/TrainingEnv/Certs - Old/star_waldo_be.csr
+PSScripts/Hetzner/TrainingEnv/Certs - Old/star_waldo_be.key
+PSScripts/Hetzner/TrainingEnv/Certs - Old/star_waldo_be.p7b
+PSScripts/Hetzner/TrainingEnv/Certs - Old/star_waldo_be.pem
+PSScripts/Hetzner/TrainingEnv/Certs - Old/star_waldo_be.pfx
